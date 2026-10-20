@@ -1,0 +1,30 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Financily Admin</title><script src="config.js"></script>
+<style>body{font:15px/1.5 system-ui,sans-serif;margin:0;background:#0d0c24;color:#f1f1fb}.w{max-width:1200px;margin:auto;padding:20px}
+h1{font-size:22px}input,select,button{font:inherit;padding:9px 12px;border-radius:10px;border:1px solid #2a2955;background:#17163a;color:#fff}
+button{background:linear-gradient(120deg,#ffb23e,#ff8a3d);color:#201400;font-weight:700;border:0;cursor:pointer}
+table{width:100%;border-collapse:collapse;margin-top:14px;font-size:14px}th,td{padding:9px 8px;border-bottom:1px solid #2a2955;text-align:left;vertical-align:top}th{color:#9ff3e8}
+.t{overflow-x:auto}#lg{max-width:340px;margin:12vh auto;display:grid;gap:10px}.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}</style></head><body><div class="w">
+<div id="lg"><h1>Financily Admin</h1><input id="u" placeholder="Username"><input id="p" type="password" placeholder="Password"><button id="go">Login</button><small id="e" style="color:#ff8a8a"></small></div>
+<div id="app" style="display:none"><h1>Applications <small id="cnt"></small></h1>
+<div class="bar"><input id="q" placeholder="Search name / mobile / ref"><select id="fs"><option value="">All status</option><option>new</option><option>contacted</option><option>docs</option><option>approved</option><option>rejected</option><option>disbursed</option></select><button id="csv">Export CSV</button><button id="out">Logout</button></div>
+<div class="t"><table><thead><tr><th>Date</th><th>Ref</th><th>Name</th><th>Mobile</th><th>Loan</th><th>Amount</th><th>CIBIL</th><th>Status</th></tr></thead><tbody id="tb"></tbody></table></div>
+<h2>Callback requests</h2><div class="t"><table><tbody id="ct"></tbody></table></div></div></div>
+<script>
+const $=i=>document.getElementById(i),A=window.FIN_API_URL,ST=['new','contacted','docs','approved','rejected','disbursed'];let T=sessionStorage.getItem('ft'),D=[];
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function api(p,o={}){const r=await fetch(A+p,{...o,headers:{'Content-Type':'application/json',Authorization:'Bearer '+T}});if(r.status===401){sessionStorage.removeItem('ft');location.reload()}return r.json()}
+$('go').onclick=async()=>{const r=await fetch(A+'/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user:$('u').value,pass:$('p').value})}),j=await r.json();
+ if(j.ok){T=j.token;sessionStorage.setItem('ft',T);load()}else $('e').textContent=j.error||'Failed'};
+$('out').onclick=()=>{sessionStorage.removeItem('ft');location.reload()};
+async function load(){const j=await api('/api/admin/applications');if(!j.ok)return;D=j.items;$('lg').style.display='none';$('app').style.display='block';
+ $('ct').innerHTML=j.contacts.map(c=>`<tr><td>${new Date(c.createdAt).toLocaleString('en-IN')}</td><td>${esc(c.name)}</td><td>${esc(c.mobile)}</td><td>${esc(c.loanType)}</td><td>${esc(c.amount)}</td></tr>`).join('');draw()}
+function draw(){const q=$('q').value.toLowerCase(),s=$('fs').value,L=D.filter(d=>(!s||d.status===s)&&(!q||(d.name+d.mobile+d.ref).toLowerCase().includes(q)));$('cnt').textContent='('+L.length+')';
+ $('tb').innerHTML=L.map(d=>`<tr><td>${new Date(d.createdAt).toLocaleDateString('en-IN')}</td><td>${esc(d.ref)}</td><td>${esc(d.name)}</td><td><a style="color:#ffb23e" href="tel:${esc(d.mobile)}">${esc(d.mobile)}</a></td><td>${esc(d.loanType)}</td><td>₹${(d.amount||0).toLocaleString('en-IN')}</td><td>${esc(d.cibil)}</td>
+ <td><select data-id="${d._id}">${ST.map(x=>`<option${x===d.status?' selected':''}>${x}</option>`).join('')}</select></td></tr>`).join('')}
+$('tb').onchange=async e=>{if(e.target.dataset.id){await api('/api/admin/applications/'+e.target.dataset.id,{method:'PATCH',body:JSON.stringify({status:e.target.value})});D.find(d=>d._id===e.target.dataset.id).status=e.target.value}};
+$('q').oninput=draw;$('fs').onchange=draw;
+$('csv').onclick=()=>{const h=['ref','name','mobile','email','city','loanType','amount','tenure','income','cibil','status','createdAt'],r=[h.join(',')].concat(D.map(d=>h.map(k=>'"'+String(d[k]??'').replace(/"/g,'""')+'"').join(',')));
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([r.join('\n')],{type:'text/csv'}));a.download='financily-applications.csv';a.click()};
+if(T)load();
+</script></body></html>

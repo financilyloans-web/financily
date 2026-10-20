@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Financily – Personal, Business, Home, Mortgage & Car Loans</title>
+<script src="config.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f7fb;--surface:#fff;--ink:#14123a;--mut:#5b5f7a;--line:#e3e5f0;--vio:#5b3df5;--aqua:#14c8b4;--gold:#ffb23e;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d0c24;--surface:#17163a;--ink:#f1f1fb;--mut:#a3a6c8;--line:#2a2955;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d0c24;--surface:#17163a;--ink:#f1f1fb;--mut:#a3a6c8;--line:#2a2955;color-scheme:dark}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;scroll-padding-top:calc(76px + env(safe-area-inset-top,0px))}
+body{font:16px/1.65 'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);overflow-x:hidden}
+h1,h2,h3,.logo{font-family:Sora,'DM Sans',sans-serif;line-height:1.15}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.wrap{max-width:1160px;margin:auto;padding:0 22px}
+header{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:20;backdrop-filter:blur(14px);background:rgba(13,12,36,.72)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;height:66px}
+.logo{font-weight:800;font-size:22px;color:#fff;display:flex;gap:9px;align-items:center}
+.logo i{width:28px;height:28px;border-radius:9px;background:linear-gradient(135deg,var(--vio),var(--aqua));display:grid;place-items:center;font-style:normal;font-size:15px}
+nav{display:flex;gap:22px;align-items:center;color:#d7d8f2;font-size:15px}
+nav a:hover{color:#fff}
+.btn{display:inline-block;padding:13px 26px;border-radius:99px;font-weight:700;background:linear-gradient(120deg,var(--gold),#ff8a3d);color:#201400;border:0;cursor:pointer;font:700 16px 'DM Sans';transition:transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(255,138,61,.4)}
+.btn.ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.4)}
+header{transition:background .3s,box-shadow .3s}
+header.stuck{background:rgba(13,12,36,.93);box-shadow:0 1px 0 rgba(20,200,180,.45),0 10px 30px rgba(0,0,0,.35)}
+nav{gap:20px}nav a:not(.btn){position:relative;padding:6px 0}
+nav a:not(.btn)::after{content:"";position:absolute;left:0;bottom:0;height:2px;width:0;background:linear-gradient(90deg,var(--aqua),var(--vio));transition:width .3s}
+nav a.act,nav a:not(.btn):hover{color:#fff}nav a.act::after,nav a:not(.btn):hover::after{width:100%}
+.burger{display:none;width:44px;height:44px;border:1px solid rgba(255,255,255,.25);border-radius:12px;background:rgba(255,255,255,.06);cursor:pointer;place-content:center;gap:5px}
+.burger span{display:block;width:20px;height:2px;background:#fff;border-radius:2px}
+@media(max-width:980px){.burger{display:grid}nav{position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:2px;padding:12px 22px 22px;background:rgba(13,12,36,.97);border-bottom:1px solid rgba(20,200,180,.4);opacity:0;visibility:hidden;transform:translateY(-8px);transition:.25s}nav.open{opacity:1;visibility:visible;transform:none}nav a:not(.btn){padding:12px 4px;font-size:17px}nav .btn{text-align:center;margin-top:8px}}
+/* futuristic */
+.hero::before{content:"";position:absolute;left:-20%;right:-20%;bottom:-8%;height:55%;background:linear-gradient(transparent,rgba(20,200,180,.22)),repeating-linear-gradient(90deg,rgba(20,200,180,.4) 0 1px,transparent 1px 60px),repeating-linear-gradient(0deg,rgba(20,200,180,.4) 0 1px,transparent 1px 60px);transform:perspective(500px) rotateX(62deg);transform-origin:bottom;animation:gm 4s linear infinite;-webkit-mask-image:linear-gradient(transparent,#000 70%);mask-image:linear-gradient(transparent,#000 70%)}
+@keyframes gm{to{background-position:0 60px,0 60px,0 60px}}
+.show{background:#07061a;color:#fff;padding:80px 0;position:relative;overflow:hidden}
+.show h2{font-size:clamp(28px,4vw,44px);font-weight:800;letter-spacing:-.015em}.show p{color:#c9cbeb;margin-top:14px;max-width:460px}
+.tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.tags span{padding:8px 16px;border-radius:99px;border:1px solid rgba(20,200,180,.5);background:rgba(20,200,180,.08);color:#9ff3e8;font-size:14px;box-shadow:0 0 16px rgba(20,200,180,.18)}
+.holo{width:100%;height:auto;max-width:520px;justify-self:center}.fl{animation:float 6s ease-in-out infinite}.fl2{animation-delay:-3s}
+.pulse{animation:p2 3s ease-in-out infinite;transform-origin:260px 170px}@keyframes p2{50%{transform:scale(1.06)}}
+.art{position:relative;overflow:hidden}
+.art::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.14) 0 1px,transparent 1px 24px),repeating-linear-gradient(0deg,rgba(255,255,255,.14) 0 1px,transparent 1px 24px)}
+.art svg{position:relative;filter:drop-shadow(0 0 10px rgba(255,255,255,.85))}.card:hover{border-color:var(--aqua)}
+/* top animations */
+header{animation:hdr .8s both}@keyframes hdr{from{transform:translateY(-100%)}}
+header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,transparent,var(--aqua),var(--vio),#ff5fa2,transparent);background-size:200% 100%;animation:fw 3s linear infinite}
+@keyframes fw{to{background-position:200% 0}}
+.logo i{animation:lg 2.4s ease-in-out infinite}@keyframes lg{50%{box-shadow:0 0 18px 4px rgba(20,200,180,.7)}}
+.pts{position:absolute;inset:0;pointer-events:none}.pts i{position:absolute;bottom:-10px;border-radius:50%;background:#9ff3e8;box-shadow:0 0 10px #14c8b4;animation:up linear infinite}
+@keyframes up{0%{transform:translateY(0);opacity:0}15%{opacity:1}100%{transform:translateY(-120vh);opacity:0}}
+.ring{position:absolute;border-radius:50%;border:1px dashed rgba(20,200,180,.4);animation:spin 30s linear infinite;pointer-events:none}
+.r1{width:520px;height:520px;top:-180px;right:-140px}.r2{width:340px;height:340px;bottom:40px;left:-120px;border-color:rgba(255,95,162,.4);animation-direction:reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+.apply-btn{position:relative;overflow:hidden}
+.apply-btn::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.6),transparent);transform:skewX(-20deg);animation:sh 3s ease-in-out infinite}
+@keyframes sh{60%,100%{left:130%}}
+.er{display:none;color:#ffb4b4;background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.55);border-radius:12px;padding:10px 14px;font-size:14px}
+#eres{display:none;margin-top:6px;padding:18px;border-radius:16px;border:1px solid var(--aqua);background:rgba(20,200,180,.08)}
+#eres .amt{font:800 34px Sora;color:#fff;display:block;margin:4px 0}
+/* animated scenes */
+.fc{position:absolute;width:56px;height:56px;pointer-events:none;animation:fy 7s ease-in-out infinite}
+.fc b{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe9a8,#ffb23e 55%,#c97a12);color:#5a3200;font:800 24px Sora;box-shadow:0 0 24px rgba(255,178,62,.6);animation:cn 3.2s linear infinite}
+@keyframes fy{50%{transform:translateY(-22px)}}@keyframes cn{to{transform:rotateY(360deg)}}
+.fc1{top:16%;left:47%}.fc2{bottom:17%;left:51%;width:40px;height:40px;animation-delay:-3s}.fc3{top:30%;right:3%;width:46px;height:46px;animation-delay:-5s}
+@media(max-width:900px){.fc{display:none}}
+.scn{background:#07061a;color:#fff;border-top:1px solid rgba(20,200,180,.25)}
+.scn .h h2{color:#fff}.scn .h p{color:#c9cbeb}
+.scnrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
+.scn-c{background:rgba(255,255,255,.05);border:1px solid rgba(20,200,180,.28);border-radius:22px;padding:18px 18px 22px;box-shadow:0 0 30px rgba(91,61,245,.14)}
+.scn-c h3{font-size:19px;margin:12px 0 4px}.scn-c p{color:#c9cbeb;font-size:14.5px}
+.vis{height:200px;display:grid;place-items:center}.vis svg{width:100%;max-height:200px}
+.scn svg *{transform-box:fill-box}
+.h1,.h3,.h4,.h5,.dt{transform-origin:50% 50%}.h2,.bb{transform-origin:50% 100%}
+.h1{animation:k1 9s ease-in-out infinite}.h2{animation:k2 9s ease-in-out infinite}.h3{animation:k3 9s ease-in-out infinite}.h4{animation:k4 9s ease-in-out infinite}.h5{animation:k5 9s ease-in-out infinite}
+@keyframes k1{0%,2%{opacity:0;transform:scaleX(0)}10%,92%{opacity:1;transform:none}100%{opacity:0}}
+@keyframes k2{0%,10%{transform:scaleY(0)}35%,92%{transform:none;opacity:1}100%{opacity:0}}
+@keyframes k3{0%,35%{opacity:0;transform:translateY(-50px)}48%{opacity:1;transform:translateY(4px)}52%,92%{opacity:1;transform:none}100%{opacity:0}}
+@keyframes k4{0%,52%{opacity:0}62%,92%{opacity:1}100%{opacity:0}}
+@keyframes k5{0%,70%{opacity:0;transform:translateY(8px)}78%,92%{opacity:1;transform:none}100%{opacity:0}}
+.money{position:relative;width:200px;height:200px;perspective:600px}
+.money::before{content:"";position:absolute;inset:8px;border:1px dashed rgba(20,200,180,.5);border-radius:50%}
+.coin{position:absolute;inset:50px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe9a8,#ffb23e 55%,#c97a12);color:#5a3200;font:800 46px Sora;display:grid;place-items:center;box-shadow:0 0 34px rgba(255,178,62,.6),inset 0 0 0 6px rgba(255,255,255,.25);animation:cn 3.6s linear infinite}
+.orbit{position:absolute;inset:0;animation:spin 12s linear infinite}
+.orbit b{position:absolute;width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#9ff3e8,#14c8b4);color:#07352f;display:grid;place-items:center;font:800 16px Sora;box-shadow:0 0 14px rgba(20,200,180,.7);animation:spin 12s linear infinite reverse}
+.orbit b:nth-child(1){top:0;left:calc(50% - 17px)}.orbit b:nth-child(2){right:0;top:calc(50% - 17px)}.orbit b:nth-child(3){bottom:0;left:calc(50% - 17px)}.orbit b:nth-child(4){left:0;top:calc(50% - 17px)}
+.rd{animation:dsh .8s linear infinite}@keyframes dsh{to{stroke-dashoffset:-32}}
+.wh{transform-box:fill-box;transform-origin:center;animation:spin .9s linear infinite}
+.car{animation:drv 4s ease-in-out infinite}@keyframes drv{0%,100%{transform:translateX(-14px)}50%{transform:translateX(14px)}}
+.bb{animation:gr 7s ease-in-out infinite}@keyframes gr{0%,6%{transform:scaleY(0)}30%,88%{transform:none}100%{transform:scaleY(0)}}
+.ln{animation:dw 7s ease-in-out infinite}@keyframes dw{0%,25%{stroke-dashoffset:220}60%,90%{stroke-dashoffset:0}100%{stroke-dashoffset:220}}
+.dt{animation:dtp 7s ease-in-out infinite}@keyframes dtp{0%,58%{opacity:0;transform:scale(0)}66%,90%{opacity:1;transform:scale(1)}100%{opacity:0}}
+/* dashboard + advanced motion */
+#spb{position:fixed;top:0;left:0;right:0;height:3px;z-index:60;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--aqua),var(--vio),#ff5fa2)}
+.hero>.grid{z-index:2}
+.hero::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(420px circle at var(--hx,70%) var(--hy,30%),rgba(91,61,245,.3),transparent 60%)}
+.h h2::after{content:"";display:block;width:0;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--aqua),var(--vio));margin-top:12px;transition:width 1s .3s}
+.reveal.on h2::after{width:90px}
+.tilt{position:relative}.tilt::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(240px circle at var(--mx,50%) var(--my,50%),rgba(20,200,180,.2),transparent 60%)}.tilt:hover::after{opacity:1}
+.emi b.flash{animation:fl .6s}@keyframes fl{0%{transform:scale(1.12);color:#ffe9a8}100%{transform:none}}
+.dash{background:#07061a;color:#fff;position:relative;overflow:hidden;border-top:1px solid rgba(20,200,180,.25)}
+.dash::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(rgba(20,200,180,.28) 1px,transparent 1.5px) 0 0/28px 28px;animation:dots 6s linear infinite;-webkit-mask-image:linear-gradient(transparent,#000 30%,#000 70%,transparent);mask-image:linear-gradient(transparent,#000 30%,#000 70%,transparent)}
+@keyframes dots{to{background-position:0 28px}}
+.dash .wrap{position:relative}.dash .h h2{color:#fff}.dash .h p{color:#c9cbeb}
+.dg{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.w{background:rgba(255,255,255,.05);border:1px solid rgba(20,200,180,.3);border-radius:22px;padding:20px;backdrop-filter:blur(10px);box-shadow:0 0 30px rgba(91,61,245,.15)}
+.w h3{font-size:17px;margin-bottom:10px}.w small{color:#a9acd6;font-size:12.5px}
+.wide{grid-column:span 2}@media(max-width:700px){.wide{grid-column:auto}}
+.ctl{margin-bottom:20px}.cg{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+.cg label{display:grid;gap:4px;font-size:14px;color:#c9cbeb}.cg span{display:flex;justify-content:space-between}.cg b{color:#fff}
+.rg{padding:0!important;border:0!important;background:none!important}
+.dn{width:100%;max-width:210px;display:block;margin:auto}
+.dn circle{fill:none;stroke-width:16;transition:stroke-dasharray 1s cubic-bezier(.3,1,.4,1),stroke-dashoffset 1s}
+.dn text{fill:#fff;text-anchor:middle;font-family:Sora,sans-serif}
+.lg{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:12px;font-size:13.5px;color:#c9cbeb}.lg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}.lg b{color:#fff}
+.gg{width:100%;max-width:260px;display:block;margin:auto}
+#nd{transform-origin:110px 110px;transition:transform 1.4s cubic-bezier(.3,1.5,.5,1)}
+#bl{fill:none;stroke:var(--aqua);stroke-width:3;stroke-linecap:round;filter:drop-shadow(0 0 6px var(--aqua))}
+#ba{fill:url(#bgf);opacity:.9;transition:opacity 1s .6s}
+.bs{width:100%;height:auto;max-height:210px;display:block}.bs text{fill:#a9acd6;font-size:11px;font-family:'DM Sans',sans-serif}
+.jr{position:relative;display:grid;grid-template-columns:repeat(4,1fr);text-align:center;font-size:14px;color:#c9cbeb}
+.jt{position:absolute;top:19px;left:12.5%;right:12.5%;height:3px;background:#2a2955;border-radius:3px}
+.jl{display:block;height:100%;width:100%;border-radius:3px;background:linear-gradient(90deg,var(--aqua),var(--gold));position:relative;animation:jw 8s linear infinite}
+@keyframes jw{from{width:0}to{width:100%}}
+.jl::after{content:"";position:absolute;right:-6px;top:50%;width:12px;height:12px;margin-top:-6px;border-radius:50%;background:#fff;box-shadow:0 0 14px 4px var(--aqua)}
+.jr span{position:relative;z-index:1}.jr b{display:grid;place-items:center;width:40px;height:40px;margin:0 auto 8px;border-radius:50%;background:#2a2955;font:800 15px Sora;color:#fff;animation:lit 8s infinite;animation-delay:calc(var(--i)*2.6s - .64s)}
+@keyframes lit{0%,4%{background:#2a2955;box-shadow:none;transform:scale(1)}8%{background:var(--aqua);color:#042;box-shadow:0 0 22px var(--aqua);transform:scale(1.25)}14%,92%{background:var(--aqua);color:#042;box-shadow:0 0 12px var(--aqua);transform:scale(1)}100%{background:#2a2955;box-shadow:none}}
+/* goal details */
+.scn-c[data-goal]{cursor:pointer;transition:border-color .3s}.scn-c[data-goal]:hover,.scn-c[data-goal]:focus-visible{border-color:var(--aqua)}
+.mr{display:inline-flex;align-items:center;gap:8px;margin-top:12px;color:var(--aqua);font-weight:700;font-size:14px}
+.mr::after{content:"";width:7px;height:7px;border:solid currentColor;border-width:2px 2px 0 0;transform:rotate(45deg);animation:nd 1.4s ease-in-out infinite}@keyframes nd{50%{transform:translateX(5px) rotate(45deg)}}
+dialog#gm{width:min(860px,95vw);padding:0}
+.gh{display:grid;grid-template-columns:240px 1fr;gap:22px;align-items:center;padding:28px 28px 10px;background:radial-gradient(circle at 15% 20%,rgba(91,61,245,.35),transparent 60%)}
+@media(max-width:640px){.gh{grid-template-columns:1fr}}
+.gv{height:190px;display:grid;place-items:center}.gv svg{width:100%;max-height:190px}.gv .money{transform:scale(.9)}
+.tgs{display:flex;gap:8px;flex-wrap:wrap}.tgs span{padding:6px 12px;border-radius:99px;border:1px solid rgba(20,200,180,.5);background:rgba(20,200,180,.08);color:#9ff3e8;font-size:13px}
+.gt{display:flex;gap:6px;overflow-x:auto;padding:10px 28px 0;border-bottom:1px solid var(--line)}
+.gt button{flex:none;padding:10px 16px;border:0;background:none;color:var(--mut);font:600 14.5px 'DM Sans',sans-serif;cursor:pointer;border-bottom:3px solid transparent}.gt button.on{color:#fff;border-color:var(--aqua)}
+.gp{padding:22px 28px}.pn{animation:pnin .5s both}@keyframes pnin{from{opacity:0;transform:translateY(14px)}}
+.gp p{color:#c9cbeb;margin-bottom:10px}.gp h4{font:700 16px Sora,sans-serif;margin:18px 0 10px;color:#fff}
+.ft{display:grid;grid-template-columns:130px 1fr 170px;gap:12px;align-items:center;margin:10px 0;font-size:14px;color:#c9cbeb}@media(max-width:640px){.ft{grid-template-columns:1fr;gap:4px}}
+.ft em{font-style:normal;color:#fff;font-weight:600}
+.tr{height:10px;border-radius:9px;background:#2a2955;overflow:hidden}.tr i{display:block;height:100%;width:0;border-radius:9px;background:linear-gradient(90deg,var(--aqua),var(--vio));transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+.fl{list-style:none;padding:0;display:grid;gap:10px}.fl li{position:relative;padding:12px 14px 12px 44px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid var(--line);color:#e3e5f8;font-size:15px;animation:fli .5s both}
+.fl li::before{content:"";position:absolute;left:16px;top:50%;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:var(--aqua);box-shadow:0 0 10px var(--aqua)}
+.fl.ck li::before{width:6px;height:11px;border-radius:0;background:none;box-shadow:none;border:solid var(--aqua);border-width:0 3px 3px 0;transform:rotate(45deg);margin-top:-8px}
+.fl.tp li::before{background:var(--gold);box-shadow:0 0 10px var(--gold)}
+@keyframes fli{from{opacity:0;transform:translateX(-18px)}}
+.fl li:nth-child(2){animation-delay:0.08s}.fl li:nth-child(3){animation-delay:0.16s}.fl li:nth-child(4){animation-delay:0.24s}.fl li:nth-child(5){animation-delay:0.32s}.fl li:nth-child(6){animation-delay:0.40s}.fl li:nth-child(7){animation-delay:0.48s}
+.eq{display:grid;gap:14px;max-width:520px}.eq label{display:grid;gap:4px;font-size:14px;color:#c9cbeb}.eq span{display:flex;justify-content:space-between}.eq b{color:#fff}
+.eo{padding:18px;border-radius:18px;background:linear-gradient(135deg,var(--vio),#3a2bb8);text-align:center}.eo b{font:800 36px Sora,sans-serif;display:block;color:#fff}.eo small{color:#d6d3ff;display:block}.eo .tr{margin:10px 0;background:var(--gold)}.eo .tr i{background:var(--aqua);transition:width .4s}
+.gc{display:flex;gap:12px;flex-wrap:wrap;padding:6px 28px 14px}.gc .btn{padding:11px 22px;font-size:15px}
+.nt{padding:0 28px 22px;color:var(--mut);font-size:12.5px}
+/* CIBIL chips */
+.chips{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.chips .chip{position:relative;display:block!important;cursor:pointer;color:var(--ink)!important}
+.chips .chip input{position:absolute;opacity:0;width:1px!important;height:1px;padding:0!important;border:0!important}
+.chips .chip span{display:block;padding:12px 14px;border-radius:14px;border:1.5px solid var(--line);border-top:5px solid var(--c);background:var(--bg);transition:.2s}
+.chips .chip:nth-child(1){--c:#ef4444}.chips .chip:nth-child(2){--c:#f5a524}.chips .chip:nth-child(3){--c:#16c784}
+.chips .chip b{display:block;font:800 16px Sora;color:var(--c)}.chips .chip small{color:var(--mut);font-size:12.5px}
+.chips .chip input:checked+span{box-shadow:0 0 0 2px var(--c),0 8px 24px -6px var(--c);transform:translateY(-3px)}
+.chips .chip input:focus-visible+span{outline:3px solid var(--gold);outline-offset:2px}
+/* apply modal */
+#am,#em,#gm{border:1px solid rgba(20,200,180,.5);border-radius:26px;padding:28px;width:min(640px,94vw);max-height:92vh;background:#0d0c24;color:#f1f1fb;--bg:#17163a;--ink:#f1f1fb;--mut:#a3a6c8;--line:#2a2955;margin:auto;box-shadow:0 0 60px rgba(91,61,245,.5)}
+#am::backdrop,#em::backdrop,#gm::backdrop{background:rgba(5,4,20,.78);backdrop-filter:blur(6px)}
+#am h2,#em h2,#gm h2{font-size:26px}#am .s,#em .s,#gm .s{color:var(--mut);margin:6px 0 18px;font-size:14.5px}
+#am form,#em form{background:none;border:0;padding:0;gap:12px}
+#am label.l,#em label.l{font-size:13px;color:var(--mut);display:grid;gap:5px}
+#am .g2,#em .g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+#amx,#emx,#gmx{position:absolute;top:14px;right:16px;width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:transparent;color:#fff;font-size:20px;cursor:pointer}
+#mdone{display:none;margin-top:6px;padding:18px;border-radius:16px;border:2px solid var(--aqua)}
+/* hero */
+.hero{position:relative;background:#0d0c24;color:#fff;padding:130px 0 90px;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.55;animation:drift 14s ease-in-out infinite alternate}
+.b1{width:420px;height:420px;background:var(--vio);top:-80px;left:-100px}
+.b2{width:360px;height:360px;background:var(--aqua);bottom:-120px;right:10%;animation-delay:-5s;opacity:.4}
+.b3{width:240px;height:240px;background:#ff5fa2;top:30%;right:-60px;animation-delay:-9s;opacity:.35}
+@keyframes drift{to{transform:translate(70px,50px) scale(1.2)}}
+.grid{position:relative;display:grid;grid-template-columns:1.1fr .9fr;gap:46px;align-items:center}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.hero h1{font-size:clamp(36px,5.6vw,66px);font-weight:800;letter-spacing:-.02em;animation:rise .9s both}
+.hero h1 span{background:linear-gradient(90deg,var(--aqua),var(--gold),#ff5fa2,var(--aqua));background-size:300%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:flow 6s linear infinite}
+@keyframes flow{to{background-position:300% 0}}
+@keyframes rise{from{opacity:0;transform:translateY(30px)}}
+.hero p.lead{margin:20px 0 30px;color:#c9cbeb;max-width:520px;font-size:18px;animation:rise .9s .15s both}
+.cta{display:flex;gap:14px;flex-wrap:wrap;animation:rise .9s .3s both}
+.stats{display:flex;gap:34px;margin-top:42px;flex-wrap:wrap;animation:rise .9s .45s both}
+.stats b{font:800 30px Sora;display:block}
+.stats small{color:#a9acd6}
+/* calculator */
+.calc{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:26px;padding:28px;backdrop-filter:blur(18px);animation:float 6s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-12px)}}
+.calc h3{font-size:19px;margin-bottom:16px}
+.calc label{display:flex;justify-content:space-between;font-size:14px;color:#c9cbeb;margin-top:14px}
+.calc label b{color:#fff}
+input[type=range]{width:100%;accent-color:var(--aqua);height:28px}
+.emi{margin-top:20px;padding:18px;border-radius:18px;background:linear-gradient(135deg,var(--vio),#3a2bb8);text-align:center}
+.emi b{font:800 38px Sora;display:block}
+.emi small{color:#d6d3ff}
+.bar{height:10px;border-radius:9px;background:var(--gold);margin-top:14px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--aqua);transition:width .4s}
+.note{font-size:12px;color:#a9acd6;margin-top:12px}
+/* sections */
+section{padding:90px 0}
+.h{max-width:640px;margin-bottom:44px}
+.h h2{font-size:clamp(28px,4vw,44px);font-weight:800;letter-spacing:-.015em}
+.h p{color:var(--mut);margin-top:12px}
+.loans{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:22px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:24px;overflow:hidden;transition:transform .3s,box-shadow .3s}
+.card:hover{transform:translateY(-6px);box-shadow:0 24px 50px rgba(91,61,245,.18)}
+.art{height:150px;display:grid;place-items:center}
+.art svg{width:96px;height:96px;animation:bob 4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px) rotate(-3deg)}}
+.card .in{padding:22px 24px 26px}
+.card h3{font-size:21px;margin-bottom:8px}
+.card p{color:var(--mut);font-size:15px}
+.card ul{margin:14px 0 0;padding-left:18px;font-size:14.5px;color:var(--mut)}
+.c1 .art{background:linear-gradient(135deg,#5b3df5,#8f7bff)}.c2 .art{background:linear-gradient(135deg,#0fa89b,#5ce6d3)}.c3 .art{background:linear-gradient(135deg,#ff8a3d,#ffc15e)}.c4 .art{background:linear-gradient(135deg,#d93a7e,#ff8ab8)}.c5 .art{background:linear-gradient(135deg,#2563eb,#60a5fa)}.c6 .art{background:linear-gradient(135deg,#334155,#64748b)}
+.why{background:var(--surface);border-block:1px solid var(--line)}
+.feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:30px}
+.feats div{border-left:3px solid var(--aqua);padding-left:18px}
+.feats h3{font-size:18px;margin-bottom:6px}.feats p{color:var(--mut);font-size:15px}
+.steps{counter-reset:s;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px}
+.steps div{position:relative;padding:26px;border-radius:22px;background:var(--surface);border:1px solid var(--line)}
+.steps div::before{counter-increment:s;content:counter(s);display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--vio);color:#fff;font:800 17px Sora;margin-bottom:14px}
+.steps p{color:var(--mut);font-size:15px}
+.docs{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:760px){.docs{grid-template-columns:1fr}}
+.docs>div{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:26px}
+.docs ul{padding-left:18px;color:var(--mut);margin-top:10px}
+.reveal{opacity:0;transform:translateY(28px);transition:.8s}
+.reveal.on{opacity:1;transform:none}
+/* legal */
+.legal{background:var(--surface);border-top:1px solid var(--line)}
+details{border:1px solid var(--line);border-radius:16px;padding:16px 22px;margin-bottom:12px;background:var(--bg)}
+summary{cursor:pointer;font:600 17px Sora;list-style:none;display:flex;justify-content:space-between}
+summary::after{content:'+';font-size:22px;color:var(--vio);transition:transform .3s}
+details[open] summary::after{transform:rotate(45deg)}
+details p,details li{color:var(--mut);font-size:15px;margin-top:10px}
+details ul{padding-left:20px}
+/* contact */
+.contact{background:#0d0c24;color:#fff;position:relative;overflow:hidden}
+.contact .grid{grid-template-columns:1fr 1fr}
+@media(max-width:820px){.contact .grid{grid-template-columns:1fr}}
+.info p{margin:10px 0;color:#c9cbeb}.info b{color:#fff}
+form{display:grid;gap:12px;background:rgba(255,255,255,.07);padding:26px;border-radius:24px;border:1px solid rgba(255,255,255,.16)}
+input,select,textarea{width:100%;padding:13px 15px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font:16px 'DM Sans'}
+select option{color:#111}
+::placeholder{color:#a9acd6}
+#ok{display:none;color:var(--aqua);font-weight:700}
+footer{background:#080718;color:#9a9dc4;padding:30px 0;font-size:13.5px;text-align:center}
+.wa{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:30;background:#25d366;color:#fff;border-radius:99px;padding:13px 20px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.3);animation:pulse 2.4s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(37,211,102,.6)}100%{box-shadow:0 0 0 22px rgba(37,211,102,0)}}
+#apply{display:none;padding:110px 0 80px}body.ap #apply{display:block}body.ap>section:not(#apply){display:none}
+#apply .sub{font-size:24px;margin:46px 0 16px}.back{color:var(--vio);font-weight:700}
+.bands{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+.band{border-radius:20px;padding:22px;background:var(--surface);border:1px solid var(--line);border-top:6px solid var(--c);transition:transform .3s,box-shadow .3s}
+.band.on2{transform:translateY(-6px);box-shadow:0 16px 40px rgba(0,0,0,.18)}
+.band b{font:800 26px Sora;color:var(--c)}.band h3{font-size:18px;margin:6px 0}.band p,.band li{color:var(--mut);font-size:14.5px}.band ul{padding-left:18px;margin-top:8px}
+.meter{position:relative;height:16px;border-radius:9px;margin:34px 0 8px;background:linear-gradient(90deg,#ef4444 0 58.3%,#f5a524 58.3% 75%,#16c784 75% 100%)}
+.pin{position:absolute;top:-7px;left:0;width:5px;height:30px;border-radius:3px;background:var(--ink);transition:left .5s}
+.sc{display:flex;justify-content:space-between;font-size:13px;color:var(--mut)}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:26px}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+#apply .box label{font-size:13.5px;color:var(--mut);display:grid;gap:5px;font-weight:500}
+#apply .box input,#apply .box select,#apply .box textarea{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+#apply option{color:var(--ink);background:var(--surface)}
+#apply form{background:var(--surface);border:1px solid var(--line);padding:26px;gap:0}
+#apply fieldset{border:0;margin:0 0 26px}#apply legend{font:700 19px Sora;margin-bottom:14px;color:var(--vio)}
+#apply label.chk{display:flex;gap:10px;align-items:flex-start;margin:10px 0}#apply label.chk input{width:auto;margin-top:4px}
+#res{margin-top:18px;padding:18px;border-radius:16px;background:var(--bg);border:1px solid var(--line);display:none}
+#res b{font:800 20px Sora}.g{color:#16c784}.y{color:#f5a524}.r{color:#ef4444}
+#done{display:none;margin-top:18px;padding:20px;border-radius:16px;border:2px solid var(--aqua)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+
+/* === added tools === */
+.ib{width:38px;height:38px;border-radius:50%;border:1.5px solid currentColor;background:transparent;color:inherit;font-size:17px;cursor:pointer;opacity:.85}
+.tb{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:28px;margin-bottom:28px;color:var(--ink)}
+.tb h3{font:800 22px Sora,sans-serif;margin-bottom:6px}.tb .sub{color:var(--mut);margin-bottom:18px;font-size:15px}
+.tb select,.tb input[type=number]{background:var(--bg);color:var(--ink);border:1px solid var(--line);padding:11px 12px}
+.tb .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+.tb label{display:grid;gap:5px;font-size:13px;color:var(--mut)}
+.tb .btn{padding:11px 22px;font-size:15px}.tb .btn.alt{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.mq{overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.mq div{display:flex;gap:14px;width:max-content;animation:mqs 30s linear infinite}.mq:hover div{animation-play-state:paused}
+@keyframes mqs{to{transform:translateX(-50%)}}
+.lg{display:flex;align-items:center;gap:10px;padding:14px 22px;border-radius:16px;border:1px dashed var(--line);background:var(--bg);font:700 15px Sora,sans-serif;white-space:nowrap}
+.lg i{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--vio),var(--aqua));display:grid;place-items:center;color:#fff;font-style:normal;font-size:13px}
+.dcs{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.dcs span{font-size:12.5px;color:var(--mut);padding:6px 12px;border-radius:99px;border:1px solid var(--line)}
+.ck{list-style:none;padding:0;display:grid;gap:8px;margin:14px 0}.ck li label{display:flex;gap:10px;align-items:center;padding:11px 14px;border-radius:12px;background:var(--bg);border:1px solid var(--line);font-size:15px;color:var(--ink);cursor:pointer}
+.ck input{width:18px;height:18px;accent-color:var(--aqua);padding:0}.ck input:checked+span{text-decoration:line-through;opacity:.55}
+.pb{height:8px;border-radius:8px;background:var(--line);overflow:hidden}.pb i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--aqua),var(--vio));transition:width .5s}
+.tm{position:relative;min-height:170px}.tm blockquote{position:absolute;inset:0;opacity:0;transform:translateY(14px);transition:.6s;font-size:18px;line-height:1.6;pointer-events:none}.tm blockquote.on{opacity:1;transform:none;pointer-events:auto}
+.tm cite{display:block;margin-top:14px;font:700 15px Sora,sans-serif;font-style:normal;color:var(--aqua)}.tm small{display:block;color:var(--mut);font-weight:400;font-family:'DM Sans'}
+.dts{display:flex;gap:8px;margin-top:10px}.dts button{width:10px;height:10px;border-radius:50%;border:0;background:var(--line);cursor:pointer;padding:0}.dts button.on{background:var(--aqua);width:26px;border-radius:6px}
+.trk{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;position:relative;margin:8px 0 18px}
+.trk button{background:none;border:0;color:var(--mut);font:600 14px 'DM Sans';text-align:center;cursor:pointer;padding:0}
+.trk b{display:grid;place-items:center;width:42px;height:42px;margin:0 auto 8px;border-radius:50%;background:var(--line);color:var(--mut);font:800 16px Sora;transition:.5s}
+.trk .on b{background:var(--aqua);color:#042;box-shadow:0 0 18px var(--aqua);transform:scale(1.12)}.trk .on{color:var(--ink)}.trk .dn b{background:var(--vio);color:#fff}
+.tkd{padding:16px;border-radius:16px;background:var(--bg);border:1px solid var(--line);min-height:84px;animation:pnin .5s both}
+.rs{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:6px}.rs div{padding:16px;border-radius:16px;background:linear-gradient(135deg,var(--vio),#3a2bb8);color:#fff;text-align:center}.rs b{display:block;font:800 24px Sora}.rs small{color:#d6d3ff}
+.mt{width:100%;border-collapse:collapse;font-size:14.5px}.mt th,.mt td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left}.mt th{color:var(--mut);font-weight:600;width:28%}.mt td{animation:pnin .5s both}.mt thead td{font:800 18px Sora;color:var(--aqua)}
+.scx{overflow-x:auto}
+#pa{display:none}
+@media print{body>*:not(#pa){display:none!important}#pa{display:block!important;color:#000;background:#fff;padding:24px;font:15px/1.7 sans-serif}#pa li{list-style:none;margin:6px 0}#pa small{color:#555}}
+@media(prefers-reduced-motion:reduce){.mq div{animation:none}}
+
+/* === login === */
+.lgn{padding:8px 18px;border-radius:99px;border:1.5px solid currentColor;background:transparent;color:inherit;font:700 15px 'DM Sans',sans-serif;cursor:pointer}
+dialog#lm{border:1px solid rgba(20,200,180,.5);border-radius:26px;padding:28px;width:min(440px,94vw);background:#0d0c24;color:#f1f1fb;--bg:#17163a;--mut:#a3a6c8;--line:#2a2955;margin:auto;box-shadow:0 0 60px rgba(91,61,245,.5)}
+#lm::backdrop{background:rgba(5,4,20,.78);backdrop-filter:blur(6px)}
+#lmx{position:absolute;top:14px;right:16px;width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:transparent;color:#fff;font-size:20px;cursor:pointer}
+#lm h2{font-size:26px}#lm .s{color:var(--mut);margin:6px 0 16px;font-size:14.5px}
+.lt{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;border-radius:99px;background:var(--bg);margin-bottom:14px}
+.lt button{padding:10px;border:0;border-radius:99px;background:none;color:var(--mut);font:700 14.5px 'DM Sans';cursor:pointer;transition:.3s}.lt button.on{background:linear-gradient(120deg,var(--vio),#3a2bb8);color:#fff}
+#lm input{width:100%;padding:13px 15px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:#fff;font:16px 'DM Sans'}
+#lm .otp{letter-spacing:.7em;text-align:center;font:800 24px Sora,sans-serif}
+#lm .btn{width:100%;margin-top:12px}#lm .lk{background:none;border:0;color:var(--aqua);font:600 14px 'DM Sans';cursor:pointer;margin-top:10px;padding:0}
+#lm .lk:disabled{color:var(--mut);cursor:default}
+#lme{color:#ff8a8a;font-size:13.5px;min-height:20px;margin-top:8px}
+#lmd{margin-top:12px;padding:10px 12px;border-radius:12px;border:1px dashed var(--gold);color:#ffe2a8;font-size:13px}
+.lpn{animation:pnin .45s both}
+</style>
+</head>
+<body>
+<div id="spb"></div>
+<header><div class="wrap"><a class="logo" href="#top"><i>₹</i>Financily</a>
+<button class="burger" id="bg" type="button" aria-label="Open menu" aria-controls="nv" aria-expanded="false"><span></span><span></span><span></span></button>
+<nav id="nv"><a href="#loans">Loans</a><a href="#process">Process</a><a href="#docs">Documents</a><a href="#legal">Legal</a><a href="#contact">Contact</a><a href="#tools">Tools</a><button class="ib" id="th" type="button" aria-label="Switch dark or light mode"></button><a class="elig-btn" href="#apply">Eligibility</a><button class="lgn" id="lb" type="button">Login</button><a class="btn apply-btn" href="#apply" style="padding:9px 20px;font-size:15px">Apply now</a></nav></div></header>
+
+<section class="hero" id="top">
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="pts"></div><i class="ring r1"></i><i class="ring r2"></i><i class="fc fc1"><b>₹</b></i><i class="fc fc2"><b>₹</b></i><i class="fc fc3"><b>₹</b></i>
+<div class="wrap grid">
+<div>
+<h1>Money for what’s next, <span>without the runaround.</span></h1>
+<p class="lead">Financily helps families and businesses in Bhilai, Kurud and beyond get personal, business, home, mortgage and car loans with clear terms and fast guidance.</p>
+<div class="cta"><a class="btn apply-btn" href="#apply">Apply now</a><a class="btn ghost elig-btn" href="#apply">Check eligibility</a><a class="btn ghost" href="tel:+918269581567">Call 82695 81567</a></div>
+<div class="stats"><div><b data-n="5">0</b><small>loan types</small></div><div><b data-n="100" data-s="%">0</b><small>transparent terms</small></div><div><b data-n="24" data-s="h">0</b><small>first response</small></div></div>
+</div>
+<div class="calc" aria-label="EMI calculator">
+<h3>Plan your EMI</h3>
+<label>Loan amount <b id="va"></b></label><input id="a" type="range" min="50000" max="10000000" step="50000" value="1000000">
+<label>Interest rate (p.a.) <b id="vr"></b></label><input id="r" type="range" min="7" max="24" step="0.25" value="11">
+<label>Tenure <b id="vt"></b></label><input id="t" type="range" min="1" max="30" step="1" value="5">
+<div class="emi"><small>Monthly EMI</small><b id="emi"></b><small id="tot"></small></div>
+<div class="bar"><i id="pb"></i></div>
+<p class="note">Indicative only. Actual rate, fees and tenure depend on your profile and lender approval.</p>
+</div></div></section>
+
+<section class="scn" id="scenes"><div class="wrap">
+<div class="h reveal"><h2>Your goals, in motion</h2><p>From the first brick to the last EMI, see how Financily helps you build, drive and grow. Tap any goal to explore the details.</p></div>
+<div class="scnrow">
+<div class="scn-c" data-goal="home" role="button" tabindex="0" aria-label="Explore Home Loan details"><div class="vis"><svg viewBox="0 0 240 190" role="img" aria-label="A house being built, brick by brick"><g fill="none" stroke="#9ff3e8" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M10 160H230" stroke="#14c8b4" opacity=".6"/><rect class="h1" x="38" y="150" width="164" height="10" fill="rgba(20,200,180,.25)"/><rect class="h2" x="50" y="92" width="140" height="58" fill="rgba(91,61,245,.35)" stroke="#a89bff"/><path class="h3" d="M38 96L120 38l82 58z" fill="rgba(255,95,162,.35)" stroke="#ff8ab8"/><g class="h4"><rect x="108" y="116" width="24" height="34" fill="rgba(255,178,62,.55)" stroke="#ffb23e"/><rect x="62" y="108" width="28" height="24" fill="rgba(255,235,160,.6)" stroke="#ffb23e"/><rect x="150" y="108" width="28" height="24" fill="rgba(255,235,160,.6)" stroke="#ffb23e"/><path d="M160 66V48h14v28"/></g></g><g class="h5"><rect x="140" y="6" width="94" height="26" rx="13" fill="#16c784"/><text x="187" y="23" text-anchor="middle" font-size="12" font-weight="700" fill="#04281b" font-family="DM Sans,sans-serif">Approved ✓</text></g></svg></div><h3>Build your home</h3><p>Home and mortgage loans with long, comfortable tenures.</p><span class="mr">Explore</span></div>
+<div class="scn-c" data-goal="personal" role="button" tabindex="0" aria-label="Explore Personal Loan details"><div class="vis"><div class="money" role="img" aria-label="Revolving rupee coins"><div class="orbit"><b>₹</b><b>₹</b><b>₹</b><b>₹</b></div><div class="coin">₹</div></div></div><h3>Make money work</h3><p>Personal loans for weddings, medical needs and urgent plans.</p><span class="mr">Explore</span></div>
+<div class="scn-c" data-goal="car" role="button" tabindex="0" aria-label="Explore Car Loan details"><div class="vis"><svg viewBox="0 0 240 170" role="img" aria-label="A car driving on a road"><g fill="none" stroke="#6d6fb3" stroke-width="2" opacity=".7"><path d="M0 128V88h24V68h28v60M70 128V78h30v50M120 128V98h26V58h30v70M190 128V92h50"/></g><line x1="0" y1="130" x2="240" y2="130" stroke="#14c8b4" stroke-width="2"/><line class="rd" x1="0" y1="150" x2="240" y2="150" stroke="#9ff3e8" stroke-width="3" stroke-dasharray="18 14"/><g class="car"><g stroke="#ffb23e" stroke-width="2.5" fill="rgba(255,178,62,.2)" stroke-linejoin="round"><path d="M66 114v-14l12-18h44l16 18h16v14z"/><path d="M84 100l8-12h26l10 12z" fill="rgba(159,243,232,.35)" stroke="#9ff3e8"/></g><g class="wh"><circle cx="88" cy="116" r="11" fill="#0d0c24" stroke="#fff" stroke-width="2.5"/><path d="M88 108v16M80 116h16" stroke="#fff" stroke-width="2"/></g><g class="wh"><circle cx="146" cy="116" r="11" fill="#0d0c24" stroke="#fff" stroke-width="2.5"/><path d="M146 108v16M138 116h16" stroke="#fff" stroke-width="2"/></g><path d="M30 98h22M20 108h30M34 118h18" stroke="#9ff3e8" stroke-width="2.5" opacity=".6" stroke-linecap="round"/></g></svg></div><h3>Drive your dream car</h3><p>New or used car loans with a clear EMI plan.</p><span class="mr">Explore</span></div>
+<div class="scn-c" data-goal="business" role="button" tabindex="0" aria-label="Explore Business Loan details"><div class="vis"><svg viewBox="0 0 240 170" role="img" aria-label="Business growth chart"><defs><linearGradient id="bg2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#5b3df5"/><stop offset="1" stop-color="#14c8b4"/></linearGradient></defs><path d="M24 140H220M24 20V140" stroke="#6d6fb3" stroke-width="2" fill="none" stroke-linecap="round"/><rect class="bb" x="40" y="110" width="26" height="30" rx="4" fill="url(#bg2)"/><rect class="bb" style="animation-delay:.3s" x="80" y="90" width="26" height="50" rx="4" fill="url(#bg2)"/><rect class="bb" style="animation-delay:.6s" x="120" y="70" width="26" height="70" rx="4" fill="url(#bg2)"/><rect class="bb" style="animation-delay:.9s" x="160" y="48" width="26" height="92" rx="4" fill="url(#bg2)"/><polyline class="ln" points="53,100 93,80 133,58 173,34 205,22" fill="none" stroke="#ffb23e" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="220"/><circle class="dt" cx="205" cy="22" r="6" fill="#ffb23e"/></svg></div><h3>Grow your business</h3><p>Working capital and expansion loans for shops and MSMEs.</p><span class="mr">Explore</span></div>
+</div></div></section>
+
+<section class="dash" id="dashboard"><div class="wrap">
+<div class="h reveal"><h2>Your loan dashboard</h2><p>Drag the sliders and watch every panel update live. This is an indicative illustration, not an offer.</p></div>
+<div class="w ctl"><div class="cg">
+<label><span>Loan amount <b id="cav"></b></span><input class="rg" id="ca" type="range" min="50000" max="10000000" step="50000" aria-label="Loan amount"></label>
+<label><span>Interest rate <b id="crv"></b></span><input class="rg" id="cr" type="range" min="7" max="24" step="0.25" aria-label="Interest rate"></label>
+<label><span>Tenure <b id="ctv"></b></span><input class="rg" id="ct" type="range" min="1" max="30" step="1" aria-label="Tenure"></label></div></div>
+<div class="dg">
+<div class="w"><h3>Where your money goes</h3><svg class="dn" viewBox="0 0 160 160" role="img" aria-label="Principal versus interest"><circle cx="80" cy="80" r="62" stroke="#2a2955"/><circle id="dp" cx="80" cy="80" r="62" stroke="#14c8b4" transform="rotate(-90 80 80)" style="stroke-dasharray:0 390"/><circle id="di" cx="80" cy="80" r="62" stroke="#ffb23e" transform="rotate(-90 80 80)" style="stroke-dasharray:0 390"/><text id="dt" x="80" y="82" font-size="17" font-weight="800"></text><text x="80" y="100" font-size="10" style="fill:#a9acd6">per month</text></svg><div class="lg"><span><i style="background:#14c8b4"></i>Principal <b id="lp"></b></span><span><i style="background:#ffb23e"></i>Interest <b id="li"></b></span></div></div>
+<div class="w"><h3>CIBIL score bands</h3><svg class="gg" viewBox="0 0 220 134" role="img" aria-label="CIBIL score gauge"><g id="ga"></g><g id="nd" style="transform:rotate(-90deg)"><line x1="110" y1="110" x2="110" y2="34" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g><circle cx="110" cy="110" r="8" fill="#fff"/><text id="gl" x="110" y="130" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="Sora,sans-serif"></text></svg></div>
+<div class="w wide"><h3>Loan balance over time</h3><svg class="bs" viewBox="0 0 400 158" role="img" aria-label="Outstanding loan balance falling over the tenure"><defs><linearGradient id="bgf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14c8b4" stop-opacity=".45"/><stop offset="1" stop-color="#14c8b4" stop-opacity="0"/></linearGradient></defs><path d="M10 140H390" stroke="#2a2955" stroke-width="2"/><path id="ba"/><path id="bl"/><text x="10" y="154">Today</text><text id="by" x="390" y="154" text-anchor="end"></text></svg><small>Outstanding balance from today until your last EMI.</small></div>
+<div class="w wide"><h3>Your loan journey</h3><div class="jr"><i class="jt"><i class="jl"></i></i><span style="--i:0"><b>1</b>Enquire</span><span style="--i:1"><b>2</b>Compare</span><span style="--i:2"><b>3</b>Documents</span><span style="--i:3"><b>4</b>Get funds</span></div></div>
+</div></div></section>
+
+<section class="show"><div class="wrap grid">
+<div class="reveal"><h2>Smart lending, built around you</h2><p>See your EMI instantly, find your CIBIL band and apply in minutes. Home, car, business and personal loans in one place.</p><div class="tags"><span>Instant EMI</span><span>CIBIL-based guidance</span><span>Secure KYC</span></div></div>
+<svg class="holo" viewBox="0 0 520 380" role="img" aria-label="Glowing rupee orb with home, car and shop icons orbiting above a neon city and a rising chart">
+<defs><radialGradient id="o" cx="50%" cy="38%"><stop offset="0" stop-color="#9ff3e8"/><stop offset=".5" stop-color="#5b3df5"/><stop offset="1" stop-color="#14123a"/></radialGradient>
+<linearGradient id="lg" x1="0" x2="1"><stop offset="0" stop-color="#14c8b4"/><stop offset="1" stop-color="#ff5fa2"/></linearGradient>
+<filter id="gl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<path id="orbit" d="M50 170a210 64 0 1 0 420 0a210 64 0 1 0 -420 0"/></defs>
+<path d="M0 380V318h40V288h34v30h30V258h38v60h30V298h34v20h34V268h30v50h36V293h34v25h40V278h36v40h38V308h40v10h20v62z" fill="rgba(20,200,180,.07)" stroke="#14c8b4" stroke-width="1.5" filter="url(#gl)"/>
+<polyline points="30,340 110,308 180,322 260,268 340,288 420,226 490,204" fill="none" stroke="url(#lg)" stroke-width="3" stroke-linecap="round" filter="url(#gl)" stroke-dasharray="700" stroke-dashoffset="700"><animate attributeName="stroke-dashoffset" to="0" dur="2.5s" fill="freeze"/></polyline>
+<use href="#orbit" fill="none" stroke="url(#lg)" stroke-width="1.5" stroke-dasharray="4 8" opacity=".8"/>
+<circle class="pulse" cx="260" cy="170" r="62" fill="url(#o)" filter="url(#gl)"/>
+<text x="260" y="192" text-anchor="middle" font-family="Sora,sans-serif" font-weight="800" font-size="58" fill="#fff">₹</text>
+<g fill="#17163a" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<g><circle r="19" stroke="#14c8b4"/><path d="M-9 2L0-8l9 10M-6 0v9h12V0" fill="none"/><animateMotion dur="18s" repeatCount="indefinite"><mpath href="#orbit"/></animateMotion></g>
+<g><circle r="19" stroke="#ffb23e"/><path d="M-10 4v-5l3-5h14l3 5v5zM-5 7h.1M5 7h.1" fill="none"/><animateMotion dur="18s" begin="-6s" repeatCount="indefinite"><mpath href="#orbit"/></animateMotion></g>
+<g><circle r="19" stroke="#ff5fa2"/><path d="M-9-3h18v11h-18zM-9-3l2-6h14l2 6M-2 8V3h4v5" fill="none"/><animateMotion dur="18s" begin="-12s" repeatCount="indefinite"><mpath href="#orbit"/></animateMotion></g></g>
+<g class="fl"><rect x="358" y="34" width="132" height="56" rx="12" fill="rgba(255,255,255,.08)" stroke="#14c8b4"/><text x="372" y="56" fill="#a9acd6" font-size="11" font-family="DM Sans,sans-serif">Monthly EMI</text><text x="372" y="78" fill="#fff" font-size="18" font-weight="700" font-family="Sora,sans-serif">₹21,742</text></g>
+<g class="fl fl2"><rect x="30" y="52" width="132" height="56" rx="12" fill="rgba(255,255,255,.08)" stroke="#16c784"/><circle cx="46" cy="72" r="5" fill="#16c784"/><text x="58" y="76" fill="#a9acd6" font-size="11" font-family="DM Sans,sans-serif">CIBIL band</text><text x="44" y="98" fill="#fff" font-size="18" font-weight="700" font-family="Sora,sans-serif">750 and above</text></g>
+</svg></div></section>
+
+<section id="loans"><div class="wrap">
+<div class="h reveal"><h2>A loan for every plan you have</h2><p>Tell us what you’re building or buying. We match you with the right loan and explain every charge before you sign.</p></div>
+<div class="loans">
+<article class="card c1 reveal"><div class="art"><svg viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="22" r="10"/><path d="M12 56c2-12 10-18 20-18s18 6 20 18"/><path d="M45 12l3 3 6-6"/></svg></div><div class="in"><h3>Personal Loan</h3><p>For weddings, medical needs, travel, education or any urgent expense.</p><ul><li>No collateral usually needed</li><li>Flexible tenure</li><li>Quick documentation</li></ul></div></article>
+<article class="card c2 reveal"><div class="art"><svg viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="22" width="48" height="32" rx="4"/><path d="M24 22v-6h16v6M8 36h48"/><path d="M30 36v5h4v-5"/></svg></div><div class="in"><h3>Business Loan</h3><p>Working capital, stock, machinery or expansion for shops, traders and MSMEs.</p><ul><li>Loans for new and running businesses</li><li>Overdraft and term options</li><li>Repayment matched to cash flow</li></ul></div></article>
+<article class="card c3 reveal"><div class="art"><svg viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 30L32 8l26 22"/><path d="M12 26v28h40V26"/><path d="M27 54V38h10v16"/></svg></div><div class="in"><h3>Home Loan</h3><p>Buy, build or renovate your dream home with long, comfortable tenures.</p><ul><li>Purchase and construction</li><li>Home improvement top-up</li><li>Balance transfer support</li></ul></div></article>
+<article class="card c4 reveal"><div class="art"><svg viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 54V26l14-14h24l14 14v28"/><path d="M6 54h52M22 54V36h20v18"/><circle cx="32" cy="28" r="4"/></svg></div><div class="in"><h3>Mortgage Loan</h3><p>Unlock the value of your property for business, family or other needs. Loan against residential or commercial property.</p><ul><li>Higher loan amounts</li><li>Longer tenure</li><li>Property ownership stays with you</li></ul></div></article>
+<article class="card c5 reveal"><div class="art"><svg viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 42v-8l8-12h30l10 12h4v8z"/><circle cx="18" cy="44" r="6"/><circle cx="46" cy="44" r="6"/><path d="M20 34h28"/></svg></div><div class="in"><h3>Car Loan</h3><p>New or used car financing with simple paperwork and a clear EMI plan.</p><ul><li>New and pre-owned cars</li><li>Finance on a share of the car price</li><li>Fast processing</li></ul></div></article>
+<article class="card c6 reveal"><div class="art"><svg viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M10 50h44M16 50V30M32 50V16M48 50V38"/><path d="M12 24l16-10 12 8 14-12"/></svg></div><div class="in"><h3>More Loans</h3><p>Two-wheeler, gold, education, loan against vehicle and balance transfer. Ask us about what you need.</p><ul><li>Custom guidance</li><li>Top-up and refinance options</li></ul></div></article>
+</div></div></section>
+
+<section class="why"><div class="wrap">
+<div class="h reveal"><h2>Why people choose Financily</h2></div>
+<div class="feats reveal">
+<div><h3>Local and reachable</h3><p>Visit us in Kurud, Bhilai or call directly. You talk to a real person who knows your area.</p></div>
+<div><h3>Everything in writing</h3><p>Rate, processing fee, charges and penalties are explained before you commit.</p></div>
+<div><h3>Matched to you</h3><p>We compare options across partner lenders so the EMI fits your income.</p></div>
+<div><h3>Your data stays private</h3><p>Documents are used only for your loan application and never sold.</p></div>
+</div></div></section>
+
+<section id="process"><div class="wrap">
+<div class="h reveal"><h2>From enquiry to disbursal in four steps</h2></div>
+<div class="steps reveal">
+<div><h3>Enquire</h3><p>Call, message or fill the form with your loan need.</p></div>
+<div><h3>Compare</h3><p>We check eligibility and show suitable offers.</p></div>
+<div><h3>Submit documents</h3><p>Share KYC and income papers. We help with the checklist.</p></div>
+<div><h3>Get funds</h3><p>After lender approval and agreement, money goes to your bank account.</p></div>
+</div></div></section>
+
+<section id="docs" style="padding-top:0"><div class="wrap">
+<div class="h reveal"><h2>Eligibility and documents</h2><p>Requirements vary by loan type and lender. This is a general guide.</p></div>
+<div class="docs reveal">
+<div><h3>Basic eligibility</h3><ul><li>Indian resident, age 21 to 65 at maturity (varies by lender)</li><li>Steady salary or business income</li><li>Good credit history preferred</li><li>For secured loans: clear property or vehicle title</li></ul></div>
+<div><h3>Common documents</h3><ul><li>Aadhaar, PAN, passport photo</li><li>Address proof</li><li>Last 6 months bank statement</li><li>Salary slips or ITR and business proof</li><li>Property or vehicle papers for secured loans</li></ul></div>
+</div></div></section>
+
+
+<section id="tools"><div class="wrap">
+<div class="h reveal"><h2>Smart loan tools</h2><p>Plan documents, track progress, compare loans and test prepayment. Figures are indicative.</p></div>
+
+<div class="tb"><h3>Our lending partners</h3><p class="sub">Placeholder names. Replace them with your real partner lenders and logos before publishing.</p>
+<div class="mq" aria-label="Partner lenders carousel"><div id="mqi"></div></div>
+<div class="dcs"><span>Approval is decided by the lender</span><span>Rates and charges vary</span><span>Financily does not guarantee approval</span><span>No upfront fee should be paid to agents</span></div></div>
+
+<div class="tb"><h3>Document checklist generator</h3><p class="sub">Pick your case and tick items off. Save it as a PDF to carry to the lender.</p>
+<div class="row"><label>Loan type<select id="ckl"><option>Personal Loan</option><option>Business Loan</option><option>Home Loan</option><option>Mortgage Loan</option><option>Car Loan</option></select></label>
+<label>Applicant<select id="cke"><option>Salaried</option><option>Self-employed</option></select></label>
+<label>Co-applicant?<select id="ckc"><option value="0">No</option><option value="1">Yes</option></select></label></div>
+<div class="pb"><i id="ckb"></i></div><ul class="ck" id="ckx"></ul>
+<button class="btn" id="ckp" type="button">Save checklist as PDF</button></div>
+
+<div class="tb"><h3>Track a loan (live simulation)</h3><p class="sub">See how an application typically moves. This is a demo, not a real application status.</p>
+<div class="trk" id="trk"></div><div class="pb"><i id="trb"></i></div><div class="tkd" id="tkd" style="margin-top:14px"></div>
+<button class="btn alt" id="trr" type="button" style="margin-top:14px">Replay</button></div>
+
+<div class="tb"><h3>Prepayment and foreclosure calculator</h3><p class="sub">See how a part-payment shortens your loan, or what closing it today may cost.</p>
+<div class="row"><label>Loan amount (₹)<input type="number" id="pp1" value="1000000" min="10000" step="10000"></label>
+<label>Interest rate % p.a.<input type="number" id="pp2" value="10" min="1" max="40" step="0.1"></label>
+<label>Tenure (years)<input type="number" id="pp3" value="10" min="1" max="30"></label>
+<label>EMIs already paid<input type="number" id="pp4" value="24" min="0"></label>
+<label>Part-prepayment (₹)<input type="number" id="pp5" value="100000" min="0" step="10000"></label>
+<label>Foreclosure charge %<input type="number" id="pp6" value="2" min="0" max="10" step="0.5"></label></div>
+<div class="rs" id="ppo" aria-live="polite"></div><p class="sub" style="margin:12px 0 0">Part-prepayment assumes your EMI stays the same. Actual charges depend on the lender.</p></div>
+
+<div class="tb"><h3>Loan comparison matrix</h3><p class="sub">Compare two loans side by side.</p>
+<div class="row"><label>Loan A<select id="cmA"></select></label><label>Loan B<select id="cmB"></select></label></div>
+<div class="scx"><table class="mt" id="cmt"></table></div></div>
+
+<div class="tb"><h3>Customer stories</h3><p class="sub">Sample stories shown as a layout demo. Replace with real, consented customer stories before publishing.</p>
+<div class="tm" id="tmx"></div><div class="dts" id="tmd"></div></div>
+
+<div class="tb" id="pwab" style="display:none"><h3>Install Financily</h3><p class="sub">Add the site to your home screen for one-tap access.</p><button class="btn" id="pwai" type="button">Install app</button></div>
+</div></section>
+<section class="legal" id="legal"><div class="wrap">
+<div class="h reveal"><h2>Terms, policies and legal</h2><p>Please read these before applying. Last updated October 2026.</p></div>
+<div class="reveal">
+<details open><summary>Terms of Use</summary><ul><li>This website provides information about loan services and loan facilitation by Financily. Content is not a loan offer or sanction.</li><li>All loans are subject to eligibility, credit appraisal, documentation and final approval by the lending bank or financial institution.</li><li>You agree to give true, complete and current information. False information may lead to rejection or legal action.</li><li>EMI figures from the calculator are estimates and are not a commitment.</li><li>Financily may update services, content and these terms at any time.</li></ul></details>
+<details><summary>Loan terms and charges</summary><ul><li>Interest rate, processing fee, documentation charges, foreclosure and part-prepayment charges, late payment penalty and other fees are set by the lender and stated in the sanction letter and loan agreement.</li><li>Delayed or missed EMIs can attract penal charges and reduce your credit score.</li><li>Secured loans (home, mortgage, car) are backed by the asset. If you default, the lender may take recovery action under applicable law.</li><li>Read the Key Fact Statement and agreement fully before signing. Ask us if anything is unclear.</li><li>Never pay any amount to an individual in cash or to a personal account. Payments are made only to the lender’s official account.</li></ul></details>
+<details><summary>Privacy policy</summary><ul><li>We collect name, phone, email, address, KYC, income and credit details only to process your enquiry or application.</li><li>Your information may be shared with partner lenders, credit bureaus and verification agencies with your consent, and with authorities when required by law.</li><li>We do not sell your personal data.</li><li>We use reasonable safeguards to protect your information. You can ask us to correct or delete your data, subject to legal record-keeping needs.</li></ul></details>
+<details><summary>Fair practices and no-guarantee notice</summary><ul><li>Financily follows fair lending practices: clear disclosure, respectful communication and no hidden charges from our side.</li><li>We do not guarantee approval, a specific rate, amount or timeline.</li><li>Any fee payable to Financily, if applicable, will be disclosed in advance in writing.</li></ul></details>
+<details><summary>Grievance redressal</summary><p>If you have a complaint, call 8269581567 or visit our office. We aim to acknowledge within 2 working days and resolve within 30 days. If unresolved, you may escalate to the lender’s grievance officer and then to the Reserve Bank of India’s complaint portal (cms.rbi.org.in).</p></details>
+<details><summary>Disclaimer and jurisdiction</summary><p>Information is for general guidance, not financial or legal advice. Financily is not liable for loss arising from reliance on website content or decisions of third-party lenders. Disputes are subject to the courts of Durg / Bhilai, Chhattisgarh, India, under Indian law.</p></details>
+</div></div></section>
+
+<section class="contact" id="contact"><div class="blob b1" style="opacity:.3"></div>
+<div class="wrap grid">
+<div class="info reveal"><h2 style="font-size:clamp(28px,4vw,44px)">Let’s talk about your loan</h2>
+<p style="margin-top:14px">Share your need and we’ll call you back. Or walk into our office.</p>
+<p><b>Address</b><br>Kailash Nagar, Lohiya Road, Kurud, Bhilai, Chhattisgarh</p>
+<p><b>Phone</b><br><a href="tel:+918269581567" style="color:var(--gold)">+91 82695 81567</a></p>
+<p><b>Hours</b><br>Mon to Sat, 10:00 AM to 7:00 PM</p></div>
+<form id="f" class="reveal">
+<input required name="n" placeholder="Full name" autocomplete="name">
+<input required name="p" type="tel" pattern="[0-9+ ]{10,14}" placeholder="Mobile number" autocomplete="tel">
+<select name="l" aria-label="Loan type"><option>Personal Loan</option><option>Business Loan</option><option>Home Loan</option><option>Mortgage Loan</option><option>Car Loan</option><option>Other</option></select>
+<input name="a" placeholder="Loan amount needed (₹)">
+<label style="font-size:13px;color:#c9cbeb"><input required type="checkbox" style="width:auto;margin-right:8px">I agree to the Terms and Privacy Policy and allow Financily to contact me.</label>
+<button class="btn" type="submit">Send my request</button><span id="ok">Thank you! We’ll call you soon.</span>
+</form></div></section>
+
+<section id="apply"><div class="wrap">
+<a class="back" href="#top">← Back to home</a>
+<div class="h" style="margin-top:18px"><h2>Check eligibility and apply</h2><p>Know your CIBIL score, see what you may qualify for in seconds, then send a full application.</p></div>
+<h3 class="sub" style="margin-top:0">Your CIBIL score decides your terms</h3>
+<div class="bands">
+<div class="band" id="b1" style="--c:#ef4444"><b>300 – 650</b><h3>Needs improvement</h3><p>Approval is harder and rates are higher. A co-applicant or collateral may be needed.</p><ul><li>Pay every EMI and card bill on time</li><li>Keep card use under 30% of limit</li><li>Fix errors in your credit report</li></ul></div>
+<div class="band" id="b2" style="--c:#f5a524"><b>650 – 750</b><h3>Good</h3><p>Fair chance of approval with moderate rates. Reaching 750 can unlock better offers.</p><ul><li>Avoid many loan enquiries at once</li><li>Clear small dues before applying</li></ul></div>
+<div class="band" id="b3" style="--c:#16c784"><b>750 and above</b><h3>Excellent</h3><p>Strongest chance of approval, lower rates, higher limits and faster processing.</p><ul><li>Best position to negotiate</li><li>Keep your habits steady</li></ul></div>
+</div>
+<div class="meter"><i class="pin" id="pin" style="left:0"></i></div>
+<div class="sc"><span>300</span><span>650</span><span>750</span><span>900</span></div>
+<p style="color:var(--mut);font-size:13.5px;margin-top:10px">Don’t know your score? Get your free credit report from a credit bureau such as CIBIL. Approval is always decided by the lender.</p>
+
+<h3 class="sub">Eligibility checker</h3>
+<div class="box"><div class="fg">
+<label>Loan type<select id="el"><option>Personal Loan</option><option>Business Loan</option><option>Home Loan</option><option>Mortgage Loan</option><option>Car Loan</option></select></label>
+<label>Monthly income (₹)<input id="ei" type="number" min="0" placeholder="e.g. 40000"></label>
+<label>Existing EMIs per month (₹)<input id="ee" type="number" min="0" placeholder="0"></label>
+<label>Loan amount needed (₹)<input id="ea" type="number" min="0" placeholder="e.g. 500000"></label>
+<label>Tenure (years)<input id="et" type="number" min="1" max="30" value="5"></label>
+<div style="grid-column:1/-1"><p style="font-size:13.5px;color:var(--mut);margin-bottom:6px">Your CIBIL score range</p><div class="cib" data-g="ec"></div></div>
+</div><button class="btn" id="eb" type="button" style="margin-top:18px">Check eligibility</button>
+<div id="res" aria-live="polite"></div></div>
+
+<h3 class="sub">Loan application form</h3>
+<form id="af">
+<fieldset><legend>1. Personal details</legend><div class="fg">
+<label>Full name (as per PAN)<input required name="Name" autocomplete="name"></label>
+<label>Father’s / spouse’s name<input required name="Father"></label>
+<label>Date of birth<input required type="date" name="DOB"></label>
+<label>Gender<select name="Gender"><option>Male</option><option>Female</option><option>Other</option></select></label>
+<label>Marital status<select name="Marital"><option>Single</option><option>Married</option><option>Other</option></select></label>
+<label>PAN number<input required name="PAN" pattern="[A-Za-z]{5}[0-9]{4}[A-Za-z]" maxlength="10" placeholder="ABCDE1234F"></label>
+</div></fieldset>
+<fieldset><legend>2. Contact and address</legend><div class="fg">
+<label>Mobile number<input required type="tel" name="Mobile" pattern="[0-9]{10}" maxlength="10" autocomplete="tel"></label>
+<label>Email<input type="email" name="Email" autocomplete="email"></label>
+<label>Current address<input required name="Address" autocomplete="street-address"></label>
+<label>City<input required name="City"></label>
+<label>PIN code<input required name="PIN" pattern="[0-9]{6}" maxlength="6"></label>
+<label>Residence type<select name="Residence"><option>Owned</option><option>Rented</option><option>Family owned</option><option>Company provided</option></select></label>
+</div></fieldset>
+<fieldset><legend>3. Employment and income</legend><div class="fg">
+<label>Occupation<select name="Occupation"><option>Salaried</option><option>Self-employed business</option><option>Self-employed professional</option><option>Other</option></select></label>
+<label>Company / business name<input name="Company"></label>
+<label>Experience (years)<input type="number" min="0" name="Experience"></label>
+<label>Monthly income (₹)<input required id="fi" type="number" min="0" name="Income"></label>
+<label>Existing EMIs per month (₹)<input id="fe" type="number" min="0" name="ExistingEMI" value="0"></label>
+<div style="grid-column:1/-1"><p style="font-size:13.5px;color:var(--mut);margin-bottom:6px">Your CIBIL score range (select one)</p><div class="cib" data-g="fc"></div></div>
+</div></fieldset>
+<fieldset><legend>4. Loan requirement</legend><div class="fg">
+<label>Loan type<select id="fl" name="LoanType"><option>Personal Loan</option><option>Business Loan</option><option>Home Loan</option><option>Mortgage Loan</option><option>Car Loan</option><option>Other</option></select></label>
+<label>Loan amount (₹)<input required id="fa" type="number" min="10000" name="Amount"></label>
+<label>Tenure (years)<input required id="ft" type="number" min="1" max="30" name="Tenure"></label>
+<label>Purpose<input name="Purpose" placeholder="e.g. buy a car, expand shop"></label>
+<label>Property / vehicle value (₹, if secured)<input type="number" min="0" name="AssetValue"></label>
+<label>Preferred call time<select name="CallTime"><option>Morning</option><option>Afternoon</option><option>Evening</option></select></label>
+</div></fieldset>
+<fieldset><legend>5. Reference</legend><div class="fg"><label>Reference name<input name="RefName"></label><label>Reference mobile<input type="tel" name="RefMobile" maxlength="10"></label></div></fieldset>
+<label class="chk"><input required type="checkbox">I confirm the details are true and agree to the Terms and Privacy Policy.</label>
+<label class="chk"><input required type="checkbox">I allow Financily and partner lenders to verify my details and check my credit report.</label>
+<button class="btn" type="submit" style="margin-top:10px">Submit application</button>
+<div id="done"><b id="ref"></b><p id="dmsg" style="color:var(--mut);margin:8px 0 0"></p></div>
+</form>
+</div></section>
+
+<footer><div class="wrap">© 2026 Financily. Kailash Nagar, Lohiya Road, Kurud, Bhilai · 8269581567<br>Loans are subject to lender approval. Financily does not guarantee approval or rates.</div></footer>
+<a class="wa" href="https://wa.me/918269581567" target="_blank" rel="noopener">WhatsApp us</a>
+
+
+<dialog id="lm" aria-labelledby="lmt"><button id="lmx" type="button" aria-label="Close">×</button>
+<h2 id="lmt">Login</h2><p class="s" id="lms">Sign in with your mobile number or email.</p>
+<div class="lt" role="tablist"><button type="button" class="on" data-m="mobile">Mobile</button><button type="button" data-m="email">Email</button></div>
+<div id="lm1" class="lpn"><input id="lmi" autocomplete="username" aria-label="Mobile or email"><button class="btn" id="lms1" type="button">Send OTP</button></div>
+<div id="lm2" class="lpn" style="display:none"><p class="s" id="lmw" style="margin-top:0"></p><input id="lmo" class="otp" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="••••••" aria-label="6 digit OTP"><button class="btn" id="lms2" type="button">Verify and continue</button>
+<button class="lk" id="lmr" type="button" disabled></button> <button class="lk" id="lmc" type="button" style="margin-left:14px">Change</button></div>
+<p id="lme" role="alert"></p><div id="lmd" style="display:none"></div></dialog>
+<dialog id="gm" aria-labelledby="gmt"><button id="gmx" type="button" aria-label="Close">×</button>
+<div class="gh"><div class="gv" id="gv"></div><div><h2 id="gmt"></h2><p class="s" id="gs" style="margin-bottom:12px"></p><div class="tgs" id="gtg"></div></div></div>
+<div class="gt" id="gtabs" role="tablist"></div><div class="gp" id="gp" aria-live="polite"></div>
+<div class="gc"><button class="btn" id="gce" type="button">Check eligibility</button><button class="btn ghost" id="gca" type="button">Apply now</button><a class="btn ghost" id="gcw" target="_blank" rel="noopener">Ask on WhatsApp</a></div>
+<p class="nt">Indicative information for guidance. Rates, tenure, fees, charges and approval are decided by the lender.</p></dialog>
+
+<dialog id="em" aria-labelledby="emt"><button id="emx" type="button" aria-label="Close">×</button>
+<h2 id="emt">Check your eligibility</h2><p class="s">Enter your details, income and monthly obligations to see how much you may be able to borrow.</p>
+<form id="ef" novalidate><div class="g2">
+<label class="l">Full name<input required name="nm" autocomplete="name"></label>
+<label class="l">Mobile number<input required name="mb" type="tel" pattern="[0-9]{10}" maxlength="10" autocomplete="tel"></label>
+<label class="l">Loan type<select name="l"><option>Personal Loan</option><option>Business Loan</option><option>Home Loan</option><option>Mortgage Loan</option><option>Car Loan</option></select></label>
+<label class="l">Monthly income (₹)<input required name="i" type="number" min="1" placeholder="e.g. 40000"></label>
+<label class="l">Monthly obligations / EMIs (₹)<input name="o" type="number" min="0" value="0"></label>
+<label class="l">Loan amount needed (₹), optional<input name="a" type="number" min="0" placeholder="e.g. 500000"></label>
+<label class="l">Tenure (years)<input name="t" type="number" min="1" max="30" value="5"></label></div>
+<p style="font-size:13px;color:var(--mut);margin-top:4px">CIBIL score range (select one)</p><div class="cib" data-g="xc"></div><p class="er" role="alert"></p>
+<button class="btn" type="submit">Check eligibility</button>
+<div id="eres" aria-live="polite"></div>
+<a id="fl" href="#apply" style="color:var(--aqua);font-size:14px;text-align:center">Prefer the full application form? Open it</a></form></dialog>
+
+
+
+<dialog id="am" aria-labelledby="amt"><button id="amx" type="button" aria-label="Close">×</button>
+<h2 id="amt">Apply for your loan</h2><p class="s">Share your details and select your CIBIL score range. We will call you back.</p>
+<form id="mf" novalidate><div class="g2">
+<label class="l">Full name<input required name="n" autocomplete="name"></label>
+<label class="l">Mobile number<input required name="p" type="tel" pattern="[0-9]{10}" maxlength="10" autocomplete="tel"></label>
+<label class="l">Email<input name="e" type="email" autocomplete="email"></label>
+<label class="l">City<input required name="c"></label>
+<label class="l">Loan type<select name="l"><option>Personal Loan</option><option>Business Loan</option><option>Home Loan</option><option>Mortgage Loan</option><option>Car Loan</option><option>Other</option></select></label>
+<label class="l">Loan amount (₹)<input required name="a" type="number" min="10000"></label>
+<label class="l">Tenure (years)<input required name="t" type="number" min="1" max="30" value="5"></label>
+<label class="l">Monthly income (₹)<input required name="i" type="number" min="0"></label></div>
+<p style="font-size:13px;color:var(--mut);margin-top:4px">CIBIL score range (select one)</p><div class="cib" data-g="mc"></div><p class="er" role="alert"></p>
+<label class="l" style="display:flex;gap:10px;align-items:flex-start"><input required type="checkbox" style="width:auto;margin-top:4px">I confirm the details are true and agree to the Terms and Privacy Policy.</label>
+<button class="btn" type="submit">Submit application</button>
+<div id="mdone"><b id="mref"></b><p id="mmsg" style="color:var(--mut);margin:8px 0 0"></p></div></form></dialog>
+
+<script>
+const $=id=>document.getElementById(id),fm=n=>'₹'+Math.round(n).toLocaleString('en-IN');
+function calc(){const P=+$('a').value,R=+$('r').value/1200,N=+$('t').value*12;
+const e=P*R*Math.pow(1+R,N)/(Math.pow(1+R,N)-1);$('va').textContent=fm(P);$('vr').textContent=$('r').value+'%';$('vt').textContent=$('t').value+' yrs';
+$('emi').textContent=fm(e);const tot=e*N;$('tot').textContent='Total interest '+fm(tot-P);$('pb').style.width=(P/tot*100)+'%'}
+['a','r','t'].forEach(i=>$(i).addEventListener('input',calc));calc();
+const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('on');io.unobserve(x.target)}}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(e=>io.observe(e));
+document.querySelectorAll('[data-n]').forEach(el=>{const n=+el.dataset.n,s=el.dataset.s||'';let i=0;const k=setInterval(()=>{i+=Math.ceil(n/40);if(i>=n){i=n;clearInterval(k)}el.textContent=i+s},35)});
+$('f').addEventListener('submit',async e=>{e.preventDefault();const f=e.target,b=f.querySelector('button[type=submit]'),o=$('ok');b.disabled=true;
+try{const r=await fetch((window.FIN_API_URL||'')+'/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(f)))});const j=await r.json();if(!j.ok)throw new Error(j.error);o.textContent='Thank you! We\u2019ll call you soon.';f.reset()}
+catch(x){o.textContent='Could not send. Please call 82695 81567.'}b.disabled=false;o.style.display='block'});
+function route(){const a=location.hash==='#apply';document.body.classList.toggle('ap',a);if(a)scrollTo(0,0);else if(location.hash.length>1){const el=document.querySelector(location.hash);if(el)el.scrollIntoView()}}
+addEventListener('hashchange',route);route();
+function pin(s){s=+s;if(s<300||s>900||!s)return;$('pin').style.left='calc('+((s-300)/6)+'% - 2px)';[['b1',s<650],['b2',s>=650&&s<750],['b3',s>=750]].forEach(([i,o])=>$(i).classList.toggle('on2',o))}
+const BD=[['300 – 650','Needs improvement',475],['650 – 750','Good',700],['750 and above','Excellent',825]];
+document.querySelectorAll('.cib').forEach(c=>{const n=c.dataset.g;c.className='chips';c.innerHTML=BD.map(([t,d,v])=>'<label class="chip"><input type="radio" name="'+n+'" value="'+t+'" data-v="'+v+'" required><span><b>'+t+'</b><small>'+d+'</small></span></label>').join('')});
+document.addEventListener('change',e=>{if(e.target.matches('.chips input'))pin(e.target.dataset.v)});
+$('eb').addEventListener('click',()=>{const inc=+$('ei').value,e0=+$('ee').value||0,amt=+$('ea').value,yrs=+$('et').value||5,sc=+((document.querySelector('input[name=ec]:checked')||{dataset:{}}).dataset.v)||0,R=$('res');R.style.display='block';
+if(!inc||sc<300||sc>900){R.innerHTML='Enter your monthly income and select your CIBIL score range.';return}
+pin(sc);const rate=sc>=750?10.5:sc>=650?13:18,foir=sc>=750?.55:sc>=650?.5:.4,r=rate/1200,n=yrs*12,maxE=Math.max(0,inc*foir-e0),maxL=maxE*(1-Math.pow(1+r,-n))/r;
+let c,t;if(!amt){c='g';t='Your estimated eligibility'}else if(amt<=maxL*.9&&sc>=650){c='g';t='Likely eligible'}else if(amt<=maxL){c='y';t='May be eligible, subject to lender review'}else{c='r';t='Amount may be too high for your income'}
+R.innerHTML='<b class="'+c+'">'+t+'</b><p style="margin:8px 0">Estimated maximum loan: <b>'+fm(maxL)+'</b> over '+yrs+' years, with an EMI room of about '+fm(maxE)+' per month.</p><p style="color:var(--mut);font-size:13px">This is an indicative estimate using assumed rates and income limits. The lender makes the final decision.</p><button class="btn" id="go" type="button" style="margin-top:12px">Continue to application</button>';
+$('go').onclick=()=>{$('fi').value=inc;$('fe').value=e0;$('fa').value=amt;$('ft').value=yrs;const q=document.querySelector('input[name=ec]:checked').value;document.querySelector('input[name=fc][value="'+q+'"]').checked=true;$('fl').value=$('el').value;$('af').scrollIntoView()}});
+/* apply forms save to MongoDB via the backend (see submitApp below) */
+
+/* nav + modal */
+const nv=$('nv'),am=$('am'),hd=document.querySelector('header');
+$('bg').onclick=()=>$('bg').setAttribute('aria-expanded',nv.classList.toggle('open'));
+nv.addEventListener('click',e=>{if(e.target.closest('a')){nv.classList.remove('open');$('bg').setAttribute('aria-expanded','false')}});
+addEventListener('scroll',()=>hd.classList.toggle('stuck',scrollY>20),{passive:true});
+const sp=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting)document.querySelectorAll('nav a:not(.btn)').forEach(a=>a.classList.toggle('act',a.getAttribute('href')==='#'+x.target.id))}),{rootMargin:'-40% 0px -55% 0px'});
+['loans','process','docs','legal','contact'].forEach(i=>sp.observe($(i)));
+document.querySelectorAll('.apply-btn').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();nv.classList.remove('open');am.showModal()}));
+$('amx').onclick=()=>am.close();am.addEventListener('click',e=>{if(e.target===am)am.close()});
+
+
+/* form check */
+function chk(f){const er=f.querySelector('.er');er.style.display='none';const bad=[...f.elements].find(x=>x.willValidate&&!x.validity.valid);if(!bad)return true;
+const g=bad.type==='radio',lab=((bad.closest('label')||{}).firstChild||{}).textContent||'this field';
+er.textContent=g?'Please select your CIBIL score range.':bad.type==='checkbox'?'Please tick the confirmation box.':'Please check "'+lab.trim()+'": '+bad.validationMessage;
+er.style.display='block';if(g)f.querySelector('.chips').scrollIntoView({block:'center',behavior:'smooth'});else{bad.scrollIntoView({block:'center',behavior:'smooth'});bad.focus({preventScroll:true})}return false}
+/* eligibility popup + quote */
+['input','change'].forEach(v=>$('ef').addEventListener(v,()=>{$('eres').style.display='none'}));
+const em=$('em');
+document.querySelectorAll('.elig-btn').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();nv.classList.remove('open');em.showModal()}));
+$('emx').onclick=()=>em.close();$('fl').onclick=()=>em.close();em.addEventListener('click',e=>{if(e.target===em)em.close()});
+$('ef').addEventListener('submit',e=>{e.preventDefault();if(!chk(e.target))return;const d=new FormData(e.target),inc=+d.get('i'),ob=+d.get('o')||0,amt=+d.get('a')||0,yrs=+d.get('t')||5,sc=+document.querySelector('#ef input[name=xc]:checked').dataset.v,
+rate=sc>=750?10.5:sc>=650?13:18,foir=sc>=750?.55:sc>=650?.5:.4,r=rate/1200,n=yrs*12,room=Math.max(0,inc*foir-ob),max=Math.floor(room*(1-Math.pow(1+r,-n))/r/1000)*1000,R=$('eres');
+let c,t;if(max<=0){c='r';t='Not eligible at this income and obligation level'}else if(!amt){c='g';t='Your estimated eligibility'}else if(amt<=max*.9&&sc>=650){c='g';t='Likely eligible for your amount'}else if(amt<=max){c='y';t='May be eligible, subject to lender review'}else{c='r';t='Your amount may be too high. Try a lower amount'}
+const ref='FIN'+Date.now().toString().slice(-7),rs=x=>'Rs '+Math.round(x).toLocaleString('en-IN');
+const msg='Financily quote request '+ref+'\nName: '+d.get('nm')+'\nMobile: '+d.get('mb')+'\nLoan type: '+d.get('l')+'\nMonthly income: '+rs(inc)+'\nMonthly obligations: '+rs(ob)+'\nLoan amount needed: '+(amt?rs(amt):'not specified')+'\nTenure: '+yrs+' yrs\nCIBIL range: '+document.querySelector('#ef input[name=xc]:checked').value+'\nEligibility: '+t+'\nEligible amount: '+rs(max)+'\nEMI room: '+rs(room)+'/month at about '+rate+'% p.a.\nPlease send me a quote.';
+R.style.display='block';
+R.innerHTML='<b class="'+c+'">'+t+'</b><span class="amt">'+(max>0?fm(max):'₹0')+'</span><p style="color:var(--mut);font-size:14px">Eligible loan amount over '+yrs+' years. EMI room about '+fm(room)+' per month at an indicative '+rate+'% p.a.</p><p style="color:var(--mut);font-size:12.5px;margin:8px 0 12px">Indicative estimate only. The lender makes the final decision.</p><a class="btn" id="gq" target="_blank" rel="noopener" href="https://wa.me/918269581567?text='+encodeURIComponent(msg)+'">Get quote</a><p id="gqn" style="display:none;color:var(--aqua);font-size:13.5px;margin-top:10px">Your details and eligibility are ready in WhatsApp. Press send there to receive your quote.</p>';
+$('gq').onclick=()=>{$('gqn').style.display='block'};
+setTimeout(()=>R.scrollIntoView({block:'end',behavior:'smooth'}),60)});
+const PT=document.querySelector('.pts');for(let i=0;i<24;i++){const e=document.createElement('i'),z=2+Math.random()*4;e.style.cssText='left:'+Math.random()*100+'%;width:'+z+'px;height:'+z+'px;animation-duration:'+(7+Math.random()*9)+'s;animation-delay:-'+Math.random()*12+'s';PT.appendChild(e)}
+
+/* make every submit button work even where native form submission is blocked (sandboxed previews) */
+document.querySelectorAll('form button[type=submit]').forEach(b=>b.addEventListener('click',e=>{const f=b.form;if(!f)return;e.preventDefault();if(!f.noValidate&&!f.reportValidity())return;f.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true}))}));
+
+/* dashboard */
+const CF=2*Math.PI*62;
+function dsh(){const P=+$('a').value,R=+$('r').value/1200,N=+$('t').value*12,e=P*R*Math.pow(1+R,N)/(Math.pow(1+R,N)-1),tot=e*N,I=tot-P,p=P/tot*CF,i=I/tot*CF;
+$('ca').value=P;$('cr').value=$('r').value;$('ct').value=$('t').value;$('cav').textContent=fm(P);$('crv').textContent=$('r').value+'%';$('ctv').textContent=$('t').value+' yrs';
+$('dp').style.strokeDasharray=p+' '+(CF-p);$('di').style.strokeDasharray=i+' '+(CF-i);$('di').style.strokeDashoffset=-p;
+$('dt').textContent=fm(e);$('lp').textContent=fm(P);$('li').textContent=fm(I);$('by').textContent='Year '+$('t').value;
+const pts=[];for(let k=0;k<=40;k++){const m=N*k/40,B=P*Math.pow(1+R,m)-e*(Math.pow(1+R,m)-1)/R;pts.push((k?'L':'M')+(10+k*9.5)+' '+(140-Math.max(0,B)/P*120).toFixed(1))}
+const d=pts.join(''),l=$('bl');l.setAttribute('d',d);$('ba').setAttribute('d',d+'L390 140L10 140Z');const len=l.getTotalLength();
+l.style.transition='none';l.style.strokeDasharray=len;l.style.strokeDashoffset=len;l.getBoundingClientRect();l.style.transition='stroke-dashoffset 1.4s ease';l.style.strokeDashoffset=0;
+const m=$('emi');m.classList.remove('flash');void m.offsetWidth;m.classList.add('flash')}
+['a','r','t'].forEach(i=>$(i).addEventListener('input',dsh));
+['ca','cr','ct'].forEach((id,k)=>$(id).addEventListener('input',()=>{const t=$(['a','r','t'][k]);t.value=$(id).value;t.dispatchEvent(new Event('input',{bubbles:true}))}));
+dsh();
+new IntersectionObserver((es,o)=>es.forEach(x=>{if(x.isIntersecting){$('dp').style.strokeDasharray=$('di').style.strokeDasharray='0 '+CF;requestAnimationFrame(()=>requestAnimationFrame(dsh));o.disconnect()}}),{threshold:.25}).observe($('dashboard'));
+const ar=(f1,f2,c)=>{const a=t=>[110+90*Math.cos(Math.PI*(1+t)),110+90*Math.sin(Math.PI*(1+t))],A=a(f1),B=a(f2);return '<path d="M'+A[0]+' '+A[1]+'A90 90 0 0 1 '+B[0]+' '+B[1]+'" fill="none" stroke="'+c+'" stroke-width="16"/>'};
+$('ga').innerHTML=ar(0,.5833,'#ef4444')+ar(.5833,.75,'#f5a524')+ar(.75,1,'#16c784');
+const GS=[[475,'300 – 650: Needs improvement','#ef4444'],[700,'650 – 750: Good','#f5a524'],[825,'750 and above: Excellent','#16c784']];let gi=0;
+function gv(){const q=GS[gi++%3];$('nd').style.transform='rotate('+((q[0]-300)/600*180-90)+'deg)';$('gl').textContent=q[1];$('gl').setAttribute('fill',q[2])}
+const RM=matchMedia('(prefers-reduced-motion:reduce)').matches;gv();if(!RM)setInterval(gv,2800);
+/* motion: scroll bar, tilt, spotlight, magnetic buttons */
+addEventListener('scroll',()=>{const h=document.documentElement;$('spb').style.transform='scaleX('+scrollY/Math.max(1,h.scrollHeight-innerHeight)+')'},{passive:true});
+if(!RM){document.querySelectorAll('.card,.scn-c,.w:not(.ctl),.steps>div,.feats>div,.docs>div').forEach(el=>{el.classList.add('tilt');
+el.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;el.style.setProperty('--mx',x*100+'%');el.style.setProperty('--my',y*100+'%');el.style.transition='transform .15s';el.style.transform='perspective(700px) rotateX('+(.5-y)*8+'deg) rotateY('+(x-.5)*10+'deg) translateY(-4px)'});
+el.addEventListener('pointerleave',()=>{el.style.transition='transform .5s';el.style.transform='';setTimeout(()=>{el.style.transition=''},500)})});
+const HR=document.querySelector('.hero');HR.addEventListener('pointermove',e=>{const r=HR.getBoundingClientRect();HR.style.setProperty('--hx',e.clientX-r.left+'px');HR.style.setProperty('--hy',e.clientY-r.top+'px')});
+document.querySelectorAll('.cta .btn').forEach(b=>{b.addEventListener('pointermove',e=>{const r=b.getBoundingClientRect();b.style.transform='translate('+(e.clientX-r.left-r.width/2)*.2+'px,'+(e.clientY-r.top-r.height/2)*.3+'px)'});b.addEventListener('pointerleave',()=>{b.style.transform=''})})}
+
+/* goal details */
+const GD={
+home:{t:"Home Loan",s:"Buy, build or renovate with long, comfortable tenures.",lt:"Home Loan",rate:9.5,ra:[500000,10000000,100000,2500000],ty:[30,20],tags:["Secured loan","Up to 30 years","Property is the security"],
+ov:["A home loan finances buying a ready home or plot, constructing on your own land, or renovating an existing house.","The property stays as security with the lender until the last EMI is paid. That is why tenures are long and EMIs comfortable.","You usually pay part of the cost yourself as a down payment, and the lender finances the rest."],
+facts:[["Tenure",.95,"Up to 30 years"],["Security",1,"The property"],["Down payment",.35,"You pay a share"],["Paperwork",.75,"Property papers needed"]],
+feat:["Buy, build, extend or renovate","Balance transfer and top-up options","Part-prepayment can reduce interest (check lender rules)","Interest and principal may qualify for tax benefits. Ask your tax advisor"],
+tips:["Pick the longest tenure you can afford, then prepay when you have spare funds","Check the property title and approvals before paying any advance","Keep EMIs within what your monthly budget can bear comfortably"],
+docs:["Aadhaar, PAN and photographs","Address proof","Last 6 months bank statement","Salary slips, or ITR with business proof","Property papers: sale deed, approved plan, title documents"],
+faq:[["Can I get a loan to build on my own plot?","Yes. Construction loans are available against your plot and approved plan. Money is usually released in stages as work progresses."],["Home loan or mortgage loan?","A home loan is for buying or building a house. A mortgage loan (loan against property) uses a property you already own to raise money for any need, such as business or family."],["Does a higher CIBIL score help?","Yes. A score of 750 and above generally improves approval chances and rates, but the lender decides."]]},
+personal:{t:"Personal Loan",s:"Quick funds for weddings, medical needs and urgent plans.",lt:"Personal Loan",rate:14,ra:[50000,2000000,50000,500000],ty:[7,3],tags:["Unsecured loan","Usually 1 to 5 years","Quick paperwork"],
+ov:["A personal loan is unsecured, so no property or vehicle is pledged. Use it for weddings, medical needs, travel, education or any genuine expense.","Approval depends mostly on your income, existing EMIs and CIBIL score.","The lender takes more risk, so rates are usually higher than for secured loans and tenures are shorter."],
+facts:[["Tenure",.4,"Usually 1 to 5 years"],["Security",.05,"None usually"],["Speed",.9,"Quicker paperwork"],["Interest rate",.8,"Higher than secured loans"]],
+feat:["No collateral usually needed","Flexible tenure and EMI","Quick documentation","Use the money for almost any genuine need"],
+tips:["Borrow only what you need, since interest is higher","Pay every EMI on time. It builds your CIBIL score","Avoid applying to many lenders at once"],
+docs:["Aadhaar, PAN and photograph","Address proof","Last 6 months bank statement","Salary slips or ITR","Employment or business proof"],
+faq:[["Do I need a guarantor?","Usually not. A co-applicant can help if your income or score is on the lower side."],["Can I repay early?","Many lenders allow part or full prepayment, sometimes with a charge. Ask for the foreclosure terms before signing."],["How is my EMI decided?","By the amount, interest rate and tenure. Try the EMI tab to see how each one changes it."]]},
+car:{t:"Car Loan",s:"New or used car financing with a clear EMI plan.",lt:"Car Loan",rate:10,ra:[200000,3000000,50000,800000],ty:[7,5],tags:["Secured by the car","Usually up to 7 years","Fast processing"],
+ov:["A car loan finances a new or pre-owned car. The car is the security, and the lender’s charge is noted on its registration until you finish repaying.","The lender usually finances a share of the car price, so you pay the rest as a down payment.","Tenures are shorter than home loans, so choose an EMI that keeps your monthly budget comfortable."],
+facts:[["Tenure",.5,"Usually up to 7 years"],["Security",1,"The car"],["Down payment",.25,"You pay a share"],["Paperwork",.6,"Simple"]],
+feat:["New and pre-owned cars","Finance on a share of the car price","Fast processing","Guidance on insurance and registration"],
+tips:["Compare the total cost, not only the EMI","Keep comprehensive insurance active. Lenders usually require it","For used cars, check the papers and service history carefully"],
+docs:["Aadhaar, PAN and photograph","Address proof","Last 6 months bank statement","Income proof","Car quotation or invoice, and RC for used cars"],
+faq:[["What is hypothecation?","The lender’s name is added to the car’s registration as security. After your last EMI it is removed and the car is fully yours."],["Can I finance a used car?","Yes. Many lenders do, usually for a smaller share of the value and a shorter tenure."],["Is insurance needed?","Lenders generally require valid insurance on the financed car."]]},
+business:{t:"Business Loan",s:"Working capital and expansion for shops, traders and MSMEs.",lt:"Business Loan",rate:15,ra:[100000,5000000,50000,1000000],ty:[5,3],tags:["Term loan or overdraft","Usually 1 to 5 years","For MSMEs and traders"],
+ov:["Business loans give working capital, funds for stock or machinery, or money to expand a shop, trading unit or MSME.","Lenders look at business income, bank statements, GST and tax returns, and how long the business has been running.","Repayment can be matched to your cash flow through term loans or overdraft-style limits."],
+facts:[["Tenure",.45,"Usually 1 to 5 years"],["Security",.4,"Depends on amount"],["Track record",.8,"Usually 1 to 3 years"],["Paperwork",.85,"More documents"]],
+feat:["Loans for new and running businesses","Term loan and overdraft options","Repayment matched to cash flow","Top-up and refinance guidance"],
+tips:["Keep bank statements and GST filings tidy","Separate personal and business spending","Borrow for growth that can pay back the EMI"],
+docs:["Aadhaar and PAN of the owner(s)","Business proof: registration, GST, Udyam","Last 12 months bank statements","ITR and financials, as available","Address proof of the business"],
+faq:[["Can a new business get a loan?","Some lenders fund new businesses, often with a co-applicant or collateral. Ask us what fits your case."],["Term loan or overdraft?","A term loan is a fixed amount repaid by EMI. An overdraft is a limit you draw from and repay as cash flow allows, paying interest only on the amount used."],["Do I need collateral?","Smaller loans may be unsecured. Larger ones often need property or other security. It varies by lender."]]}};
+const gm=$('gm'),GT=['Overview','Features','Documents','Try EMI','FAQ'];let gk='home',gcv=0,graf;
+function gCount(el,to){cancelAnimationFrame(graf);const f=gcv,t0=performance.now(),st=n=>{const k=Math.min(1,(n-t0)/500);gcv=f+(to-f)*k;el.textContent=fm(gcv);if(k<1)graf=requestAnimationFrame(st)};graf=requestAnimationFrame(st)}
+function gE(){const d=GD[gk],A=$('qa'),T=$('qt');A.min=d.ra[0];A.max=d.ra[1];A.step=d.ra[2];A.value=d.ra[3];T.max=d.ty[0];T.value=d.ty[1];gcv=0;
+const u=()=>{const P=+A.value,Y=+T.value,r=d.rate/1200,n=Y*12,e=P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1),tot=e*n;$('qav').textContent=fm(P);$('qtv').textContent=Y+' yrs';$('qrt').textContent=d.rate;gCount($('qo'),e);$('qb').style.width=(P/tot*100)+'%';$('qi').textContent='Total interest about '+fm(tot-P)+' on '+fm(P)+' borrowed.'};A.oninput=T.oninput=u;u()}
+function gT(i){const d=GD[gk],P=$('gp');document.querySelectorAll('#gtabs button').forEach((b,j)=>{b.classList.toggle('on',j===i);b.setAttribute('aria-selected',j===i)});let h='';
+if(i==0)h=d.ov.map(x=>'<p>'+x+'</p>').join('')+'<h4>At a glance</h4>'+d.facts.map(f=>'<div class="ft"><span>'+f[0]+'</span><div class="tr"><i data-w="'+f[1]*100+'"></i></div><em>'+f[2]+'</em></div>').join('');
+else if(i==1)h='<ul class="fl">'+d.feat.map(x=>'<li>'+x+'</li>').join('')+'</ul><h4>Smart tips</h4><ul class="fl tp">'+d.tips.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+else if(i==2)h='<p>Keep these ready. The exact list depends on the lender.</p><ul class="fl ck">'+d.docs.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+else if(i==3)h='<div class="eq"><label><span>Loan amount <b id="qav"></b></span><input class="rg" id="qa" type="range" aria-label="Loan amount"></label><label><span>Tenure <b id="qtv"></b></span><input class="rg" id="qt" type="range" min="1" aria-label="Tenure"></label><div class="eo"><small>Estimated EMI at an assumed <span id="qrt" style="display:inline"></span>% p.a.</small><b id="qo"></b><div class="tr"><i id="qb"></i></div><small id="qi"></small></div></div>';
+else h=d.faq.map(q=>'<details><summary>'+q[0]+'</summary><p>'+q[1]+'</p></details>').join('');
+P.innerHTML='<div class="pn">'+h+'</div>';requestAnimationFrame(()=>requestAnimationFrame(()=>P.querySelectorAll('.tr i[data-w]').forEach(e=>{e.style.width=e.dataset.w+'%'})));if(i==3)gE()}
+function gOpen(k){gk=k;const d=GD[k];$('gmt').textContent=d.t;$('gs').textContent=d.s;$('gtg').innerHTML=d.tags.map(x=>'<span>'+x+'</span>').join('');
+$('gv').innerHTML=document.querySelector('.scn-c[data-goal="'+k+'"] .vis').innerHTML;$('gtabs').innerHTML=GT.map((t,i)=>'<button type="button" role="tab" data-i="'+i+'">'+t+'</button>').join('');
+$('gcw').href='https://wa.me/918269581567?text='+encodeURIComponent('Hi Financily, I would like to know more about the '+d.t);gT(0);gm.showModal();gm.scrollTop=0}
+document.querySelectorAll('.scn-c[data-goal]').forEach(c=>{c.addEventListener('click',()=>gOpen(c.dataset.goal));c.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();gOpen(c.dataset.goal)}})});
+$('gtabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)gT(+b.dataset.i)});
+$('gmx').onclick=()=>gm.close();gm.addEventListener('click',e=>{if(e.target===gm)gm.close()});
+$('gce').onclick=()=>{gm.close();em.querySelector('select[name=l]').value=GD[gk].lt;em.showModal()};
+$('gca').onclick=()=>{gm.close();am.querySelector('select[name=l]').value=GD[gk].lt;am.showModal()};
+</script>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id),fmt=n=>'₹'+Math.round(n).toLocaleString('en-IN');
+/* theme */
+const R=document.documentElement;let st=null;try{st=localStorage.getItem('fth')}catch(e){}
+if(st)R.setAttribute('data-theme',st);
+const tb=$('th');function cur(){return R.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light')}
+function ts(){tb.textContent=cur()==='dark'?'☀':'☾'}ts();
+tb.onclick=()=>{const n=cur()==='dark'?'light':'dark';R.setAttribute('data-theme',n);try{localStorage.setItem('fth',n)}catch(e){}ts()};
+/* lenders */
+const L=['Partner Bank A','Partner NBFC B','Partner Bank C','Partner Finance D','Partner Bank E','Partner NBFC F'];
+const lh=L.map(n=>'<span class="lg"><i>'+n.split(' ').pop()+'</i>'+n+'</span>').join('');$('mqi').innerHTML=lh+lh;
+/* checklist */
+const base=['Aadhaar card','PAN card','Passport size photographs','Address proof','Last 6 months bank statement'];
+const ex={Salaried:['Last 3 months salary slips','Form 16 or ITR','Employment ID or offer letter'],'Self-employed':['ITR with computation, last 2 years','Business registration, GST or Udyam','Last 12 months business bank statement']};
+const lx={'Personal Loan':['Existing loan statements, if any'],'Business Loan':['Profit and loss with balance sheet','GST returns, last 12 months'],'Home Loan':['Sale agreement or allotment letter','Approved plan and title documents','Down payment proof'],'Mortgage Loan':['Property title and sale deed','Property tax receipts','Valuation-related papers'],'Car Loan':['Car quotation or invoice','RC and insurance for used cars','Down payment proof']};
+function ck(){const l=$('ckl').value,e=$('cke').value;let a=base.concat(ex[e],lx[l]);if($('ckc').value==='1')a.push('Co-applicant Aadhaar, PAN and income proof');
+$('ckx').innerHTML=a.map((x,i)=>'<li><label><input type="checkbox" data-i="'+i+'"><span>'+x+'</span></label></li>').join('');up()}
+function up(){const c=document.querySelectorAll('#ckx input'),d=[...c].filter(x=>x.checked).length;$('ckb').style.width=(d/c.length*100)+'%'}
+['ckl','cke','ckc'].forEach(i=>$(i).onchange=ck);$('ckx').onchange=up;ck();
+$('ckp').onclick=()=>{let o=document.getElementById('pa');if(o)o.remove();o=document.createElement('div');o.id='pa';
+o.innerHTML='<h2>Financily document checklist</h2><p>'+$('ckl').value+' · '+$('cke').value+'</p><ul>'+[...document.querySelectorAll('#ckx label')].map(l=>'<li>'+(l.firstChild.checked?'☑ ':'☐ ')+l.textContent+'</li>').join('')+'</ul><small>Indicative list. The lender decides the final requirements. Contact: 8269581567</small>';
+document.body.appendChild(o);print()};
+/* tracker */
+const T=[['Enquiry received','We log your loan need and contact you. Typically the same day.'],['Document verification','Your KYC and income papers are checked for completeness.'],['Lender matching','We match your profile to lenders likely to suit your case.'],['Sanctioned','The lender issues a sanction. Disbursal follows after agreement.']];
+let ti=0,tt;$('trk').innerHTML=T.map((t,i)=>'<button type="button" data-i="'+i+'"><b>'+(i+1)+'</b>'+t[0]+'</button>').join('');
+function tr(i){ti=i;document.querySelectorAll('#trk button').forEach((b,j)=>{b.className=j<i?'dn':j===i?'on':''});$('trb').style.width=((i+1)/4*100)+'%';
+$('tkd').innerHTML='<b>'+T[i][0]+(i===3?' ✓':'')+'</b><br>'+T[i][1];$('tkd').style.animation='none';$('tkd').offsetWidth;$('tkd').style.animation=''}
+function tp(){clearInterval(tt);tr(0);tt=setInterval(()=>{if(ti<3)tr(ti+1);else clearInterval(tt)},2000)}
+$('trk').onclick=e=>{const b=e.target.closest('button');if(b){clearInterval(tt);tr(+b.dataset.i)}};$('trr').onclick=tp;tp();
+/* prepayment */
+function pc(){const P=+$('pp1').value,r=+$('pp2').value/1200,n=+$('pp3').value*12,m=Math.min(+$('pp4').value,n-1),X=+$('pp5').value,f=+$('pp6').value/100;
+if(!(P>0&&r>0&&n>0)){return}
+const g=Math.pow(1+r,n),E=P*r*g/(g-1),B=P*Math.pow(1+r,m)-E*(Math.pow(1+r,m)-1)/r,B2=Math.max(0,B-X);
+let k=0;if(B2>0&&B2*r<E)k=-Math.log(1-B2*r/E)/Math.log(1+r);
+const left=n-m,saved=E*left-(X+E*k),fc=B*f;
+$('ppo').innerHTML='<div><small>Monthly EMI</small><b>'+fmt(E)+'</b></div><div><small>Outstanding now</small><b>'+fmt(B)+'</b></div><div><small>Months saved</small><b>'+Math.max(0,Math.round(left-k))+'</b></div><div><small>Interest saved</small><b>'+fmt(Math.max(0,saved))+'</b></div><div><small>To foreclose today</small><b>'+fmt(B+fc)+'</b><small>incl. '+fmt(fc)+' charge</small></div>'}
+['pp1','pp2','pp3','pp4','pp5','pp6'].forEach(i=>$(i).oninput=pc);pc();
+/* comparison */
+const CN={home:'Home Loan',personal:'Personal Loan',car:'Car Loan',business:'Business Loan'};
+const op=Object.keys(CN).map(k=>'<option value="'+k+'">'+CN[k]+'</option>').join('');$('cmA').innerHTML=$('cmB').innerHTML=op;$('cmB').value='personal';
+function cm(){const a=GD[$('cmA').value],b=GD[$('cmB').value];const rows=[['Indicative rate',d=>'about '+d.rate+'% p.a.'],['Loan range',d=>fmt(d.ra[0])+' to '+fmt(d.ra[1])],['Security',d=>d.tags[0]],['Tenure',d=>d.tags[1]],['Best for',d=>d.s],['Key document',d=>d.docs[d.docs.length-1]]];
+$('cmt').innerHTML='<thead><tr><th></th><td>'+a.t+'</td><td>'+b.t+'</td></tr></thead><tbody>'+rows.map(r=>'<tr><th>'+r[0]+'</th><td>'+r[1](a)+'</td><td>'+r[1](b)+'</td></tr>').join('')+'</tbody>'}
+$('cmA').onchange=$('cmB').onchange=cm;cm();
+/* testimonials */
+const Q=[['“The checklist saved me two trips to the bank. Everything was ready on day one.”','Sample customer','Home Loan'],['“I understood every charge before signing. No surprises later.”','Sample customer','Personal Loan'],['“Stock for the festive season, funded on time. Simple process.”','Sample customer','Business Loan']];
+$('tmx').innerHTML=Q.map((q,i)=>'<blockquote class="'+(i?'':'on')+'">'+q[0]+'<cite>'+q[1]+'<small>'+q[2]+'</small></cite></blockquote>').join('');
+$('tmd').innerHTML=Q.map((q,i)=>'<button type="button" aria-label="Story '+(i+1)+'" class="'+(i?'':'on')+'"></button>').join('');
+let qi=0,qt;function qs(i){qi=i;document.querySelectorAll('#tmx blockquote').forEach((e,j)=>e.classList.toggle('on',j===i));document.querySelectorAll('#tmd button').forEach((e,j)=>e.classList.toggle('on',j===i))}
+function qa(){clearInterval(qt);qt=setInterval(()=>qs((qi+1)%Q.length),5000)}qa();
+$('tmd').onclick=e=>{const b=[...document.querySelectorAll('#tmd button')].indexOf(e.target.closest('button'));if(b>-1){qs(b);qa()}};
+/* PWA */
+try{const mf={name:'Financily',short_name:'Financily',start_url:'.',display:'standalone',background_color:'#0d0c24',theme_color:'#5b3df5',icons:[{src:'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="110" fill="#5b3df5"/><text x="256" y="350" font-size="300" text-anchor="middle" fill="#fff" font-family="sans-serif" font-weight="800">₹</text></svg>'),sizes:'512x512',type:'image/svg+xml',purpose:'any'}]};
+const l=document.createElement('link');l.rel='manifest';l.href=URL.createObjectURL(new Blob([JSON.stringify(mf)],{type:'application/manifest+json'}));document.head.appendChild(l);
+const m=document.createElement('meta');m.name='theme-color';m.content='#5b3df5';document.head.appendChild(m)}catch(e){}
+let dp;addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;$('pwab').style.display='block'});
+$('pwai').onclick=async()=>{if(dp){dp.prompt();await dp.userChoice;dp=null;$('pwab').style.display='none'}};
+})();
+</script>
+
+
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const A={m:'mobile',id:'',otp:'',exp:0,tr:0,pend:null,tm:null};
+const ext=()=>window.FIN_AUTH; /* optional: set window.FIN_AUTH={send:async(id,mode)=>{},verify:async(id,mode,code)=>true} to use a real SMS/email service */
+function sess(){try{return JSON.parse(localStorage.getItem('finu'))}catch(e){return null}}
+function mask(u){return u.m==='mobile'?'XXXXXX'+u.id.slice(-4):u.id.replace(/^(.).*(@.*)$/,'$1•••$2')}
+function hdr(){const u=sess(),b=$('lb');b.textContent=u?'Hi, '+mask(u)+' · Logout':'Login';b.setAttribute('aria-label',u?'Logout':'Login')}
+function fill(){const u=sess();if(!u)return;const set=(f,n,v)=>{const el=document.querySelector('#'+f+' [name='+n+']');if(el&&!el.value)el.value=v};
+if(u.m==='mobile'){set('mf','p',u.id);set('af','Mobile',u.id)}else set('mf','e',u.id)}
+function err(t){$('lme').textContent=t||''}
+function show(step){$('lm1').style.display=step===1?'block':'none';$('lm2').style.display=step===2?'block':'none';err('')}
+function setM(m){A.m=m;document.querySelectorAll('#lm .lt button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+const i=$('lmi');i.value='';i.type=m==='mobile'?'tel':'email';i.maxLength=m==='mobile'?10:80;i.placeholder=m==='mobile'?'10 digit mobile number':'you@example.com';show(1);$('lmd').style.display='none'}
+function openL(gate){A.id='';setM('mobile');$('lmt').textContent=gate?'Verify to submit':'Login';$('lms').textContent=gate?'Please verify your mobile number or email before we receive your application.':'Sign in with your mobile number or email.';$('lm').showModal()}
+function valid(){const v=$('lmi').value.trim();if(A.m==='mobile'){if(!/^[6-9][0-9]{9}$/.test(v))return err('Enter a valid 10 digit mobile number.'),null}else if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v))return err('Enter a valid email address.'),null;return v}
+function cd(){let n=30;const r=$('lmr');r.disabled=true;clearInterval(A.tm);const t=()=>{r.textContent=n>0?'Resend OTP in '+n+'s':'Resend OTP';if(n<=0){r.disabled=false;clearInterval(A.tm)}n--};t();A.tm=setInterval(t,1000)}
+async function send(){const v=valid();if(!v)return;A.id=v;A.tr=0;err('');const b=$('lms1');b.disabled=true;
+try{if(ext()&&ext().send){await ext().send(v,A.m);$('lmd').style.display='none'}
+else{A.otp=String(Math.floor(100000+Math.random()*900000));A.exp=Date.now()+300000;const d=$('lmd');d.style.display='block';d.innerHTML='<b>Demo mode:</b> no SMS or email service is connected, so your OTP is shown here: <b>'+A.otp+'</b>'}
+$('lmw').textContent='Enter the 6 digit OTP sent to '+(A.m==='mobile'?'+91 '+v:v);$('lmo').value='';show(2);cd();$('lmo').focus()}catch(e){err('Could not send OTP. Please try again.')}b.disabled=false}
+async function verify(){const c=$('lmo').value.trim();if(!/^[0-9]{6}$/.test(c))return err('Enter the 6 digit OTP.');
+let ok=false;try{if(ext()&&ext().verify)ok=await ext().verify(A.id,A.m,c);else{if(Date.now()>A.exp)return err('OTP expired. Please resend.');ok=c===A.otp}}catch(e){return err('Verification failed. Try again.')}
+if(!ok){A.tr++;if(A.tr>=3){err('Too many wrong attempts. Please request a new OTP.');show(2);$('lmo').value='';A.otp='';return}return err('Incorrect OTP. Attempts left: '+(3-A.tr))}
+try{localStorage.setItem('finu',JSON.stringify({m:A.m,id:A.id,t:Date.now()}))}catch(e){}
+$('lm').close();hdr();fill();const f=A.pend;A.pend=null;if(f)f.requestSubmit()}
+$('lb').onclick=()=>{if(sess()){try{localStorage.removeItem('finu')}catch(e){}hdr()}else{document.getElementById('nv').classList.remove('open');openL(false)}};
+document.querySelectorAll('#lm .lt button').forEach(b=>b.onclick=()=>setM(b.dataset.m));
+$('lms1').onclick=send;$('lms2').onclick=verify;$('lmr').onclick=send;$('lmc').onclick=()=>{show(1);$('lmd').style.display='none'};
+$('lmi').addEventListener('keydown',e=>{if(e.key==='Enter')send()});$('lmo').addEventListener('keydown',e=>{if(e.key==='Enter')verify()});
+$('lmo').addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'')});
+$('lmx').onclick=()=>{A.pend=null;$('lm').close()};$('lm').addEventListener('click',e=>{if(e.target===$('lm')){A.pend=null;$('lm').close()}});
+/* gate both apply forms: submit only after login */
+['af','mf'].forEach(i=>$(i).addEventListener('submit',e=>{if(sess())return;e.preventDefault();e.stopImmediatePropagation();A.pend=e.target;openL(true)},true));
+hdr();fill();
+})();
+</script>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const API=window.FIN_API_URL!==undefined?window.FIN_API_URL:(location.protocol==='file:'?'http://localhost:3000':'');
+const QMAP={n:'Name',p:'Mobile',e:'Email',c:'City',l:'LoanType',a:'Amount',t:'Tenure',i:'Income',mc:'CIBIL'};
+async function submitApp(form,doneId,refId,msgId,quick){
+if(quick&&typeof chk==='function'&&!chk(form))return;
+const raw=Object.fromEntries(new FormData(form)),body={source:quick?'quick':'full'};
+for(const k in raw){if(quick){if(QMAP[k])body[QMAP[k]]=raw[k]}else body[k==='fc'?'CIBIL':k]=raw[k]}
+const btn=form.querySelector('button[type=submit]'),done=$(doneId),r=$(refId),m=$(msgId);
+btn.disabled=true;const old=btn.textContent;btn.textContent='Submitting...';
+try{const res=await fetch(API+'/api/applications',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+const j=await res.json().catch(()=>({}));
+if(!res.ok||!j.ok)throw new Error(j.error||'Server error');
+r.textContent='Application received. Reference: '+j.ref;r.style.color='';
+m.textContent='Your details were saved securely. We will call you soon to collect documents.';
+form.reset();
+}catch(e){r.textContent='Could not submit your application';r.style.color='#ff8a8a';m.textContent=(e.message&&e.message!=='Failed to fetch'?e.message+'. ':'')+'Please check your connection and try again. Your details are still filled in.'}
+btn.disabled=false;btn.textContent=old;done.style.display='block';done.scrollIntoView({block:'center'})}
+$('af').addEventListener('submit',e=>{e.preventDefault();submitApp(e.target,'done','ref','dmsg',false)});
+$('mf').addEventListener('submit',e=>{e.preventDefault();submitApp(e.target,'mdone','mref','mmsg',true)});
+})();
+</script>
+</body>
+</html>
