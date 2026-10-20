@@ -76,3 +76,15 @@ app.patch('/api/admin/applications/:id',auth,async(req,res)=>{
 app.use((e,q,res,n)=>res.status(400).json({ok:false,error:e.message}));
 if(!process.env.MONGODB_URI||!process.env.JWT_SECRET){console.error('Set MONGODB_URI and JWT_SECRET');process.exit(1)}
 mongoose.connect(process.env.MONGODB_URI).then(()=>app.listen(process.env.PORT||3000,()=>console.log('Financily API running'))).catch(e=>{console.error(e.message);process.exit(1)});
+// near the top, after other requires
+const otpRoutes = require('./routes/otp');
+const requireVerified = require('./middleware/requireVerified');
+
+// after app = express(), before routes. Needed on Render so req.ip is the real client IP
+app.set('trust proxy', 1);
+
+// after express.json() and cors(), BEFORE your existing app.post('/api/applications', ...)
+app.use('/api/otp', otpRoutes);
+app.post('/api/applications', requireVerified);   // calls next() when the token is valid
+```
+

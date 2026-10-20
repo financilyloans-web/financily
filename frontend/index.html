@@ -619,7 +619,7 @@ const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.targ
 document.querySelectorAll('.reveal').forEach(e=>io.observe(e));
 document.querySelectorAll('[data-n]').forEach(el=>{const n=+el.dataset.n,s=el.dataset.s||'';let i=0;const k=setInterval(()=>{i+=Math.ceil(n/40);if(i>=n){i=n;clearInterval(k)}el.textContent=i+s},35)});
 $('f').addEventListener('submit',async e=>{e.preventDefault();const f=e.target,b=f.querySelector('button[type=submit]'),o=$('ok');b.disabled=true;
-try{const r=await fetch((window.FIN_API_URL||'')+'/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(f)))});const j=await r.json();if(!j.ok)throw new Error(j.error);o.textContent='Thank you! We\u2019ll call you soon.';f.reset()}
+try{const r=await fetch((window.FIN_API_URL!==undefined?window.FIN_API_URL:(location.protocol==='file:'?'https://financily-94e0.onrender.com':''))+'/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(f)))});const j=await r.json();if(!j.ok)throw new Error(j.error);o.textContent='Thank you! We\u2019ll call you soon.';f.reset()}
 catch(x){o.textContent='Could not send. Please call 82695 81567.'}b.disabled=false;o.style.display='block'});
 function route(){const a=location.hash==='#apply';document.body.classList.toggle('ap',a);if(a)scrollTo(0,0);else if(location.hash.length>1){const el=document.querySelector(location.hash);if(el)el.scrollIntoView()}}
 addEventListener('hashchange',route);route();
@@ -830,13 +830,13 @@ function cd(){let n=30;const r=$('lmr');r.disabled=true;clearInterval(A.tm);cons
 async function send(){const v=valid();if(!v)return;A.id=v;A.tr=0;err('');const b=$('lms1');b.disabled=true;
 try{if(ext()&&ext().send){await ext().send(v,A.m);$('lmd').style.display='none'}
 else{A.otp=String(Math.floor(100000+Math.random()*900000));A.exp=Date.now()+300000;const d=$('lmd');d.style.display='block';d.innerHTML='<b>Demo mode:</b> no SMS or email service is connected, so your OTP is shown here: <b>'+A.otp+'</b>'}
-$('lmw').textContent='Enter the 6 digit OTP sent to '+(A.m==='mobile'?'+91 '+v:v);$('lmo').value='';show(2);cd();$('lmo').focus()}catch(e){err('Could not send OTP. Please try again.')}b.disabled=false}
+$('lmw').textContent='Enter the 6 digit OTP sent to '+(A.m==='mobile'?'+91 '+v:v);$('lmo').value='';show(2);cd();$('lmo').focus()}catch(e){err(e&&e.message&&e.message!=='Failed to fetch'?e.message:'Could not send OTP. Please try again.')}b.disabled=false}
 async function verify(){const c=$('lmo').value.trim();if(!/^[0-9]{6}$/.test(c))return err('Enter the 6 digit OTP.');
-let ok=false;try{if(ext()&&ext().verify)ok=await ext().verify(A.id,A.m,c);else{if(Date.now()>A.exp)return err('OTP expired. Please resend.');ok=c===A.otp}}catch(e){return err('Verification failed. Try again.')}
+let ok=false;try{if(ext()&&ext().verify)ok=await ext().verify(A.id,A.m,c);else{if(Date.now()>A.exp)return err('OTP expired. Please resend.');ok=c===A.otp}}catch(e){return err(e&&e.message&&e.message!=='Failed to fetch'?e.message:'Verification failed. Try again.')}
 if(!ok){A.tr++;if(A.tr>=3){err('Too many wrong attempts. Please request a new OTP.');show(2);$('lmo').value='';A.otp='';return}return err('Incorrect OTP. Attempts left: '+(3-A.tr))}
 try{localStorage.setItem('finu',JSON.stringify({m:A.m,id:A.id,t:Date.now()}))}catch(e){}
 $('lm').close();hdr();fill();const f=A.pend;A.pend=null;if(f)f.requestSubmit()}
-$('lb').onclick=()=>{if(sess()){try{localStorage.removeItem('finu')}catch(e){}hdr()}else{document.getElementById('nv').classList.remove('open');openL(false)}};
+$('lb').onclick=()=>{if(sess()){try{localStorage.removeItem('finu');localStorage.removeItem('finv')}catch(e){}hdr()}else{document.getElementById('nv').classList.remove('open');openL(false)}};
 document.querySelectorAll('#lm .lt button').forEach(b=>b.onclick=()=>setM(b.dataset.m));
 $('lms1').onclick=send;$('lms2').onclick=verify;$('lmr').onclick=send;$('lmc').onclick=()=>{show(1);$('lmd').style.display='none'};
 $('lmi').addEventListener('keydown',e=>{if(e.key==='Enter')send()});$('lmo').addEventListener('keydown',e=>{if(e.key==='Enter')verify()});
@@ -859,8 +859,9 @@ const raw=Object.fromEntries(new FormData(form)),body={source:quick?'quick':'ful
 for(const k in raw){if(quick){if(QMAP[k])body[QMAP[k]]=raw[k]}else body[k==='fc'?'CIBIL':k]=raw[k]}
 const btn=form.querySelector('button[type=submit]'),done=$(doneId),r=$(refId),m=$(msgId);
 btn.disabled=true;const old=btn.textContent;btn.textContent='Submitting...';
-try{const res=await fetch(API+'/api/applications',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+try{const res=await fetch(API+'/api/applications',{method:'POST',headers:{'Content-Type':'application/json','x-verify-token':(function(){try{return localStorage.getItem('finv')||''}catch(e){return ''}})()},body:JSON.stringify(body)});
 const j=await res.json().catch(()=>({}));
+if(res.status===401&&j.code==='VERIFY_REQUIRED'){try{localStorage.removeItem('finu');localStorage.removeItem('finv')}catch(e){}throw new Error('Your verification has expired. Please press Submit again to verify')}
 if(!res.ok||!j.ok)throw new Error(j.error||'Server error');
 r.textContent='Application received. Reference: '+j.ref;r.style.color='';
 m.textContent='Your details were saved securely. We will call you soon to collect documents.';
