@@ -851,7 +851,7 @@ hdr();fill();
 <script>
 (function(){
 const $=id=>document.getElementById(id);
-const API=window.FIN_API_URL!==undefined?window.FIN_API_URL:(location.protocol==='file:'?'http://localhost:3000':'');
+const API=window.FIN_API_URL!==undefined?window.FIN_API_URL:(location.protocol==='file:'?'https://financily-94e0.onrender.com':'');
 const QMAP={n:'Name',p:'Mobile',e:'Email',c:'City',l:'LoanType',a:'Amount',t:'Tenure',i:'Income',mc:'CIBIL'};
 async function submitApp(form,doneId,refId,msgId,quick){
 if(quick&&typeof chk==='function'&&!chk(form))return;

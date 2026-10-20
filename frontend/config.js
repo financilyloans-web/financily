@@ -1,5 +1,5 @@
 /* After deploying the backend on Render, put its URL here (no trailing slash). */
-window.FIN_API_URL = location.hostname==='localhost' ? 'http://localhost:3000' : 'https://financily-api.onrender.com';
+window.FIN_API_URL = location.hostname==='localhost' ? 'https://financily-94e0.onrender.com' : 'https://financily-api.onrender.com';
 
 /* Real OTP login through the backend (the site uses this automatically). */
 window.FIN_AUTH = {
