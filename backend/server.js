@@ -154,4 +154,5 @@ app.patch('/api/admin/applications/:id',auth,async(req,res)=>{
 
 app.use((e,q,res,n)=>res.status(400).json({ok:false,error:e.message}));
 if(!process.env.MONGODB_URI||!process.env.JWT_SECRET){console.error('Set MONGODB_URI and JWT_SECRET');process.exit(1)}
+if(process.env.NODE_ENV==='production'&&(!process.env.ADMIN_USER||!process.env.ADMIN_PASS)){console.error('Set ADMIN_USER and a non-empty ADMIN_PASS in production');process.exit(1)}
 mongoose.connect(process.env.MONGODB_URI).then(()=>app.listen(process.env.PORT||3000,()=>console.log('Financily API running'))).catch(e=>{console.error(e.message);process.exit(1)});
