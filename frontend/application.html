@@ -229,6 +229,7 @@ footer{text-align:center;padding:18px;color:var(--muted);font-size:.78rem}
         <h2><span class="ico">✅</span>Review & submit</h2>
         <p class="hint">Confirm everything looks right.</p>
         <div class="ocrfields" id="summary"></div>
+        <div class="field"><label>Mobile number (for updates)</label><input id="reviewMobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile"></div>
         <div class="consent" style="margin-top:14px">
           <input type="checkbox" id="consent">
           <span>I confirm the details are accurate and authorize verification.</span>
@@ -679,6 +680,10 @@ $('loanBack').addEventListener('click', () => goTo(2));
 $('loanNext').addEventListener('click', () => {
   if (!$('lPurpose').value) { $('lPurpose').parentElement.querySelector('.err').textContent = 'Select purpose'; return; }
   $('lPurpose').parentElement.querySelector('.err').textContent = '';
+  // Prefill mobile from login (if not already entered on the review step).
+  if (!$('reviewMobile').value) {
+    $('reviewMobile').value = (localStorage.getItem('financily-phone') || '').replace(/\D/g,'').slice(-10);
+  }
   buildSummary();
   goTo(4);
 });
@@ -719,8 +724,14 @@ $('submitBtn').addEventListener('click', async () => {
   if (!$('consent').checked) { errEl.textContent = 'Please accept the consent to submit.'; return; }
   errEl.textContent = '';
   const btn = $('submitBtn');
-  btn.disabled = true; btn.textContent = 'Submitting…';
-  const mobile = (localStorage.getItem('financily-phone') || '').replace(/\D/g,'').slice(-10);
+
+  const mobile = ($('reviewMobile').value || localStorage.getItem('financily-phone') || '').replace(/\D/g,'').slice(-10);
+  if (!/^[6-9]\d{9}$/.test(mobile)) {
+    errEl.textContent = 'Enter a valid 10-digit mobile number to receive updates.';
+    $('reviewMobile').focus();
+    return;
+  }
+
   const rec = {
     Name: $('panName').value.trim(),
     Mobile: mobile,
@@ -738,23 +749,29 @@ $('submitBtn').addEventListener('click', async () => {
     consent: true
   };
   const loanNo = 'LN-' + Date.now().toString(36).toUpperCase();
-  localStorage.setItem('financily-application', JSON.stringify(Object.assign({}, rec, { loanNo, savedAt: new Date().toISOString() })));
+
+  btn.disabled = true; btn.textContent = 'Submitting…';
   const apiBase = window.FIN_API_URL || '';
   let saveOk = false;
   try {
     const r = await fetch(apiBase + '/api/applications', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(rec) });
     const j = await r.json().catch(() => ({}));
     if (r.ok && j.ok) { saveOk = true; }
-    else { errEl.textContent = (j && j.error) || 'Server could not save your application.'; }
+    else { errEl.textContent = (j && j.error) || 'Server could not save your application. Please try again.'; }
   } catch(e) {
-    errEl.textContent = 'Network error — could not reach the server. Your application is saved on this device only.';
+    errEl.textContent = 'Network error — could not reach the server. Please check your internet and try again.';
   }
+
+  localStorage.setItem('financily-application', JSON.stringify(Object.assign({}, rec, { loanNo, savedAt: new Date().toISOString(), savedToServer: saveOk })));
+  btn.disabled = false; btn.textContent = 'Submit application';
+
+  if (!saveOk) { errEl.style.color = '#dc2626'; return; }   // stay on review, show error
+
   $('loanNo').textContent = loanNo;
   goTo(5);
   gsap.from('.done-card .ring', { scale:0, rotation:180, duration:.8, ease:'back.out(1.7)' });
   gsap.from('.done-card h2', { y:20, autoAlpha:0, duration:.6, delay:.2 });
   gsap.from('.loanno', { y:14, autoAlpha:0, duration:.6, delay:.4 });
-  btn.disabled = false; btn.textContent = 'Submit application';
 });
 $('doneHome').addEventListener('click', () => window.location.replace('index.html'));
 </script>
