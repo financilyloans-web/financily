@@ -255,8 +255,12 @@ footer{text-align:center;padding:18px;color:var(--muted);font-size:.78rem}
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<!-- Puter.js (cloud OCR via puter.ai.img2txt). Loads global `puter`. -->
-<script src="https://js.puter.com/v2/"></script>
+<!-- Puter.js (cloud OCR via puter.ai.img2txt). Loads global `puter`.
+     No SRI/integrity: the CDN sends no CORS headers, so crossorigin="anonymous"
+     + integrity would fail the load. Instead we load defensively: an
+     onerror handler records failure, and runOcr() already falls back to
+     in-browser Tesseract.js when puter.ai.img2txt is unavailable. -->
+<script src="https://js.puter.com/v2/" onerror="window.__puterOcrDown=true;console.warn('Puter.js failed to load; using Tesseract OCR')"></script>
 
 <script type="module">
 import { auth } from './src/firebase.js';
