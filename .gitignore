@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Local dev / static server logs
+*.log
+npm-debug.log*
+
+# Screenshots / temp artifacts
+_mobile_*.png
+
+# Env / secrets
+.env
+.env.local
+*.local
+
+# OS cruft
+.DS_Store
+Thumbs.db

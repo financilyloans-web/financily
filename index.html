@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 48 48%22><circle cx=%2224%22 cy=%2224%22 r=%2222%22 fill=%22%234f46e5%22/><text x=%2224%22 y=%2231%22 text-anchor=%22middle%22 font-size=%2219%22 font-weight=%22800%22 fill=%22white%22>₹</text></svg>">
+<title>Financily — Money in minutes. Zero paperwork.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============ CSS VARIABLES (edit colours here) ============ */
+:root{
+  --primary:#4f46e5; --primary-600:#4338ca; --p-100:#e0e7ff;
+  --secondary:#7c3aed; --sec-600:#6d28d9; --s-100:#ede9fe;
+  --accent:#06b6d4; --accent-400:#22d3ee; --a-100:#cffafe;
+  --bg:#f4f5fb; --surface:#ffffff; --glass:rgba(255,255,255,.55);
+  --text:#0f0f15; --heading:#04040a; --muted:#26262f;
+  --on-dark:#ffffff; --border:rgba(20,20,26,.1);
+  --radius:20px; --radius-lg:24px;
+  --shadow:0 24px 60px -24px rgba(79,70,229,.28);
+  --glow:0 0 0 1px rgba(6,182,212,.25),0 18px 50px -18px rgba(6,182,212,.5);
+  --maxw:1140px;
+}
+html{scroll-behavior:smooth;overflow-x:hidden}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+h1,h2,h3{color:var(--heading);line-height:1.15;letter-spacing:-.02em}
+img{display:block;max-width:100%}
+a{color:var(--primary);text-decoration:none}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+section{padding:clamp(4rem,10vw,8rem) 0;position:relative}
+/* GIF-like fixes */
+.sec-title h2{font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:800;margin:0}
+.sec-title p{color:var(--muted);margin:14px auto 0;max-width:640px}
+
+/* ============ GLASS CARD ============ */
+.glass{background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.6);border-radius:var(--radius-lg);box-shadow:var(--shadow)}
+.card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:0 8px 30px -18px rgba(20,20,26,.18);padding:26px}
+
+/* ============ BUTTONS ============ */
+.btn{position:relative;display:inline-flex;align-items:center;gap:10px;background:var(--primary);color:var(--on-dark)!important;font-weight:600;font-size:.95rem;padding:14px 28px;border:0;border-radius:14px;cursor:pointer;overflow:hidden;transition:transform .3s cubic-bezier(.2,.9,.3,1.4),box-shadow .3s;box-shadow:0 12px 30px -12px rgba(79,70,229,.55)}
+.btn:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 20px 40px -14px rgba(79,70,229,.65)}
+.btn .shine{position:absolute;top:0;left:-80%;width:60%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg)}
+.btn-ghost{background:transparent;color:var(--primary)!important;border:1.5px solid var(--primary);box-shadow:none}
+.btn-ghost .shine{display:none}
+
+/* ============ PRELOADER ============ */
+#preloader{position:fixed;inset:0;z-index:1000;background:var(--heading);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px}
+.coin3d{width:70px;height:70px;border-radius:50%;position:relative;transform-style:preserve-3d;background:radial-gradient(circle at 32% 30%,var(--accent-400),var(--accent) 45%,#0891b2);box-shadow:0 0 40px rgba(6,182,212,.6);display:flex;align-items:center;justify-content:center;color:var(--on-dark);font-weight:800;font-size:1.6rem}
+.coin3d::before{content:"";position:absolute;inset:6px;border-radius:50%;border:2px dashed rgba(255,255,255,.6)}
+#preloader .loader-txt{color:rgba(255,255,255,.85);font-weight:500;letter-spacing:2px;text-transform:uppercase;font-size:.8rem}
+
+/* ============ NAVBAR ============ */
+#navbar{position:fixed;top:0;left:0;right:0;z-index:200;padding:18px 0;transition:padding .4s,background .4s,box-shadow .4s}
+#navbar.shrink{padding:10px 0;background:rgba(244,245,251,.82);backdrop-filter:blur(14px);box-shadow:0 10px 30px -18px rgba(20,20,26,.25)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.25rem;color:var(--heading)}
+.logo .logo-mark{flex:none;filter:drop-shadow(0 0 10px rgba(6,182,212,.45))}
+.logo .coin{width:30px;height:30px;font-size:.8rem;box-shadow:0 0 16px rgba(6,182,212,.5)}
+.nav-links{display:flex;gap:22px;align-items:center;list-style:none;margin:0;padding:0}
+.nav-links a{color:var(--text);font-weight:500;font-size:.95rem}
+.nav-links a:hover{color:var(--primary)}
+.nav-actions{display:flex;gap:12px;align-items:center}
+#progressBar{position:fixed;top:0;left:0;height:3px;width:100%;background:transparent;z-index:300}
+#progressBar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--accent))}
+#navToggle{display:none;background:none;border:0;font-size:1.6rem;cursor:pointer;color:var(--heading)}
+@media(max-width:900px){
+  .nav-links{display:none;flex-direction:column;background:var(--surface);position:absolute;top:100%;left:24px;right:24px;padding:20px;border-radius:16px;box-shadow:var(--shadow)}
+  .nav-links.open{display:flex}
+  #navToggle{display:block}
+}
+
+/* ============ AMBIENT BG ============ */
+#ambient{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.6}
+.blob.a{width:420px;height:420px;background:radial-gradient(circle,var(--p-100),transparent 70%);top:-80px;left:-60px}
+.blob.b{width:460px;height:460px;background:radial-gradient(circle,var(--s-100),transparent 70%);bottom:-100px;right:-80px}
+.blob.c{width:300px;height:300px;background:radial-gradient(circle,var(--a-100),transparent 70%);top:40%;left:55%}
+.floatcoin{position:absolute;border-radius:50%;background:radial-gradient(circle at 32% 30%,var(--accent-400),var(--accent) 45%,#0891b2);display:flex;align-items:center;justify-content:center;color:var(--on-dark);font-weight:700;box-shadow:0 0 20px rgba(6,182,212,.4)}
+
+/* ============ HERO ============ */
+#hero{min-height:100vh;display:flex;align-items:center;padding-top:120px;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;width:100%}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);padding:8px 16px;border-radius:999px;font-weight:500;font-size:.85rem;color:var(--primary)}
+.hero h1{font-size:clamp(2.6rem,6vw,4.4rem);font-weight:800;margin:20px 0 18px}
+.hero h1 .ch{display:inline-block;will-change:transform}
+.hero .sub{color:var(--muted);max-width:480px;font-size:1.05rem;margin:0 0 26px}
+.hero-chips{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0}
+.chip{background:var(--surface);border:1px solid var(--border);padding:8px 16px;border-radius:999px;font-size:.85rem;font-weight:500;box-shadow:0 4px 16px -8px rgba(20,20,26,.15)}
+
+/* hero scene */
+.hero-scene{perspective:1200px;position:relative;height:480px}
+.scene-stage{position:absolute;inset:0;transform-style:preserve-3d}
+.scene-item{position:absolute;transform-style:preserve-3d;will-change:transform}
+.credit-card{width:300px;height:180px;border-radius:18px;top:150px;left:70px;background:linear-gradient(135deg,var(--primary),var(--secondary) 60%,var(--accent));color:var(--on-dark);padding:20px;box-shadow:0 30px 60px -20px rgba(79,70,229,.5);display:flex;flex-direction:column;justify-content:space-between}
+.credit-card .chip{width:40px;height:30px;border-radius:6px;background:linear-gradient(135deg,#fbbf24,#f59e0b);box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
+.credit-card .noo{font-weight:600;letter-spacing:2px;font-size:.95rem}
+.fabs{width:64px;height:64px;border-radius:18px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;font-size:1.7rem}
+.fabs.key{top:40px;right:30px}
+.fabs.shield{top:240px;right:-10px}
+.fabs.coin{top:60px;left:20px}
+.badge0{position:absolute;right:20px;bottom:30px;background:linear-gradient(135deg,var(--accent),#0891b2);color:var(--on-dark);font-weight:700;padding:12px 18px;border-radius:14px;box-shadow:0 0 30px rgba(6,182,212,.5)}
+.hero-path{position:absolute;inset:0;pointer-events:none}
+.travelcoin{position:absolute;left:0;top:0;width:26px;height:26px;font-size:.6rem;will-change:transform}
+
+/* ============ CALCULATOR ============ */
+#calc{perspective:1400px}
+.calc-card{max-width:880px;margin:0 auto;padding:34px;transform-style:preserve-3d;will-change:transform}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.calc-grid>*{min-width:0}
+.calc-left h3{margin:0 0 22px}
+.ctrl{margin-bottom:22px}
+.ctrl label{display:flex;justify-content:space-between;font-weight:600;font-size:.9rem;margin-bottom:8px}
+.ctrl label output{color:var(--primary);font-weight:700}
+.range-wrap{position:relative;height:10px;background:var(--s-100);border-radius:999px}
+.range-fill{position:absolute;left:0;top:0;height:100%;width:50%;border-radius:999px;background:linear-gradient(90deg,var(--primary),var(--accent))}
+input[type=range]{position:absolute;inset:0;width:100%;opacity:0;cursor:pointer;margin:0}
+input[type=number]{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font:inherit;font-weight:600;background:var(--surface);color:var(--text)}
+.calc-right{display:flex;flex-direction:column;gap:16px}
+.kpi{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px dashed var(--border);padding-bottom:10px}
+.kpi b{font-size:1.4rem;font-weight:800;color:var(--heading)}
+.donut-wrap{display:flex;align-items:center;gap:24px;margin-top:6px}
+.donut{position:relative;width:150px;height:150px}
+.donut svg{transform:rotate(-90deg)}
+.donut .donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+legend.legend{display:flex;flex-direction:column;gap:8px;font-size:.85rem;color:var(--muted)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:8px}
+.bars{display:flex;gap:4px;align-items:flex-end;height:80px;margin-top:12px}
+.bars i{flex:1;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px 4px 0 0;height:0}
+
+/* ============ LOANS ============ */
+.loans-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px}
+.loan-card{position:relative;padding:26px;transform-style:preserve-3d;will-change:transform}
+.loan-icon{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--p-100),var(--s-100));display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:16px}
+.loan-card h3{margin:0 0 8px}
+.loan-card p{color:var(--muted);font-size:.92rem;margin:0 0 16px}
+.loan-meta{display:flex;justify-content:space-between;align-items:center;color:var(--primary);font-weight:600;font-size:.9rem}
+.marquee{overflow:hidden;margin-top:48px;padding:16px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.marquee-track{display:flex;gap:48px;white-space:nowrap;align-items:center;font-weight:600;color:var(--muted)}
+.marquee-track span{display:flex;align-items:center;gap:48px}
+.marquee:hover .marquee-track{animation-play-state:paused}
+
+/* ============ ELIGIBILITY ============ */
+#eligibility{perspective:1400px;border-bottom:1px solid var(--border)}
+.elig-wrap{max-width:820px;margin:0 auto}
+.elig-progress{height:8px;background:var(--s-100);border-radius:999px;margin-bottom:30px;overflow:hidden}
+.elig-progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width .4s cubic-bezier(.2,.8,.2,1)}
+.step-stage{position:relative;height:340px}
+.step{position:absolute;inset:0;background:var(--surface);border-radius:var(--radius-lg);padding:34px;box-shadow:var(--shadow);transform-style:preserve-3d;will-change:transform;display:none}
+.step.active{display:block}
+.step h3{margin:0 0 6px}
+.step .q{color:var(--muted);margin:0 0 24px}
+.field{margin-bottom:18px}
+.field label{display:block;font-weight:600;font-size:.9rem;margin-bottom:8px}
+.seg{display:flex;gap:10px;flex-wrap:wrap}
+.seg button{border:1.5px solid var(--border);background:var(--surface);padding:10px 16px;border-radius:12px;font:inherit;font-weight:500;cursor:pointer;color:var(--text)}
+.seg button.sel{border-color:var(--primary);background:var(--p-100);color:var(--primary-600);font-weight:600}
+.elig-nav{display:flex;justify-content:space-between;gap:14px;margin-top:24px}
+.check-svg{width:74px;height:74px;display:block;margin:0 auto 6px;stroke:var(--accent);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.result-card{display:none;margin-top:26px;padding:30px;text-align:center}
+.result-card.show{display:block}
+.amount-big{font-size:2.4rem;font-weight:800;color:var(--heading)}
+.status-badge{display:inline-block;margin-top:14px;padding:8px 20px;border-radius:999px;background:linear-gradient(135deg,var(--accent),#0891b2);color:var(--on-dark);font-weight:700}
+.status-badge.no{background:linear-gradient(135deg,#64748b,#475569)}
+.confetti{position:fixed;width:10px;height:10px;pointer-events:none;z-index:900;border-radius:2px}
+.elig-help{max-width:720px;margin:-6px auto 30px}
+.elig-help-toggle{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);color:var(--primary);font-weight:600;cursor:pointer;padding:10px 16px;border-radius:999px;font:inherit;box-shadow:var(--shadow)}
+.elig-help-toggle:hover{border-color:var(--accent)}
+.elig-help-toggle .plus{display:inline-block;transition:transform .3s ease;font-weight:700}
+.elig-help.open .elig-help-toggle .plus{transform:rotate(45deg)}
+.elig-help-body{max-height:0;overflow:hidden;transition:max-height .45s ease;background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-top:10px}
+.elig-help.open .elig-help-body{max-height:340px}
+.elig-help-body-inner{padding:16px 18px;color:var(--muted);font-size:.95rem;line-height:1.6}
+
+/* ============ HOW IT WORKS ============ */
+#how{perspective:1400px;padding-top:clamp(4rem,10vw,8rem)}
+#how .sec-title{text-align:center;margin-bottom:40px}
+.how-track{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:20px;padding-top:20px}
+.how-progress{position:absolute;top:0;left:0;width:100%;height:6px;background:var(--s-100);border-radius:999px}
+.how-fill{height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:999px}
+.how-runner{position:absolute;top:-8px;left:0;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--accent-400),var(--accent));box-shadow:0 0 20px rgba(6,182,212,.6);display:flex;align-items:center;justify-content:center;color:var(--on-dark);font-size:.6rem}
+.how-step{text-align:center;padding:24px 14px;opacity:.35;transform:translateY(0);will-change:transform}
+.how-step.on{opacity:1}
+.how-num{width:46px;height:46px;margin:0 auto 12px;border-radius:50%;background:var(--primary);color:var(--on-dark);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:1.2rem;box-shadow:0 10px 24px -10px rgba(79,70,229,.6)}
+.how-step h3{margin:0 0 6px;font-size:1.05rem}
+.how-step p{color:var(--muted);font-size:.88rem;margin:0}
+
+/* ============ FAQ ============ */
+.faq-list{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.faq-item{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;will-change:transform}
+.faq-item.open{border-color:var(--accent);box-shadow:var(--glow)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:20px 22px;cursor:pointer;font-weight:600;color:var(--heading)}
+.faq-icon{position:relative;width:28px;height:28px;flex:none;border-radius:50%;background:var(--p-100);color:var(--primary);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+.faq-icon span{position:absolute;background:currentColor}
+.faq-icon .h{top:50%;left:7px;right:7px;height:2px;transform:translateY(-50%)}
+.faq-icon .v{left:50%;top:7px;bottom:7px;width:2px;transform:translateX(-50%)}
+.faq-a{overflow:hidden}
+.faq-a-inner{padding:0 22px 22px;color:var(--muted)}
+
+/* ============ TESTIMONIALS ============ */
+.tst-wrap{perspective:1400px;max-width:960px;margin:40px auto 0;position:relative}
+.tst-stage{position:relative;height:420px}
+.tst-card{position:absolute;inset:0;margin:auto;width:min(480px,88%);height:340px;background:var(--surface);border-radius:var(--radius-lg);padding:32px;box-shadow:var(--shadow);transform-style:preserve-3d;will-change:transform;cursor:grab}
+.tst-ava{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:var(--on-dark);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.4rem;margin-bottom:14px}
+.tst-stars{color:#f59e0b;font-size:1.1rem;letter-spacing:3px;margin-bottom:12px}
+.tst-quote{font-size:1.05rem;line-height:1.6;margin:0 0 16px;color:var(--text)}
+.tst-name{font-weight:700;color:var(--heading)}
+.tst-role{color:var(--muted);font-size:.85rem}
+.tst-arrows{display:flex;gap:12px;justify-content:center;margin-top:24px}
+.tst-arrows button{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--border);background:var(--surface);font-size:1.2rem;cursor:pointer;color:var(--text)}
+
+/* ============ CTA / FOOTER ============ */
+#cta{text-align:center}
+.cta-card{position:relative;padding:64px 32px;overflow:hidden}
+.cta-card h2{font-size:clamp(2rem,4.5vw,3.2rem);max-width:760px;margin:0 auto 16px}
+.cta-card p{color:var(--muted);max-width:520px;margin:0 auto 30px}
+.orbit{position:absolute;pointer-events:none}
+footer{background:#0b0b12;color:rgba(255,255,255,.75);padding:60px 0 30px;margin-top:60px}
+.foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:32px;margin-bottom:36px}
+footer h4{color:var(--on-dark);font-weight:700;margin:0 0 14px}
+footer ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+footer a{color:rgba(255,255,255,.75)}
+footer a:hover{color:var(--accent-400)}
+.disclaimer{font-size:.8rem;color:rgba(255,255,255,.55);border-top:1px solid rgba(255,255,255,.12);padding-top:22px;max-width:900px;line-height:1.6}
+.foot-bottom{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:24px}
+
+/* ============ MODAL (full-page fintech login) ============ */
+#modal{position:fixed;inset:0;z-index:500;display:none;overflow:hidden}
+#modal.open{display:block}
+.modal-scene{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.modal-scene .orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:.5}
+.modal-scene .coin{position:absolute;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 32% 30%,var(--accent-400),var(--accent) 45%,#0891b2);color:var(--on-dark);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.8rem;box-shadow:0 0 18px rgba(6,182,212,.7);will-change:transform}
+.modal-scene .ring{position:absolute;border:2px solid rgba(6,182,212,.5);border-radius:50%;border-top-color:transparent;will-change:transform}
+.modal-scene .beam{position:absolute;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.35;will-change:transform}
+.login-page{position:relative;display:grid;grid-template-columns:1.15fr 1fr;min-height:100vh;background:var(--bg)}
+.login-brand{position:relative;overflow:hidden;background:radial-gradient(120% 120% at 15% 0%,#1c1c35 0%,#10101f 50%,#071d2b 100%);color:#fff;padding:48px 56px;display:flex;flex-direction:column}
+.login-brand .bg-elems{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.login-brand .bg-elems .orb{opacity:.5}
+.login-brand .bg-elems .float{position:absolute;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 32% 30%,var(--accent-400),var(--accent) 45%,#0891b2);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.8rem;box-shadow:0 0 18px rgba(6,182,212,.7);will-change:transform}
+.login-brand .bg-elems .spark{position:absolute;background:var(--accent);border-radius:4px;opacity:.9;will-change:transform}
+.login-brand .brand-logo{display:flex;align-items:center;gap:12px;font-weight:800;font-size:1.5rem;color:#fff;z-index:2}
+.login-brand .brand-logo .logo-mark{flex:none;filter:drop-shadow(0 0 12px rgba(6,182,212,.5))}
+.login-brand .brand-logo .coin{width:40px;height:40px;font-size:1.05rem}
+.login-brand .brand-tag{margin:4px 0 0;color:rgba(255,255,255,.6);font-size:.85rem;z-index:2}
+.login-brand .brand-hero{z-index:2;margin-top:auto;padding-top:40px}
+.login-brand .brand-hero h2{color:#fff;font-size:clamp(1.9rem,3vw,2.6rem);line-height:1.15;margin:0 0 14px;letter-spacing:-.02em}
+.login-brand .brand-hero p{color:rgba(255,255,255,.72);max-width:440px;margin:0 0 28px}
+.dash-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(14px);border-radius:20px;padding:22px;box-shadow:0 30px 60px -20px rgba(0,0,0,.6)}
+.dash-card .d-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.dash-card .d-head span{color:rgba(255,255,255,.6);font-size:.8rem}
+.dash-card .d-bal{font-size:2rem;font-weight:800;color:#fff}
+.dash-card .d-bal small{font-size:.9rem;color:rgba(255,255,255,.6);font-weight:500}
+.dash-bars{display:flex;align-items:flex-end;gap:8px;height:110px;margin-top:16px}
+.dash-bars i{flex:1;background:linear-gradient(180deg,var(--accent-400),var(--primary));border-radius:6px 6px 0 0;transform-origin:bottom;will-change:transform}
+.dash-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.dash-stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px 14px}
+.dash-stat b{display:block;color:#fff;font-size:1.15rem}
+.dash-stat span{color:rgba(255,255,255,.55);font-size:.75rem}
+.login-form{position:relative;display:flex;flex-direction:column;justify-content:center;padding:48px 8vmax;background:var(--surface)}
+.login-form-inner{width:100%;max-width:420px;margin:0 auto}
+.modal-close{position:absolute;top:24px;right:24px;background:var(--bg);border:0;width:42px;height:42px;border-radius:50%;cursor:pointer;font-size:1.2rem;color:var(--text);box-shadow:0 8px 22px -10px rgba(0,0,0,.4);z-index:3}
+.login-form h3{margin:0 0 8px;font-size:1.8rem}
+.login-form .sub{color:var(--muted);margin:0 0 28px}
+.login-form .field input{width:100%;padding:14px 15px;border:1.5px solid var(--border);border-radius:13px;font:inherit;color:var(--text);background:var(--surface)}
+.login-form .field label{display:block;font-weight:600;font-size:.9rem;margin-bottom:8px;color:var(--heading)}
+.login-form .err{color:#b91c1c;font-size:.8rem;margin-top:4px;min-height:1em}
+.login-form .field{margin-bottom:18px}
+.offer-card{display:none;text-align:center;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:24px;box-shadow:var(--shadow)}
+.offer-card.show{display:block}
+.load-ring{width:70px;height:70px;border-radius:50%;border:4px solid var(--p-100);border-top-color:var(--primary);margin:0 auto 16px}
+.form-ok{display:none;text-align:center;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:24px;box-shadow:var(--shadow)}
+.form-ok.show{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-ring{animation:spin 1s linear infinite}
+@media(max-width:900px){
+  .login-page{grid-template-columns:1fr}
+  .login-brand{display:none}
+  .login-form{padding:64px 28px}
+}
+
+/* ============ DARK MODE ============ */
+html[data-theme=dark]{
+  --bg:#0e0e16; --surface:#171722; --glass:rgba(23,23,34,.6);
+  --text:#f4f4f9; --heading:#ffffff; --muted:#c5c5d2;
+  --border:rgba(255,255,255,.14); --s-100:rgba(124,58,237,.18);
+  --p-100:rgba(79,70,229,.2); --a-100:rgba(6,182,212,.18);
+  --shadow:0 24px 60px -24px rgba(0,0,0,.6);
+  --bg-2:#171722;
+}
+html[data-theme=dark] .card,html[data-theme=dark] .step,html[data-theme=dark] .tst-card,html[data-theme=dark] .faq-item,html[data-theme=dark] .login-form,html[data-theme=dark] .chip{background:var(--surface)}
+html[data-theme=dark] body{background:var(--bg)}
+html[data-theme=dark] #navbar.shrink{background:rgba(14,14,22,.8)}
+html[data-theme=dark] input[type=number],html[data-theme=dark] .login-form input{background:var(--surface);color:var(--text);border-color:var(--border)}
+html[data-theme=dark] .seg button{background:var(--surface);border-color:var(--border);color:var(--text)}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:900px){
+  .hero-grid{grid-template-columns:1fr}
+  .hero-scene{height:340px}
+  .calc-grid{grid-template-columns:1fr}
+  .how-track{grid-template-columns:1fr 1fr}
+  .foot-grid{grid-template-columns:1fr;gap:24px}
+  .nav-actions .btn[data-open-modal]{display:none}
+  .calc-card{padding:26px}
+  .cta-card{padding:48px 24px}
+  .login-form{padding:44px 28px}
+  .tst-card{padding:26px}
+}
+@media(max-width:520px){
+  .how-track{grid-template-columns:1fr}
+  .scene-item{transform:scale(.8)}
+  .wrap{padding:0 18px}
+  .calc-card{padding:18px}
+  .cta-card{padding:40px 20px}
+  .login-form{padding:36px 20px}
+  .donut-wrap{flex-direction:column;align-items:flex-start;gap:16px}
+  .foot-bottom{flex-direction:column;align-items:flex-start;text-align:left}
+  .tst-card{padding:22px}
+  .tst-quote{font-size:.98rem}
+  .hero h1{font-size:clamp(2.1rem,9vw,2.8rem)}
+  .credit-card{left:50%;transform:translateX(-50%);width:min(268px,88%)}
+  .fabs{width:54px;height:54px;font-size:1.4rem}
+}
+
+/* ============ REDUCED MOTION ============ */
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001s!important;transition-duration:.001s!important}
+  .marquee-track{animation:none!important}
+}
+</style>
+</head>
+<body>
+<!-- ============ PRELOADER ============ -->
+<div id="preloader">
+  <div class="coin3d" id="loaderCoin">₹</div>
+  <div class="loader-txt">Financily</div>
+</div>
+
+<!-- ============ AMBIENT BG ============ -->
+<div id="ambient" aria-hidden="true">
+  <div class="blob a" data-depth="0.4"></div>
+  <div class="blob b" data-depth="0.5"></div>
+  <div class="blob c" data-depth="0.3"></div>
+</div>
+
+<!-- ============ SCROLL PROGRESS ============ -->
+<div id="progressBar" aria-hidden="true"><span></span></div>
+
+<!-- ============ NAVBAR ============ -->
+<nav id="navbar">
+  <div class="wrap nav-inner">
+    <a class="logo" href="#hero" aria-label="Financily home">
+      <svg class="logo-mark" width="34" height="34" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs><linearGradient id="lgCoinNav" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#06b6d4"/></linearGradient></defs>
+        <circle cx="24" cy="24" r="22" fill="url(#lgCoinNav)"/>
+        <circle cx="24" cy="24" r="16" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-dasharray="4 4"/>
+        <text x="24" y="31" text-anchor="middle" font-size="19" font-weight="800" fill="#ffffff" font-family="Arial, sans-serif">₹</text>
+      </svg>
+      <span>Financily</span>
+    </a>
+    <div class="nav-actions">
+      <button class="btn" id="themeToggle" aria-label="Toggle dark mode" style="width:44px;padding:10px;border-radius:12px;justify-content:center">🌙</button>
+    </div>
+  </div>
+</nav>
+<main>
+<!-- ============ HERO ============ -->
+<section id="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-left">
+      <div class="hero-badge">⚡ Instant loans · No paperwork</div>
+      <h1 id="heroTitle"><span class="word"><span class="ch">M</span><span class="ch">o</span><span class="ch">n</span><span class="ch">e</span><span class="ch">y</span></span> <span class="word"><span class="ch">i</span><span class="ch">n</span></span> <span class="word"><span class="ch">m</span><span class="ch">i</span><span class="ch">n</span><span class="ch">u</span><span class="ch">t</span><span class="ch">e</span><span class="ch">s</span><span class="ch">.</span></span>
+        <span class="word"><span class="ch">Z</span><span class="ch">e</span><span class="ch">r</span><span class="ch">o</span></span> <span class="word"><span class="ch">p</span><span class="ch">a</span><span class="ch">p</span><span class="ch">e</span><span class="ch">r</span><span class="ch">w</span><span class="ch">o</span><span class="ch">r</span><span class="ch">k</span><span class="ch">.</span></span></h1>
+      <p class="sub">Financily gives you an instant loan in minutes — no bank queues, no stacks of documents, no waiting. Just you and your money.</p>
+      <div class="hero-chips">
+        <span class="chip">✅ Approval in 2 min</span>
+        <span class="chip">🛡️ No collateral</span>
+        <span class="chip">⚡ Instant payout</span>
+      </div>
+      <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:10px">
+        <button class="btn magnetic" data-open-modal>Login <span class="shine"></span></button>
+        <a class="btn btn-ghost" href="#calc">Calculate EMI</a>
+      </div>
+    </div>
+    <div class="hero-scene" id="heroScene">
+      <div class="scene-stage">
+        <div class="scene-item credit-card" data-depth="0.9">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="chip"></div><span style="font-weight:800;font-size:1.2rem">FINANCILY</span>
+          </div>
+          <div class="noo">• • • •  &nbsp; • • • •  &nbsp; • • • •  &nbsp; 2847</div>
+          <div style="display:flex;justify-content:space-between;font-size:.8rem;opacity:.9">
+            <span>SOURABH KUMAR</span><span>VALID THRU 12/30</span>
+          </div>
+        </div>
+        <div class="scene-item fabs key" data-depth="0.6">🔑</div>
+        <div class="scene-item fabs shield" data-depth="0.5">🛡️</div>
+        <div class="scene-item fabs coin" data-depth="1.1">💰</div>
+        <div class="scene-item badge0" data-depth="0.7">0% FEE*</div>
+      </div>
+      <svg class="hero-path" viewBox="0 0 500 480" fill="none" aria-hidden="true">
+        <path id="coinPath" d="M 40 380 C 120 320, 180 220, 260 240 S 420 340, 470 120" stroke="url(#pgrad)" stroke-width="3" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="pgrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#06b6d4"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="travelcoin coin3d" id="travelCoin">₹</div>
+    </div>
+  </div>
+</section>
+<!-- ============ CALCULATOR ============ -->
+<section id="calc">
+  <div class="wrap sec-title"><h2>Loan Calculator</h2><p>Slide to see your EMI, total interest and payable in real time.</p></div>
+  <div class="calc-card glass" id="calcCard">
+    <div class="calc-grid">
+      <div class="calc-left">
+        <h3>Your loan</h3>
+        <div class="ctrl">
+          <label for="amtRange">Loan amount <output id="amtOut">₹1,00,000</output></label>
+          <div class="range-wrap"><div class="range-fill" id="amtFill"></div><input type="range" id="amtRange" min="10000" max="1000000" step="10000" value="100000"></div>
+        </div>
+        <div class="ctrl">
+          <label for="tenRange">Tenure (months) <output id="tenOut">12</output></label>
+          <div class="range-wrap"><div class="range-fill" id="tenFill"></div><input type="range" id="tenRange" min="3" max="60" step="1" value="12"></div>
+        </div>
+        <div class="ctrl">
+          <label for="rateRange">Interest rate <output id="rateOut">26%</output></label>
+          <div class="range-wrap"><div class="range-fill" id="rateFill"></div><input type="range" id="rateRange" min="6" max="33" step="0.5" value="26"></div>
+        </div>
+        <div class="ctrl">
+          <label for="amtNum">Amount (₹)</label>
+          <input type="number" id="amtNum" min="10000" max="1000000" value="100000">
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn" id="calcBtn">Calculate <span class="shine"></span></button>
+          <button class="btn btn-ghost" id="resetBtn">Reset</button>
+        </div>
+      </div>
+      <div class="calc-right">
+        <div class="kpi"><span>Monthly EMI</span><b id="emiOut">₹0</b></div>
+        <div class="kpi"><span>Total interest</span><b id="interestOut">₹0</b></div>
+        <div class="kpi"><span>Total payable</span><b id="payableOut">₹0</b></div>
+        <div class="donut-wrap">
+          <div class="donut">
+            <svg viewBox="0 0 150 150" width="150" height="150">
+              <circle cx="75" cy="75" r="60" fill="none" stroke="#e0e7ff" stroke-width="18"/>
+              <circle id="donutPr" cx="75" cy="75" r="60" fill="none" stroke="#4f46e5" stroke-width="18" stroke-linecap="round" stroke-dasharray="377" stroke-dashoffset="377"/>
+              <circle id="donutInt" cx="75" cy="75" r="42" fill="none" stroke="#06b6d4" stroke-width="18" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264"/>
+            </svg>
+            <div class="donut-center"><b id="donutLabel">0%</b><small>interest</small></div>
+          </div>
+          <div class="legend">
+            <span><i style="background:#4f46e5"></i>Principal</span>
+            <span><i style="background:#06b6d4"></i>Interest</span>
+          </div>
+        </div>
+        <div class="bars" id="amortBars" aria-label="Amortization chart"></div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ============ LOANS ============ -->
+<section id="loans">
+  <div class="wrap sec-title"><h2>Loans for every need</h2><p>From personal to business — pick the one that fits your moment.</p></div>
+  <div class="wrap loans-grid">
+    <article class="card loan-card" data-side="left"><div class="loan-icon">👤</div><h3>Personal Loan</h3><p>For any personal need — medical, travel, marriage, home. Salaried applicants get even better rates.</p><div class="loan-meta"><span>Starting 26% p.a.</span><span>Salaried from 16% p.a.</span></div></article>
+    <article class="card loan-card" data-side="right"><div class="loan-icon">💵</div><h3>Cash Loan</h3><p>Quick cash in minutes for urgent expenses — no collateral needed.</p><div class="loan-meta"><span>Starting 29% p.a.</span><span>Disbursed in minutes</span></div></article>
+    <article class="card loan-card" data-side="left"><div class="loan-icon">🏢</div><h3>Business Loan</h3><p>Working capital and growth funding for your business, without collateral.</p><div class="loan-meta"><span>Starting 19% p.a.</span><span>Up to ₹50L</span></div></article>
+  </div>
+  <div class="wrap">
+    <div class="marquee" id="marquee">
+      <div class="marquee-track" id="marqueeTrack">
+        <span>INSTANT LOAN · ZERO PAPERWORK · NO COLLATERAL · 2-MIN APPROVAL · DIGITAL e-KYC · RBI REGISTERED · FIXED EMI · PREPAY ANYTIME ·</span>
+        <span>INSTANT LOAN · ZERO PAPERWORK · NO COLLATERAL · 2-MIN APPROVAL · DIGITAL e-KYC · RBI REGISTERED · FIXED EMI · PREPAY ANYTIME ·</span>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ============ ELIGIBILITY CHECKER ============ -->
+<section id="eligibility">
+  <div class="wrap sec-title"><h2>Check your eligibility</h2><p>Answer a few quick questions. No hard check, no impact on your CIBIL.</p></div>
+  <div class="elig-help" id="eligHelp">
+    <button type="button" class="elig-help-toggle" id="eligHelpToggle">💡 How does this work? <span class="plus">+</span></button>
+    <div class="elig-help-body"><div class="elig-help-body-inner">We ask a few quick questions about your monthly income, employment type, age, existing repayments and credit score. We do <b>not</b> run a hard check, so your CIBIL score is never affected. Once you finish, you'll instantly see an estimated loan amount and interest rate you may qualify for. Final approval still depends on the lender's verification of your documents.</div></div>
+  </div>
+  <div class="wrap elig-wrap">
+    <div class="elig-progress"><span id="eligProg"></span></div>
+    <div class="step-stage" id="stepStage">
+      <div class="step active" data-step="0">
+        <h3>What's your monthly income?</h3><p class="q">After tax, per month.</p>
+        <div class="field">
+          <label for="incRange">Monthly income <output id="incOut">₹30,000</output></label>
+          <div class="range-wrap"><div class="range-fill" id="incFill"></div><input type="range" id="incRange" min="10000" max="200000" step="5000" value="30000"></div>
+        </div>
+      </div>
+      <div class="step" data-step="1">
+        <h3>How are you employed?</h3><p class="q">Select your employment type.</p>
+        <div class="field">
+          <label>Employment type</label>
+          <div class="seg" data-group="emp">
+            <button data-val="salaried">Salaried</button>
+            <button data-val="self">Self-employed</button>
+            <button data-val="business">Business</button>
+            <button data-val="student">Student</button>
+          </div>
+        </div>
+      </div>
+      <div class="step" data-step="2">
+        <h3>What's your age?</h3><p class="q">We use this to pick the best tenure.</p>
+        <div class="field">
+          <label for="ageRange">Age <output id="ageOut">28</output></label>
+          <div class="range-wrap"><div class="range-fill" id="ageFill"></div><input type="range" id="ageRange" min="18" max="65" step="1" value="28"></div>
+        </div>
+      </div>
+      <div class="step" data-step="3">
+        <h3>Your repayments & credit score</h3><p class="q">Almost done.</p>
+        <div class="field">
+          <label for="emiRange">Existing monthly EMIs <output id="emiOut2">₹5,000</output></label>
+          <div class="range-wrap"><div class="range-fill" id="emiFill"></div><input type="range" id="emiRange" min="0" max="100000" step="5000" value="5000"></div>
+        </div>
+        <div class="field">
+          <label>Credit score range</label>
+          <div class="seg" data-group="score">
+            <button data-val="good">750+</button>
+            <button data-val="ok">650–749</button>
+            <button data-val="low">Below 650</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="elig-nav">
+      <button class="btn btn-ghost" id="eligPrev">← Back</button>
+      <button class="btn" id="eligNext">Next →</button>
+    </div>
+    <div class="result-card glass" id="eligResult">
+      <svg class="check-svg" viewBox="0 0 74 74"><path class="ck" d="M18 38 l12 12 l26 -28"/></svg>
+      <h3 id="resTitle">You're eligible 🎉</h3>
+      <p id="resSub" style="color:var(--muted)">Based on your answers, here's what we can offer:</p>
+      <div class="amount-big" id="resAmount">₹0</div>
+      <div style="color:var(--muted);margin-top:6px">Estimated interest from <b id="resRate" style="color:var(--primary)">—</b> p.a.</div>
+      <div class="status-badge" id="resBadge">APPROVED</div>
+      <div style="margin-top:22px"><button class="btn" data-open-modal>Login <span class="shine"></span></button></div>
+    </div>
+  </div>
+</section>
+<!-- ============ HOW IT WORKS ============ -->
+<section id="how">
+  <div class="wrap sec-title"><h2>How it works</h2><p>From apply to money in your account — four simple steps.</p></div>
+  <div class="wrap">
+    <div class="how-track" id="howTrack">
+      <div class="how-progress"><div class="how-fill" id="howFill"></div><div class="how-runner" id="howRunner">₹</div></div>
+      <div class="how-step" data-step="0"><div class="how-num" id="num0">1</div><h3>Apply</h3><p>Fill the 2-minute form online.</p></div>
+      <div class="how-step" data-step="1"><div class="how-num" id="num1">2</div><h3>Verify</h3><p>Digital e-KYC in seconds.</p></div>
+      <div class="how-step" data-step="2"><div class="how-num" id="num2">3</div><h3>Approve</h3><p>Instant decision, no waiting.</p></div>
+      <div class="how-step" data-step="3"><div class="how-num" id="num3">4</div><h3>Get money</h3><p>Payout to your account in minutes.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section id="faq">
+  <div class="wrap sec-title"><h2>Frequently asked questions</h2><p>Everything you need to know about Financily.</p></div>
+  <div class="wrap faq-list" id="faqList">
+    <div class="faq-item"><div class="faq-q" tabindex="0">Am I eligible for a loan?<span class="faq-icon"><span class="h"></span><span class="v"></span></span></div><div class="faq-a"><div class="faq-a-inner">You need to be 18+ with a steady income and a valid ID. Most salaried and self-employed applicants are eligible. Use the Eligibility Checker above for a quick estimate.</div></div></div>
+    <div class="faq-item"><div class="faq-q" tabindex="0">What documents do I need?<span class="faq-icon"><span class="h"></span><span class="v"></span></span></div><div class="faq-a"><div class="faq-a-inner">Just your PAN, Aadhaar and a bank account. Everything is verified digitally via e-KYC — no printed documents, no couriers.</div></div></div>
+    <div class="faq-item"><div class="faq-q" tabindex="0">What are the interest rates?<span class="faq-icon"><span class="h"></span><span class="v"></span></span></div><div class="faq-a"><div class="faq-a-inner">Each product has its own starting rate: Personal Loan from 26% p.a. (salaried from 16%), Cash Loan from 29%, and Business Loan from 19%. The maximum interest rate is capped at 33% p.a. Your exact rate depends on your profile, amount and tenure — and is always shown before you accept the offer.</div></div></div>
+    <div class="faq-item"><div class="faq-q" tabindex="0">How do I repay the loan?<span class="faq-icon"><span class="h"></span><span class="v"></span></span></div><div class="faq-a"><div class="faq-a-inner">Auto-debit from your bank account works monthly EMI. You can also repay manually from the app anytime.</div></div></div>
+    <div class="faq-item"><div class="faq-q" tabindex="0">Can I prepay the loan early?<span class="faq-icon"><span class="h"></span><span class="v"></span></span></div><div class="faq-a"><div class="faq-a-inner">Yes — you can prepay fully or partially at any time with no hidden charges on most products. Foreclosure is free after 3 EMIs.</div></div></div>
+    <div class="faq-item"><div class="faq-q" tabindex="0">What if I miss an EMI?<span class="faq-icon"><span class="h"></span><span class="v"></span></span></div><div class="faq-a"><div class="faq-a-inner">A late fee applies, and we'll remind you before the due date. Contact us immediately if you're facing difficulty — we can restructure your plan.</div></div></div>
+    <div class="faq-item"><div class="faq-q" tabindex="0">Is my data safe?<span class="faq-icon"><span class="h"></span><span class="v"></span></span></div><div class="faq-a"><div class="faq-a-inner">Yes. We use bank-grade encryption, never sell your data, and are registered with the RBI. Your data is used only to process your loan.</div></div></div>
+  </div>
+</section>
+
+<!-- ============ TESTIMONIALS ============ -->
+<section id="testimonials">
+  <div class="wrap sec-title"><h2>Loved by 2M+ borrowers</h2><p>Real stories from people who got money in minutes.</p></div>
+  <div class="wrap">
+    <div class="tst-wrap" id="tstWrap">
+      <div class="tst-stage" id="tstStage">
+        <div class="tst-card" data-i="0">
+          <div class="tst-ava">A</div>
+          <div class="tst-stars">★★★★★</div>
+          <p class="tst-quote">"I needed ₹80,000 for an emergency surgery at 9 PM. By 9:15 the money was in my account. Unbelievable."</p>
+          <div class="tst-name">Ananya Sharma</div><div class="tst-role">Teacher, Delhi</div>
+        </div>
+        <div class="tst-card" data-i="1">
+          <div class="tst-ava">R</div>
+          <div class="tst-stars">★★★★★</div>
+          <p class="tst-quote">"The calculator and eligibility checker are spot-on. No paperwork, no visits. Exactly what a small business owner needs."</p>
+          <div class="tst-name">Rahul Verma</div><div class="tst-role">Café owner, Jaipur</div>
+        </div>
+        <div class="tst-card" data-i="2">
+          <div class="tst-ava">P</div>
+          <div class="tst-stars">★★★★☆</div>
+          <p class="tst-quote">"Clear interest, transparent EMI, and I could prepay after 3 months without fees. Best loan experience I've had."</p>
+          <div class="tst-name">Priya Nair</div><div class="tst-role">Software engineer, Bengaluru</div>
+        </div>
+        <div class="tst-card" data-i="3">
+          <div class="tst-ava">K</div>
+          <div class="tst-stars">★★★★★</div>
+          <p class="tst-quote">"Applied for a gold loan while travelling. Verified via video KYC and got the amount in 12 minutes. Fantastic."</p>
+          <div class="tst-name">Karan Mehta</div><div class="tst-role">Travel blogger, Mumbai</div>
+        </div>
+      </div>
+    </div>
+    <div class="tst-arrows">
+      <button id="tstPrev" aria-label="Previous testimonial">‹</button>
+      <button id="tstNext" aria-label="Next testimonial">›</button>
+    </div>
+  </div>
+</section>
+<!-- ============ APPLY CTA ============ -->
+<section id="cta">
+  <div class="wrap">
+    <div class="cta-card glass" id="ctaCard">
+      <div class="orbit" id="orbitCoins" aria-hidden="true">
+        <div class="floatcoin" style="width:30px;height:30px;font-size:.7rem">₹</div>
+        <div class="floatcoin" style="width:22px;height:22px;font-size:.5rem">₹</div>
+        <div class="floatcoin" style="width:18px;height:18px;font-size:.4rem">₹</div>
+      </div>
+      <h2>Your money, in minutes.</h2>
+      <p>Join 2M+ Indians who skipped the queues. Check your offer in under 2 minutes.</p>
+      <button class="btn magnetic" id="ctaBtn" data-open-modal style="font-size:1.05rem;padding:18px 38px">Login <span class="shine"></span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer id="footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="logo" style="color:#fff;margin-bottom:14px"><div class="coin coin3d" style="width:26px;height:26px;font-size:.7rem">₹</div><span>Financily</span></div>
+        <p style="max-width:340px;margin:0">Money in minutes. Zero paperwork. Financily is an instant loan platform built for the modern Indian borrower.</p>
+        <div style="display:flex;gap:12px;margin-top:16px">
+          <a href="#" aria-label="Twitter">𝕏</a><a href="#" aria-label="LinkedIn">in</a><a href="#" aria-label="Instagram">◎</a>
+        </div>
+      </div>
+      <div>
+        <h4>Products</h4>
+        <ul><li><a href="#loans">Personal Loan</a></li><li><a href="#loans">Business Loan</a></li><li><a href="#loans">Gold Loan</a></li><li><a href="#loans">Education Loan</a></li></ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul><li><a href="#faq">FAQ</a></li><li><a href="#">Contact</a></li><li><a href="privacy.html">Privacy Policy</a></li><li><a href="privacy.html#terms">Terms</a></li></ul>
+      </div>
+    </div>
+    <p class="disclaimer">Financily Technologies Pvt. Ltd. is a Loan Service Provider (LSP) — we are not an NBFC, a bank, or a lender. We do not hold an NBFC licence. Loans are provided by our RBI-registered NBFC partner lenders and banks, who are the actual lenders on your loan agreement. Interest rates range from 16% p.a. to 33% p.a. depending on the product and eligibility. This is illustrative content for a demo — not financial advice. Always read the loan agreement before accepting.</p>
+    <div class="foot-bottom">
+      <span style="color:rgba(255,255,255,.6);font-size:.85rem">© 2026 Financily. All rights reserved.</span>
+      <span style="color:rgba(255,255,255,.6);font-size:.85rem">Made with ₹ in India 🇮🇳</span>
+    </div>
+  </div>
+</footer>
+</main>
+
+<!-- ============ APPLY MODAL (full-page login) ============ -->
+<div id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="login-page">
+    <!-- Brand panel -->
+    <div class="login-brand" id="loginBrand">
+      <div class="bg-elems" aria-hidden="true">
+        <div class="orb" style="width:420px;height:420px;background:radial-gradient(circle,rgba(79,70,229,.55),transparent 70%);top:-100px;left:-80px"></div>
+        <div class="orb" style="width:460px;height:460px;background:radial-gradient(circle,rgba(6,182,212,.4),transparent 70%);bottom:-120px;right:-80px"></div>
+        <div class="float" style="left:12%;top:20%;"><b>₹</b></div>
+        <div class="float" style="right:14%;top:34%;font-size:.6rem;width:24px;height:24px"><b>₹</b></div>
+        <div class="float" style="left:20%;bottom:30%;font-size:.6rem;width:24px;height:24px"><b>₹</b></div>
+        <div class="float" style="right:22%;bottom:22%;"><b>₹</b></div>
+        <div class="spark" style="left:30%;top:14%;width:6px;height:6px"></div>
+        <div class="spark" style="right:32%;top:60%;width:5px;height:5px"></div>
+        <div class="spark" style="left:14%;bottom:18%;width:5px;height:5px"></div>
+      </div>
+      <div class="brand-logo">
+        <svg class="logo-mark" width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs><linearGradient id="lgCoinBrand" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#06b6d4"/></linearGradient></defs>
+          <circle cx="24" cy="24" r="22" fill="url(#lgCoinBrand)"/>
+          <circle cx="24" cy="24" r="16" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-dasharray="4 4"/>
+          <text x="24" y="31" text-anchor="middle" font-size="19" font-weight="800" fill="#ffffff" font-family="Arial, sans-serif">₹</text>
+        </svg><span>Financily</span>
+      </div>
+      <p class="brand-tag">Money in minutes. Zero paperwork.</p>
+      <div class="brand-hero">
+        <h2>Your money,<br>in minutes.</h2>
+        <p>Login to check your instant offer, track repayments and manage your loans — all in one place.</p>
+        <div class="dash-card" id="dashCard">
+          <div class="d-head"><span>Available limit</span><span>▲ 2%</span></div>
+          <div class="d-bal" id="dashBal">₹1,25,000 <small>/ month</small></div>
+          <div class="dash-bars" id="dashBars">
+            <i style="height:35%"></i><i style="height:55%"></i><i style="height:42%"></i>
+            <i style="height:70%"></i><i style="height:58%"></i><i style="height:80%"></i>
+            <i style="height:65%"></i><i style="height:92%"></i>
+          </div>
+          <div class="dash-stats">
+            <div class="dash-stat"><b id="statLoans">12</b><span>Loans active</span></div>
+            <div class="dash-stat"><b id="statScore">768</b><span>Credit score</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form panel -->
+    <div class="login-form" id="loginForm">
+      <button class="modal-close" data-close aria-label="Close">✕</button>
+      <div class="login-form-inner">
+        <h3 id="modalTitle">Welcome back</h3>
+        <p class="sub">Enter your mobile number to continue.</p>
+        <div id="formView">
+          <div class="field"><label for="mPhone">Mobile number</label><div style="display:flex;gap:10px"><span style="display:flex;align-items:center;padding:0 14px;border:1.5px solid var(--border);border-radius:13px;color:var(--muted);font-weight:600;background:var(--bg)">+91</span><input type="tel" id="mPhone" placeholder="10-digit mobile" style="flex:1" required></div><div class="err" id="errPhone"></div></div>
+          <div class="field" id="otpField" style="display:none"><label for="mOtp">Enter OTP</label><input type="text" id="mOtp" placeholder="4-digit OTP" inputmode="numeric" style="width:100%" required><div class="err" id="errOtp"></div></div>
+          <button class="btn" id="submitApply" style="width:100%;justify-content:center">Login <span class="shine"></span></button>
+        </div>
+        <div class="load-ring-wrap" id="loadingView" style="display:none;text-align:center;padding:30px 0">
+          <div class="load-ring"></div><p style="color:var(--muted)">Checking your offer…</p>
+        </div>
+        <div class="offer-card" id="offerView">
+          <div class="tst-ava" style="margin:0 auto 14px">✓</div>
+          <h3>You're approved! 🎉</h3>
+          <p style="color:var(--muted)">Here's your instant offer:</p>
+          <div class="amount-big" id="offerAmount">₹50,000</div>
+          <div class="kpi"><span>Interest rate</span><b id="offerRate">26% p.a.</b></div>
+          <div class="kpi"><span>Monthly EMI</span><b id="offerEmi">₹4,803</b></div>
+          <div style="margin-top:20px"><button class="btn" id="acceptOffer" style="width:100%;justify-content:center">Accept & get money <span class="shine"></span></button></div>
+        </div>
+        <div class="form-ok" id="okView">
+          <div class="tst-ava" style="margin:0 auto 14px">✓</div>
+          <h3>Application received!</h3>
+          <p style="color:var(--muted)">Payout of <b id="okAmt" style="color:var(--primary)">₹50,000</b> will arrive in your account in minutes. We've sent the details to your phone.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/MotionPathPlugin.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Draggable.min.js"></script>
+<script>
+// ============ SETUP ============
+gsap.registerPlugin(ScrollTrigger, MotionPathPlugin, Draggable);
+const $ = (s, c = document) => c.querySelector(s);
+const $$ = (s, c = document) => [...c.querySelectorAll(s)];
+const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const IS_MOBILE = () => window.innerWidth < 768;
+const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark';
+
+// ============ PRELOADER ============
+function runPreloader() {
+  const pl = $('#preloader');
+  const coin = $('#loaderCoin');
+  const tl = gsap.timeline({ onComplete: () => { pl.style.display = 'none'; } });
+  tl.fromTo(coin, { rotationY: 0 }, { rotationY: 720, duration: 1.6, ease: 'power2.inOut' })
+    .to(coin, { scale: 1.3, duration: 0.3, ease: 'power2.out' })
+    .to(coin, { scale: 0.6, opacity: 0, duration: 0.4, ease: 'power2.in' })
+    .to(pl, { clipPath: 'circle(0% at 50% 50%)', duration: 0.7, ease: 'power2.inOut' }, '-=0.2')
+    .from('#hero .hero-badge', { autoAlpha: 0, y: 20, duration: 0.5 }, '-=0.35');
+  return tl;
+}
+runPreloader();
+
+// ============ NAVBAR ============
+gsap.to('#navbar', {
+  scrollTrigger: { start: 60, end: 'max', toggleClass: { targets: '#navbar', className: 'shrink' } }
+});
+
+// scroll progress bar
+gsap.to('#progressBar span', {
+  scaleX: 1, ease: 'none',
+  scrollTrigger: { start: 0, end: 'max', scrub: 0.3 }
+});
+gsap.set('#progressBar span', { transformOrigin: '0% 50%', scaleX: 0 });
+
+// ============ AMBIENT PARALLAX ============
+$$('#ambient .blob').forEach(el => {
+  gsap.to(el, {
+    x: () => gsap.utils.random(-40, 40),
+    y: () => gsap.utils.random(-30, 30),
+    duration: () => gsap.utils.random(6, 10),
+    yoyo: true, repeat: -1, ease: 'sine.inOut'
+  });
+});
+
+// ============ SECTION TITLE REVEAL (masked slide-up) ============
+$$('.sec-title').forEach(title => {
+  const h2 = title.querySelector('h2');
+  if (!h2) return;
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'overflow:hidden;display:inline-block;padding-bottom:4px';
+  h2.parentNode.insertBefore(wrap, h2);
+  wrap.appendChild(h2);
+  gsap.from(h2, {
+    yPercent: 110, duration: 0.9, ease: 'expo.out',
+    scrollTrigger: { trigger: title, start: 'top 85%' }
+  });
+});
+
+// ============ HERO ============
+// title char flip-in
+$$('#heroTitle .ch').forEach((ch, i) => {
+  gsap.set(ch, { transformOrigin: '50% 100%' });
+  gsap.from(ch, {
+    rotationX: -90, y: 8, autoAlpha: 0, duration: 0.8,
+    ease: 'expo.out', delay: 0.15 + i * 0.03
+  });
+});
+// gentle wave on the title
+if (!REDUCED) {
+  gsap.to('#heroTitle .ch', {
+    y: 'random(-6, -2)', duration: 0.4, stagger: 0.02,
+    yoyo: true, repeat: -1, ease: 'sine.inOut'
+  });
+}
+
+// chips slide in + float
+gsap.from('.hero-chips .chip', {
+  autoAlpha: 0, y: 24, duration: 0.6, ease: 'back.out(1.6)',
+  stagger: 0.12, delay: 0.9
+});
+if (!REDUCED) {
+  gsap.to('.hero-chips .chip', {
+    y: 'random(-8, 8)', duration: 2.4, stagger: 0.3,
+    yoyo: true, repeat: -1, ease: 'sine.inOut'
+  });
+}
+
+// sub text
+if ($('.hero .sub')) gsap.from('.hero .sub', { autoAlpha: 0, y: 20, duration: 0.7, delay: 0.7, ease: 'power3.out' });
+if ($$('.hero .btn').length) gsap.from('.hero .btn', { autoAlpha: 0, y: 20, duration: 0.6, stagger: 0.1, delay: 1.0 });
+
+// scene path draw + travel coin
+const coinPath = $('#coinPath'), travelCoin = $('#travelCoin');
+if (coinPath) {
+  const len = coinPath.getTotalLength();
+  gsap.set(coinPath, { strokeDasharray: len, strokeDashoffset: len });
+  gsap.to(coinPath, { strokeDashoffset: 0, duration: 2, ease: 'power2.inOut', delay: 1.2 });
+  if (!REDUCED) {
+    gsap.to(travelCoin, {
+      motionPath: { path: coinPath, align: coinPath, alignOrigin: [0.5, 0.5] },
+      duration: 4, repeat: -1, ease: 'none', delay: 1.4
+    });
+  } else {
+    gsap.set(travelCoin, { autoAlpha: 0 });
+  }
+}
+
+// scene idle float (each item)
+$$('#heroScene .scene-item').forEach((item, i) => {
+  gsap.set(item, { transformPerspective: 1000 });
+  if (REDUCED) return;
+  gsap.to(item, {
+    y: 'random(-14, 14)', z: 'random(-30, 30)', rotation: 'random(-3, 3)',
+    duration: gsap.utils.random(2.5, 4), yoyo: true, repeat: -1,
+    ease: 'sine.inOut', delay: i * 0.2
+  });
+});
+
+// scene mouse parallax + card tilt
+const scene = $('#heroScene');
+if (scene && !REDUCED) {
+  const stage = $('.scene-stage', scene);
+  scene.addEventListener('mousemove', e => {
+    const r = scene.getBoundingClientRect();
+    const nx = ((e.clientX - r.left) / r.width - 0.5) * 2;
+    const ny = ((e.clientY - r.top) / r.height - 0.5) * 2;
+    $$('.scene-item', scene).forEach(item => {
+      const d = parseFloat(item.dataset.depth || '0.5');
+      gsap.to(item, { x: nx * 30 * d, y: ny * 20 * d, duration: 0.6, ease: 'power2.out' });
+    });
+    gsap.to(stage, { rotationY: nx * 10, rotationX: -ny * 8, duration: 0.6, ease: 'power2.out' });
+  });
+  scene.addEventListener('mouseleave', () => {
+    $$('.scene-item', scene).forEach(item => gsap.to(item, { x: 0, y: 0, duration: 0.8, ease: 'power2.out' }));
+    gsap.to(stage, { rotationY: 0, rotationX: 0, duration: 0.8, ease: 'power2.out' });
+  });
+}
+
+// magnetic buttons
+$$('.magnetic').forEach(btn => {
+  if (REDUCED) return;
+  btn.addEventListener('mousemove', e => {
+    const r = btn.getBoundingClientRect();
+    const x = (e.clientX - r.left - r.width / 2) * 0.3;
+    const y = (e.clientY - r.top - r.height / 2) * 0.3;
+    gsap.to(btn, { x, y, duration: 0.3, ease: 'power2.out' });
+  });
+  btn.addEventListener('mouseleave', () => gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1,0.4)' }));
+});
+
+// shine sweep on buttons
+$$('.btn').forEach(btn => {
+  function sweep() {
+    gsap.fromTo(btn.querySelector('.shine'), { left: '-80%' }, { left: '130%', duration: 1.1, ease: 'power2.inOut' });
+  }
+  btn.addEventListener('mouseenter', sweep);
+});
+
+// ============ LOAN CALCULATOR ============
+const RANGE_IDS = { amt: ['amtRange','amtFill','amtOut','amtNum'], ten: ['tenRange','tenFill','tenOut'], rate: ['rateRange','rateFill','rateOut'] };
+const IN_NS = { amt: 100000, ten: 12, rate: 26 };
+
+function fmtIN(n) { return '₹' + Math.round(n).toLocaleString('en-IN'); }
+function pctFill(id, val, min, max) { const p = Math.round((val - min) / (max - min) * 100); $(id).style.width = p + '%'; }
+
+function readParams() {
+  return { P: +$('#amtRange').value, n: +$('#tenRange').value, r: +$('#rateRange').value };
+}
+function compute() {
+  const { P, n, r } = readParams();
+  const mr = r / 12 / 100;
+  const emi = mr === 0 ? P / n : P * mr * Math.pow(1 + mr, n) / (Math.pow(1 + mr, n) - 1);
+  const total = emi * n, interest = total - P;
+  return { emi, total, interest, P, n, r };
+}
+function updateDonut(interest, total) {
+  const pct = Math.min(100, Math.round(interest / total * 100));
+  const C1 = 377, C2 = 264;
+  gsap.to('#donutPr', { strokeDashoffset: C1 * (1 - (100 - pct) / 100), duration: 0.7, ease: 'power2.out' });
+  gsap.to('#donutInt', { strokeDashoffset: C2 * (1 - pct / 100), duration: 0.7, ease: 'power2.out' });
+  gsap.to('#donutLabel', { textContent: pct + '%', snap: { textContent: 1 }, duration: 0.7 });
+}
+function renderBars(n) {
+  const bars = $('#amortBars'); bars.innerHTML = '';
+  const { P, r } = readParams(); const mr = r / 12 / 100;
+  const emi = compute().emi;
+  const cols = Math.min(n, 24);
+  let bal = P;
+  for (let i = 0; i < cols; i++) {
+    const interestPart = bal * mr, prinPart = emi - interestPart;
+    bal = Math.max(0, bal - prinPart);
+    const b = document.createElement('i');
+    b.style.height = (prinPart / emi * 100) + '%';
+    b.dataset.tip = 'EMI ' + Math.round(emi).toLocaleString('en-IN');
+    bars.appendChild(b);
+  }
+}
+function animateCounts() {
+  const { emi, total, interest } = compute();
+  const p = { emi: 0, total: 0, interest: 0 };
+  gsap.to(p, {
+    emi, total, interest, duration: 0.8, ease: 'power2.out',
+    onUpdate: () => {
+      $('#emiOut').textContent = fmtIN(p.emi);
+      $('#interestOut').textContent = fmtIN(p.interest);
+      $('#payableOut').textContent = fmtIN(p.total);
+    }
+  });
+}
+// sync range -> output + number
+Object.keys(RANGE_IDS).forEach(k => {
+  const [rId, fId, oId, nId] = RANGE_IDS[k];
+  const el = $('#' + rId), outEl = $('#' + oId), numEl = nId ? $('#' + nId) : null;
+  const min = +el.min, max = +el.max;
+  function sync() {
+    const v = +el.value;
+    pctFill('#' + fId, v, min, max);
+    if (k === 'amt') outEl.textContent = fmtIN(v);
+    else if (k === 'rate') outEl.textContent = v + '%';
+    else outEl.textContent = v;
+    if (numEl && numEl !== document.activeElement) numEl.value = v;
+    if (k === 'amt') { const c = compute(); animateCounts(); updateDonut(c.interest, c.total); renderBars(IN_NS.ten); }
+  }
+  el.addEventListener('input', sync);
+  if (numEl) numEl.addEventListener('input', () => {
+    let v = Math.min(max, Math.max(min, +numEl.value || min));
+    el.value = v; sync();
+  });
+  sync();
+});
+// ten/rate also refresh counts + donut
+['ten','rate'].forEach(k => {
+  const el = $('#' + RANGE_IDS[k][0]);
+  el.addEventListener('input', () => { const c = compute(); animateCounts(); updateDonut(c.interest, c.total); renderBars(IN_NS.ten); });
+});
+
+// calculate press -> coin drop bounce
+const calcBtn = $('#calcBtn');
+if (calcBtn) {
+  calcBtn.addEventListener('click', () => {
+    const c = compute(); animateCounts(); updateDonut(c.interest, c.total); renderBars(IN_NS.ten);
+    // drop a little coin in front of card
+    const coin = document.createElement('div');
+    coin.className = 'floatcoin'; coin.style.cssText = 'position:fixed;width:34px;height:34px;font-size:.75rem;z-index:800;left:50%;top:40%';
+    coin.textContent = '₹'; document.body.appendChild(coin);
+    gsap.fromTo(coin, { y: -100, autoAlpha: 1 }, { y: 160, duration: 0.7, ease: 'bounce.out' })
+      .to(coin, { autoAlpha: 0, duration: 0.3, onComplete: () => coin.remove() });
+  });
+}
+// reset
+$('#resetBtn').addEventListener('click', () => {
+  $('#amtRange').value = 100000; $('#tenRange').value = 12; $('#rateRange').value = 26;
+  $('#amtNum').value = 100000;
+  Object.keys(RANGE_IDS).forEach(k => { const [rId, fId] = RANGE_IDS[k]; const el = $('#' + rId); pctFill('#' + fId, +el.value, +el.min, +el.max); });
+  const c = compute(); animateCounts(); updateDonut(c.interest, c.total); renderBars(IN_NS.ten);
+});
+
+// card 3D rise + cursor tilt
+const calcCard = $('#calcCard');
+if (calcCard && !REDUCED) {
+  gsap.fromTo(calcCard, { rotationX: 25, y: 60 }, {
+    rotationX: 0, y: 0, duration: 1.1, ease: 'expo.out',
+    scrollTrigger: { trigger: calcCard, start: 'top 82%' }
+  });
+  gsap.set(calcCard, { transformPerspective: 1100 });
+  calcCard.addEventListener('mousemove', e => {
+    const r = calcCard.getBoundingClientRect();
+    const nx = (e.clientX - r.left) / r.width - 0.5;
+    const ny = (e.clientY - r.top) / r.height - 0.5;
+    gsap.to(calcCard, { rotationY: nx * 5, rotationX: -ny * 4, duration: 0.5, ease: 'power2.out' });
+  });
+  calcCard.addEventListener('mouseleave', () => gsap.to(calcCard, { rotationY: 0, rotationX: 0, duration: 0.8, ease: 'power2.out' }));
+}
+
+// ============ LOANS ============
+$$('.loan-card').forEach((card, i) => {
+  const side = card.dataset.side;
+  gsap.set(card, { transformPerspective: 900 });
+  gsap.from(card, {
+    x: side === 'left' ? -80 : 80, rotationY: side === 'left' ? -30 : 30,
+    autoAlpha: 0, duration: 0.9, ease: 'expo.out', delay: (i % 2) * 0.1,
+    scrollTrigger: { trigger: card, start: 'top 88%' }
+  });
+  if (!REDUCED) {
+    gsap.to(card, { y: 'random(-8, 8)', duration: 2.6, yoyo: true, repeat: -1, ease: 'sine.inOut', delay: i * 0.3 });
+  }
+  // hover lift/tilt + icon dance
+  card.addEventListener('mouseenter', () => {
+    gsap.to(card, { z: 60, rotationX: -4, y: -14, duration: 0.5, ease: 'power3.out' });
+    gsap.to(card.querySelector('.loan-icon'), { scale: 1.2, rotation: 8, duration: 0.4, ease: 'elastic.out(1,0.4)' });
+  });
+  card.addEventListener('mouseleave', () => {
+    gsap.to(card, { z: 0, rotationX: 0, y: 0, duration: 0.6, ease: 'power2.out' });
+    gsap.to(card.querySelector('.loan-icon'), { scale: 1, rotation: 0, duration: 0.4, ease: 'power2.out' });
+  });
+  if (!REDUCED) {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const nx = (e.clientX - r.left) / r.width - 0.5;
+      const ny = (e.clientY - r.top) / r.height - 0.5;
+      gsap.to(card, { rotationY: nx * 8, rotationX: -ny * 6, duration: 0.4, ease: 'power2.out' });
+    });
+  }
+});
+
+// marquee
+const mqTrack = $('#marqueeTrack');
+if (mqTrack) {
+  const half = mqTrack.children[0];
+  gsap.to(mqTrack, {
+    xPercent: -50, repeat: -1, duration: 24, ease: 'none'
+  });
+  $('#marquee').addEventListener('mouseenter', () => gsap.to(mqTrack, { timeScale: 0 }));
+  $('#marquee').addEventListener('mouseleave', () => gsap.to(mqTrack, { timeScale: 1 }));
+}
+
+// ============ ELIGIBILITY CHECKER ============
+const stepStage = $('#stepStage');
+const steps = $$('.step', stepStage);
+const answers = {};
+let curStep = 0;
+
+// eligibility "How does this work?" helper accordion
+const eligHelp = $('#eligHelp');
+if (eligHelp) {
+  $('#eligHelpToggle').addEventListener('click', () => eligHelp.classList.toggle('open'));
+}
+
+function segInit(group) {
+  $$(`.seg[data-group="${group}"] button`).forEach(btn => {
+    btn.addEventListener('click', () => {
+      $$(`.seg[data-group="${group}"] button`).forEach(b => b.classList.remove('sel'));
+      btn.classList.add('sel');
+      answers[group] = btn.dataset.val;
+      updateProgress();
+    });
+  });
+}
+segInit('emp'); segInit('score');
+['incRange','ageRange','emiRange'].forEach(id => {
+  $(`#${id}`).addEventListener('input', () => updateProgress());
+});
+
+function stepComplete(i) {
+  if (i === 0) return true; // income slider always has value
+  if (i === 1) return !!answers.emp;
+  if (i === 2) return true;
+  if (i === 3) return !!answers.score;
+  return true;
+}
+function updateProgress() {
+  let done = 0;
+  for (let i = 0; i <= curStep; i++) if (stepComplete(i)) done++;
+  const max = Math.max(1, curStep + 1);
+  // progress reflects completion of steps so far
+  const pct = (done / 4) * 100;
+  gsap.to('#eligProg', { width: pct + '%', duration: 0.5, ease: 'power2.out' });
+}
+function showStep(i) {
+  steps.forEach((st, idx) => {
+    if (idx === i) {
+      st.style.display = 'block';
+      gsap.fromTo(st, { z: -180, autoAlpha: 0, rotationY: 20 }, { z: 0, autoAlpha: 1, rotationY: 0, duration: 0.6, ease: 'expo.out' });
+      gsap.set(st, { transformPerspective: 1000 });
+    } else {
+      st.style.display = 'none';
+    }
+  });
+  curStep = i;
+  $('#eligPrev').style.visibility = i === 0 ? 'hidden' : 'visible';
+  $('#eligNext').textContent = i === 3 ? 'Check eligibility' : 'Next →';
+  updateProgress();
+}
+$('#eligPrev').addEventListener('click', () => { if (curStep > 0) showStep(curStep - 1); });
+$('#eligNext').addEventListener('click', () => {
+  if (curStep === 3) { computeEligibility(); return; }
+  if (!stepComplete(curStep)) { flashInvalid(); return; }
+  showStep(curStep + 1);
+});
+function flashInvalid() {
+  const st = steps[curStep];
+  gsap.fromTo(st, { x: -8 }, { x: 8, duration: 0.06, yoyo: true, repeat: 5, onComplete: () => gsap.set(st, { x: 0 }) });
+}
+function computeEligibility() {
+  const income = +$('#incRange').value;
+  const age = +$('#ageRange').value;
+  const existingEmi = +$('#emiRange').value;
+  const score = answers.score || 'ok';
+  const emp = answers.emp || 'salaried';
+  const result = $('#eligResult');
+  let amount, rate, eligible = true, tips = [];
+
+  if (income < 20000 || score === 'low' || age < 20) {
+    eligible = false;
+    if (income < 20000) tips.push('Increase your monthly income');
+    if (score === 'low') tips.push('Build your credit score to 650+');
+    if (age < 20) tips.push('Minimum age is 20 years');
+  }
+  if (eligible) {
+    const base = income * 24;
+    amount = Math.max(10000, Math.min(base - existingEmi * 6, 1000000));
+    // Rates mirror our three products (Personal 26%, salaried 16%, Cash 29%, Business 19%)
+    rate = emp === 'business' ? 19 : emp === 'self' ? 26 : emp === 'student' ? 29 : 16;
+    if (score === 'good') rate = Math.max(16, rate - 2);
+    if (score === 'low') rate = 33;
+  }
+
+  setTimeout(() => {
+    result.classList.add('show');
+    gsap.fromTo(result, { rotationX: -30, autoAlpha: 0, y: 40 }, { rotationX: 0, autoAlpha: 1, y: 0, duration: 0.7, ease: 'elastic.out(1,0.5)' });
+    gsap.set(result, { transformPerspective: 1000 });
+    if (eligible) {
+      $('#resTitle').textContent = 'You’re eligible 🎉';
+      $('#resSub').textContent = 'Based on your answers, here’s what we can offer:';
+      $('#resAmount').textContent = fmtIN(amount);
+      $('#resRate').textContent = rate + '%';
+      const badge = $('#resBadge'); badge.textContent = 'APPROVED'; badge.classList.remove('no');
+      // draw checkmark
+      const ck = result.querySelector('.ck');
+      const len = ck.getTotalLength();
+      gsap.set(ck, { strokeDasharray: len, strokeDashoffset: len });
+      gsap.to(ck, { strokeDashoffset: 0, duration: 0.6, ease: 'power2.inOut' });
+      confettiBurst(result);
+    } else {
+      $('#resTitle').textContent = 'Almost there';
+      $('#resSub').textContent = 'Based on your current profile, you’re not eligible right now. Here’s how to qualify:';
+      $('#resAmount').textContent = '—';
+      $('#resRate').textContent = '—';
+      const badge = $('#resBadge'); badge.textContent = 'NOT ELIGIBLE'; badge.classList.add('no');
+      const tipBox = $('#resSub');
+      tipBox.insertAdjacentHTML('afterend', '<div id="tipsBox" style="margin-top:14px;text-align:left;color:var(--muted);background:var(--p-100);padding:14px 18px;border-radius:12px">' + tips.map(t => '• ' + t).join('<br>') + '</div>');
+    }
+  }, 350);
+}
+function confettiBurst(host) {
+  if (REDUCED) return;
+  const r = host.getBoundingClientRect();
+  const colors = ['#4f46e5', '#7c3aed', '#06b6d4', '#f59e0b', '#10b981'];
+  for (let i = 0; i < 40; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = r.left + r.width / 2 + 'px';
+    c.style.top = r.top + r.height / 2 + 'px';
+    c.style.background = colors[i % colors.length];
+    document.body.appendChild(c);
+    gsap.to(c, {
+      x: gsap.utils.random(-220, 220), y: gsap.utils.random(60, 420),
+      rotation: gsap.utils.random(-360, 360),
+      autoAlpha: 0, duration: gsap.utils.random(1.2, 2.2),
+      ease: 'power2.out', onComplete: () => c.remove()
+    });
+  }
+}
+showStep(0);
+
+// ============ HOW IT WORKS (simple reveal) ============
+const howTrack = $('#howTrack'), howSteps = $$('.how-step', howTrack);
+if (howTrack) {
+  howSteps.forEach((st, i) => {
+    st.classList.add('on');
+    gsap.from(st, {
+      autoAlpha: 0.2, y: 24, duration: 0.6, ease: 'power2.out',
+      delay: i * 0.1,
+      scrollTrigger: { trigger: st, start: 'top 85%' }
+    });
+  });
+}
+
+// ============ FAQ ACCORDION ============
+$$('.faq-item').forEach((item, i) => {
+  const q = item.querySelector('.faq-q');
+  const a = item.querySelector('.faq-a');
+  const v = item.querySelector('.v');
+  gsap.set(a, { height: 0 });
+  // entrance
+  gsap.from(item, {
+    x: i % 2 === 0 ? -50 : 50, rotationX: 10,
+    autoAlpha: 0, duration: 0.7, ease: 'power3.out',
+    scrollTrigger: { trigger: item, start: 'top 88%' }
+  });
+  gsap.set(item, { transformPerspective: 800 });
+  function toggle() {
+    const isOpen = item.classList.contains('open');
+    if (isOpen) {
+      gsap.to(item, { y: 0, boxShadow: '0 8px 30px -18px rgba(20,20,26,.18)', duration: 0.4 });
+      gsap.to(a, { height: 0, duration: 0.45, ease: 'power2.inOut' });
+      gsap.to(v, { scale: 0, rotation: 90, duration: 0.3 });
+      item.classList.remove('open');
+    } else {
+      $$('.faq-item.open').forEach(o => { if (o !== item) { o.querySelector('.faq-a') && gsap.to(o.querySelector('.faq-a'), { height: 0, duration: 0.4 }); o.classList.remove('open'); gsap.to(o.querySelector('.v'), { scale: 0, rotation: 90, duration: 0.3 }); gsap.to(o, { y: 0, duration: 0.4 }); } });
+      item.classList.add('open');
+      gsap.to(a, { height: 'auto', duration: 0.5, ease: 'power2.inOut' });
+      gsap.fromTo(v, { scale: 0 }, { scale: 1, rotation: 45, duration: 0.4, ease: 'back.out(2)' });
+      gsap.to(item, { y: -4, duration: 0.4, ease: 'power2.out' });
+    }
+  }
+  q.addEventListener('click', toggle);
+  q.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
+});
+
+// ============ TESTIMONIALS (coverflow) ============
+const tstCards = $$('.tst-card');
+let tstActive = 0;
+const tstCount = tstCards.length;
+function layoutTst() {
+  tstCards.forEach((card, i) => {
+    let off = i - tstActive;
+    // wrap
+    if (off > tstCount / 2) off -= tstCount;
+    if (off < -tstCount / 2) off += tstCount;
+    const abs = Math.abs(off);
+    const z = abs === 0 ? 0 : -120 * abs;
+    const rot = off * 22;
+    const x = off * 160;
+    const scale = 1 - abs * 0.12;
+    const alpha = abs === 0 ? 1 : 0.45;
+    gsap.to(card, { x, z, rotationY: rot, scale, autoAlpha: alpha, duration: 0.8, ease: 'power3.out' });
+    gsap.set(card, { transformPerspective: 1100, zIndex: 100 - abs });
+  });
+}
+function popStars(card) {
+  const stars = card.querySelector('.tst-stars');
+  const chars = [...stars.textContent];
+  stars.textContent = '';
+  chars.forEach((ch, i) => {
+    const s = document.createElement('span');
+    s.textContent = ch; s.style.display = 'inline-block';
+    stars.appendChild(s);
+    gsap.from(s, { scale: 0, rotation: -90, duration: 0.5, delay: i * 0.08, ease: 'back.out(2)' });
+  });
+}
+function advanceTst(dir) {
+  tstActive = (tstActive + dir + tstCount) % tstCount;
+  layoutTst();
+}
+// drag
+if (!REDUCED && typeof Draggable !== 'undefined') {
+  let startX = 0;
+  Draggable.create('#tstStage', {
+    type: 'x', inertia: true,
+    onPress: function() { startX = this.x; },
+    onDragEnd: function() {
+      const dx = this.x - startX;
+      if (dx < -60) advanceTst(1);
+      else if (dx > 60) advanceTst(-1);
+      gsap.to(this.target, { x: 0, duration: 0.4 });
+    }
+  });
+}
+$('#tstNext').addEventListener('click', () => advanceTst(1));
+$('#tstPrev').addEventListener('click', () => advanceTst(-1));
+if (!REDUCED) {
+  setInterval(() => advanceTst(1), 4000);
+}
+layoutTst();
+popStars(tstCards[0]);
+
+// ============ CTA ORBIT COINS ============
+function initOrbit() {
+  const orbit = $('#orbitCoins');
+  if (!orbit) return;
+  orbit.style.width = '0'; orbit.style.height = '0';
+  orbit.style.left = '50%'; orbit.style.top = '50%';
+  const sizes = [30, 22, 18], fonts = ['.7rem', '.5rem', '.4rem'];
+  for (let i = 0; i < 3; i++) {
+    const w = document.createElement('div');
+    w.style.cssText = 'position:absolute;left:0;top:0';
+    const c = document.createElement('div');
+    c.className = 'floatcoin';
+    c.style.cssText = `width:${sizes[i]}px;height:${sizes[i]}px;font-size:${fonts[i]}`;
+    c.textContent = '₹';
+    w.appendChild(c); orbit.appendChild(w);
+    c.style.left = '120px'; c.style.top = '0';
+    gsap.set(w, { rotation: i * 120 });
+    if (!REDUCED) {
+      gsap.to(w, { rotation: '+=360', duration: 14 + i * 3, repeat: -1, ease: 'none' });
+    }
+  }
+}
+initOrbit();
+// pulsing CTA
+const ctaBtn = $('#ctaBtn');
+if (ctaBtn && !REDUCED) {
+  gsap.to(ctaBtn, { scale: 1.04, boxShadow: '0 0 0 14px rgba(6,182,212,.12),0 24px 50px -16px rgba(79,70,229,.6)', duration: 1.2, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+}
+
+// ============ MODAL ============
+const modal = $('#modal');
+function animateDashboard() {
+  const bars = $$('#dashBars i');
+  gsap.from(bars, { scaleY: 0, duration: 1, ease: 'power3.out', stagger: 0.06, delay: 0.5 });
+  const balEl = $('#dashBal');
+  const balCounter = { v: 0 };
+  gsap.to(balCounter, {
+    v: 125000, duration: 1.4, ease: 'power1.inOut', delay: 0.6,
+    onUpdate: () => { balEl.textContent = '₹' + Math.round(balCounter.v).toLocaleString('en-IN'); }
+  });
+  const loansEl = $('#statLoans');
+  const loansCounter = { v: 0 };
+  gsap.to(loansCounter, { v: 12, duration: 1, delay: 0.8, onUpdate: () => { loansEl.textContent = Math.round(loansCounter.v); } });
+  const scoreEl = $('#statScore');
+  const scoreCounter = { v: 600 };
+  gsap.to(scoreCounter, { v: 768, duration: 1.2, delay: 0.9, onUpdate: () => { scoreEl.textContent = Math.round(scoreCounter.v); } });
+}
+function spawnSceneCoins() {
+  const floats = $$('.login-brand .bg-elems .float');
+  floats.forEach((c, i) => {
+    gsap.set(c, { transformPerspective: 600 });
+    if (i % 2 === 0) {
+      gsap.to(c, { y: 'random(-24, 24)', rotation: 'random(-15, 15)', duration: gsap.utils.random(2.5, 4), yoyo: true, repeat: -1, ease: 'sine.inOut' });
+    } else {
+      gsap.to(c, { rotationY: 360, duration: gsap.utils.random(3, 5), repeat: -1, ease: 'none' });
+      gsap.to(c, { scale: 1.3, duration: gsap.utils.random(1.4, 2.2), yoyo: true, repeat: -1, ease: 'sine.inOut' });
+    }
+  });
+  const sparks = $$('.login-brand .bg-elems .spark');
+  sparks.forEach(s => {
+    gsap.fromTo(s, { opacity: 0.2, scale: 1 }, { opacity: 1, scale: 2, duration: 1.4, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+  });
+}
+function openModal() {
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  resetLogin();
+  spawnSceneCoins();
+  animateDashboard();
+  if (IS_MOBILE()) {
+    gsap.fromTo('#loginForm', { y: 60, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.6, ease: 'power3.out' });
+  } else {
+    gsap.fromTo('#loginBrand', { x: -80, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.8, ease: 'power3.out' });
+    gsap.fromTo('#loginForm', { x: 80, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.8, ease: 'power3.out', delay: 0.1 });
+  }
+}
+function closeModal() { modal.classList.remove('open'); document.body.style.overflow = ''; }
+$$('[data-open-modal]').forEach(b => b.addEventListener('click', openModal));
+$$('[data-close]').forEach(b => b.addEventListener('click', closeModal));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+$('#modal').addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+let loginStep = 'phone';
+function showOtpField(show) {
+  $('#otpField').style.display = show ? 'block' : 'none';
+  if (!show) { $('#mOtp').value = ''; $('#errOtp').textContent = ''; }
+}
+function validatePhone() {
+  const phone = $('#mPhone');
+  const ok = /^\d{10}$/.test(phone.value.trim());
+  $('#errPhone').textContent = ok ? '' : 'Enter a valid 10-digit mobile number.';
+  if (!ok) phone.focus();
+  return ok;
+}
+$('#submitApply').addEventListener('click', () => {
+  if (loginStep === 'phone') {
+    if (!validatePhone()) return;
+    loginStep = 'otp';
+    $('#mPhone').setAttribute('disabled', 'disabled');
+    showOtpField(true);
+    $('#submitApply').textContent = 'Verify OTP';
+    $('#errOtp').textContent = 'Demo: use OTP 1234';
+    $('#mOtp').focus();
+  } else {
+    const otp = $('#mOtp').value.trim();
+    if (otp !== '1234') {
+      $('#errOtp').textContent = otp ? 'Incorrect OTP. Use 1234.' : 'Enter the 4-digit OTP.';
+      return;
+    }
+    $('#errOtp').textContent = '';
+    $('#formView').style.display = 'none';
+    $('#loadingView').style.display = 'block';
+    setTimeout(() => {
+      $('#loadingView').style.display = 'none';
+      const amt = 50000;
+      const mr = 0.26 / 12; // 26% p.a. monthly
+      const emi = Math.round(amt * mr * Math.pow(1 + mr, 12) / (Math.pow(1 + mr, 12) - 1));
+      $('#offerAmount').textContent = fmtIN(amt);
+      $('#offerRate').textContent = '26% p.a.';
+      $('#offerEmi').textContent = fmtIN(emi);
+      $('#offerView').classList.add('show');
+      gsap.fromTo('#offerView', { scale: 0.8, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.6, ease: 'back.out(1.8)' });
+    }, 1400);
+  }
+});
+function resetLogin() {
+  loginStep = 'phone';
+  $('#mPhone').removeAttribute('disabled');
+  showOtpField(false);
+  $('#submitApply').textContent = 'Login';
+}
+$('#acceptOffer').addEventListener('click', () => {
+  $('#offerView').classList.remove('show');
+  $('#okAmt').textContent = fmtIN(50000);
+  $('#okView').classList.add('show');
+  gsap.fromTo('#okView', { scale: 0.85, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.6, ease: 'back.out(1.8)' });
+});
+
+// ============ DARK MODE TOGGLE ============
+function initTheme() {
+  const saved = localStorage.getItem('financily-theme');
+  if (saved === 'dark') applyTheme(true);
+}
+function applyTheme(dark) {
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  $('#themeToggle').textContent = dark ? '☀️' : '🌙';
+  localStorage.setItem('financily-theme', dark ? 'dark' : 'light');
+}
+$('#themeToggle').addEventListener('click', () => applyTheme(!isDark()));
+initTheme();
+
+// ============ REFRESH TRIGGERS ============
+ScrollTrigger.refresh();
+</script>
+</body>
+</html>
