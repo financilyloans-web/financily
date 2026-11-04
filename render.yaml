@@ -13,3 +13,5 @@ services:
       - {key: JWT_SECRET, generateValue: true}
       - {key: ADMIN_USER, sync: false}
       - {key: ADMIN_PASS, sync: false}
+      - {key: FREEOCR_API_KEY, sync: false}
+      - {key: FIREBASE_SERVICE_ACCOUNT, sync: false}

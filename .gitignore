@@ -1,5 +1,6 @@
 node_modules
 .env
+.env.render
 .DS_Store
 _mobile_*.png
 frontend/dist/

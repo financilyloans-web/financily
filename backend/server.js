@@ -92,7 +92,7 @@ async function sendMail(to,subject,text){
 const notify=(subject,text)=>{if(emailEnabled()&&process.env.NOTIFY_EMAIL)sendMail(process.env.NOTIFY_EMAIL,subject,text).catch(e=>console.error('notify mail:',e.message))};
 if(process.env.BREVO_API_KEY)console.log('Email: Brevo API enabled');
 else if(mailer)mailer.verify().then(()=>console.log('Email: SMTP ready')).catch(e=>console.error('Email: SMTP FAILED -',e.message));
-else console.log('Email: not configured (set BREVO_API_KEY + MAIL_FROM_EMAIL)');
+else console.log('Email: not configured (set SMTP_HOST/SMTP_USER or BREVO_API_KEY to enable OTP email).');
 
 app.get('/api/health',(q,r)=>r.json({ok:true,db:mongoose.connection.readyState===1}));
 
