@@ -450,15 +450,62 @@ function isValidPAN(pan) {
   return panRegex.test(pan);
 }
 
+/**
+ * Validates a PAN number and checks if it belongs exclusively to an Individual.
+ *
+ * @param {string} pan - The PAN number to check (e.g., "ABCDE1234F")
+ * @returns {object} - Verification result with status and message
+ */
+function verifyIndividualPan(pan) {
+  // 1. Standard PAN format regex: 5 letters, 4 numbers, 1 letter
+  const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+
+  if (!pan || typeof pan !== 'string') {
+    return { status: 'invalid', message: 'PAN is required and must be a string.' };
+  }
+
+  const cleanPan = pan.trim().toUpperCase();
+
+  // 2. Check basic syntax
+  if (!panRegex.test(cleanPan)) {
+    return { status: 'invalid', message: 'Invalid PAN format.' };
+  }
+
+  // 3. Extract the 4th letter (index 3) which denotes Holder Type
+  const holderType = cleanPan.charAt(3);
+
+  // 4. Check if the 4th letter is 'P' (Individual)
+  if (holderType === 'P') {
+    return {
+      status: 'verified',
+      tag: 'VERIFIED INDIVIDUAL',
+      message: 'PAN belongs to an Individual.'
+    };
+  } else {
+    // Rest of all categories (C, H, F, T, etc.) are treated as invalid/non-individual
+    return {
+      status: 'invalid',
+      tag: 'INVALID',
+      message: `PAN holder type '${holderType}' is not an Individual.`
+    };
+  }
+}
+
 // Live PAN verification shown right after OCR fills the box (or on typing).
 function verifyPanLive() {
   const raw = $('panNo').value.trim().toUpperCase();
   const err = $('panFields').querySelector('.err');
   if (!raw) { err.textContent = ''; return false; }
-  const ok = isValidPAN(raw);
-  err.textContent = ok ? '✓ Valid PAN format' : '✗ Invalid PAN format (e.g. ABCDE1234F)';
-  err.style.color = ok ? '#16a34a' : '#dc2626';
-  return ok;
+  const result = verifyIndividualPan(raw);
+  if (result.status === 'verified') {
+    err.textContent = '✓ ' + result.tag + ' — ' + result.message;
+    err.style.color = '#16a34a';
+    return true;
+  } else {
+    err.textContent = '✗ ' + result.message;
+    err.style.color = '#dc2626';
+    return false;
+  }
 }
 $('panNo').addEventListener('input', verifyPanLive);
 
