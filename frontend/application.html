@@ -84,6 +84,11 @@ header.appbar{position:sticky;top:0;z-index:60;background:var(--glass);backdrop-
 .field input,.field select,.field textarea{width:100%;padding:12px 13px;border:1.5px solid var(--border);border-radius:12px;font-size:.95rem;font-family:inherit;background:var(--surface);color:var(--text);transition:border-color .25s,box-shadow .25s}
 .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--p-100)}
 .field .err{color:var(--bad);font-size:.78rem;min-height:13px;margin-top:3px}
+.pan-row{display:flex;align-items:center;gap:8px}
+.pan-row input{flex:1;min-width:0}
+.pan-badge{display:none;flex:none;padding:4px 12px;border-radius:999px;font-size:.72rem;font-weight:700;letter-spacing:.02em;white-space:nowrap}
+.pan-badge.ok{display:inline-flex;align-items:center;gap:4px;background:var(--good);color:#fff}
+.pan-badge.bad{display:inline-flex;align-items:center;gap:4px;background:var(--bad);color:#fff}
 .pill{display:inline-flex;align-items:center;gap:6px;background:var(--good);color:#fff;font-size:.78rem;font-weight:700;border-radius:999px;padding:4px 12px;margin-bottom:10px}
 
 /* sliders */
@@ -155,7 +160,7 @@ footer{text-align:center;padding:18px;color:var(--muted);font-size:.78rem}
       <button class="sample" id="panSample">Use sample card (demo)</button>
         <div class="ocrfields" id="panFields">
           <div class="field"><label>Full name (from PAN)</label><input id="panName" placeholder="Name on PAN" maxlength="60"></div>
-          <div class="field"><label>PAN number</label><input id="panNo" placeholder="ABCDE1234F" maxlength="10"></div>
+          <div class="field"><label>PAN number</label><div class="pan-row"><input id="panNo" placeholder="ABCDE1234F" maxlength="10"><span id="panBadge" class="pan-badge"></span></div></div>
           <div class="field"><label>Date of birth (if present)</label><input id="panDob" type="date"></div>
           <div class="err"></div>
         </div>
@@ -495,15 +500,24 @@ function verifyIndividualPan(pan) {
 function verifyPanLive() {
   const raw = $('panNo').value.trim().toUpperCase();
   const err = $('panFields').querySelector('.err');
-  if (!raw) { err.textContent = ''; return false; }
+  const badge = $('panBadge');
+  if (!raw) {
+    err.textContent = '';
+    badge.className = 'pan-badge';
+    return false;
+  }
   const result = verifyIndividualPan(raw);
   if (result.status === 'verified') {
-    err.textContent = '✓ ' + result.tag + ' — ' + result.message;
+    err.textContent = result.message;
     err.style.color = '#16a34a';
+    badge.className = 'pan-badge ok';
+    badge.textContent = '✓ Verified Individual';
     return true;
   } else {
-    err.textContent = '✗ ' + result.message;
+    err.textContent = result.message;
     err.style.color = '#dc2626';
+    badge.className = 'pan-badge bad';
+    badge.textContent = '✕ Invalid';
     return false;
   }
 }
