@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Financily — Loan Application</title>
+<script type="module" src="config.js"></script>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 48 48%22><circle cx=%2224%22 cy=%2224%22 r=%2222%22 fill=%22%234f46e5%22/><text x=%2224%22 y=%2231%22 text-anchor=%22middle%22 font-size=%2219%22 font-weight=%22800%22 fill=%22white%22>₹</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -557,20 +558,35 @@ $('submitBtn').addEventListener('click', async () => {
   errEl.textContent = '';
   const btn = $('submitBtn');
   btn.disabled = true; btn.textContent = 'Submitting…';
+  const mobile = (localStorage.getItem('financily-phone') || '').replace(/\D/g,'').slice(-10);
   const rec = {
-    name: $('panName').value.trim(), pan: $('panNo').value.trim(),
-    aadhaar: $('aadNo').value.replace(/\D/g,''),
-    employmentType: $('eType').value, employer: $('eOrg').value.trim(),
-    income: +($('eIncome').value||0), existingEmi: +($('eEmi').value||0),
-    amount: +$('lAmt').value, tenure: +$('lTen').value, purpose: $('lPurpose').value,
+    Name: $('panName').value.trim(),
+    Mobile: mobile,
+    PAN: $('panNo').value.trim().toUpperCase(),
+    Email: '',
+    City: '',
+    loanType: $('lPurpose').value,
+    LoanType: $('lPurpose').value,
+    Amount: +$('lAmt').value,
+    Tenure: +$('lTen').value,
+    Income: +($('eIncome').value||0),
+    employer: $('eOrg').value.trim(),
+    employmentType: $('eType').value,
+    source: 'full',
     consent: true
   };
   const loanNo = 'LN-' + Date.now().toString(36).toUpperCase();
   localStorage.setItem('financily-application', JSON.stringify(Object.assign({}, rec, { loanNo, savedAt: new Date().toISOString() })));
+  const apiBase = window.FIN_API_URL || '';
+  let saveOk = false;
   try {
-    const r = await fetch('/api/applications', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(rec) });
-    if (!r.ok) { /* still show local result */ }
-  } catch(e) {}
+    const r = await fetch(apiBase + '/api/applications', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(rec) });
+    const j = await r.json().catch(() => ({}));
+    if (r.ok && j.ok) { saveOk = true; }
+    else { errEl.textContent = (j && j.error) || 'Server could not save your application.'; }
+  } catch(e) {
+    errEl.textContent = 'Network error — could not reach the server. Your application is saved on this device only.';
+  }
   $('loanNo').textContent = loanNo;
   goTo(5);
   gsap.from('.done-card .ring', { scale:0, rotation:180, duration:.8, ease:'back.out(1.7)' });

@@ -1484,7 +1484,10 @@ $('#submitApply').addEventListener('click', () => {
     // Sign the user in with the SMS code (modular PhoneAuthProvider path).
     const credential = PhoneAuthProvider.credential(confirmationResult.verificationId, otp);
     signInWithCredential(auth, credential)
-      .then(() => { window.location.replace('application.html'); })
+      .then(() => {
+        try { localStorage.setItem('financily-phone', $('#mPhone').value.trim()); } catch (e) {}
+        window.location.replace('application.html');
+      })
       .catch(err => {
         $('#errOtp').textContent = fbErr(err);
         btn.textContent = 'Verify OTP';
