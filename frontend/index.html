@@ -45,6 +45,9 @@ section{padding:clamp(4rem,10vw,8rem) 0;position:relative}
 .btn .shine{position:absolute;top:0;left:-80%;width:60%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg)}
 .btn-ghost{background:transparent;color:var(--primary)!important;border:1.5px solid var(--primary);box-shadow:none}
 .btn-ghost .shine{display:none}
+.btn-google{background:#fff!important;color:#202124!important;border:1px solid #dadce0!important;box-shadow:none}
+.btn-google:hover{transform:translateY(-2px);box-shadow:0 8px 24px -12px rgba(0,0,0,.25)}
+.btn-google .shine{display:none}
 
 /* ============ PRELOADER ============ */
 #preloader{position:fixed;inset:0;z-index:1000;background:var(--heading);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px}
@@ -362,6 +365,7 @@ html[data-theme=dark] .seg button{background:var(--surface);border-color:var(--b
     </a>
     <div class="nav-actions">
       <button class="btn" id="themeToggle" aria-label="Toggle dark mode" style="width:44px;padding:10px;border-radius:12px;justify-content:center">🌙</button>
+      <button class="btn btn-ghost" id="navSignOut" style="display:none">Sign out</button>
     </div>
   </div>
 </nav>
@@ -710,8 +714,11 @@ html[data-theme=dark] .seg button{background:var(--surface);border-color:var(--b
         <p class="sub">Enter your mobile number to continue.</p>
         <div id="formView">
           <div class="field"><label for="mPhone">Mobile number</label><div style="display:flex;gap:10px"><span style="display:flex;align-items:center;padding:0 14px;border:1.5px solid var(--border);border-radius:13px;color:var(--muted);font-weight:600;background:var(--bg)">+91</span><input type="tel" id="mPhone" placeholder="10-digit mobile" style="flex:1" required></div><div class="err" id="errPhone"></div></div>
-          <div class="field" id="otpField" style="display:none"><label for="mOtp">Enter OTP</label><input type="text" id="mOtp" placeholder="4-digit OTP" inputmode="numeric" style="width:100%" required><div class="err" id="errOtp"></div></div>
-          <button class="btn" id="submitApply" style="width:100%;justify-content:center">Login <span class="shine"></span></button>
+          <div class="field" id="otpField" style="display:none"><label for="mOtp">Enter OTP</label><input type="text" id="mOtp" placeholder="6-digit OTP" inputmode="numeric" style="width:100%" required><div class="err" id="errOtp"></div></div>
+          <div id="recaptcha-container" style="margin:14px 0"></div>
+<button class="btn" id="submitApply" style="width:100%;justify-content:center">Login <span class="shine"></span></button>
+        <div style="display:flex;align-items:center;gap:12px;margin:16px 0"><span style="flex:1;height:1px;background:var(--border)"></span><span style="color:var(--muted);font-size:.85rem">or</span><span style="flex:1;height:1px;background:var(--border)"></span></div>
+        <button class="btn btn-google" id="googleBtn" style="width:100%;justify-content:center">Continue with Google</button>
         </div>
         <div class="load-ring-wrap" id="loadingView" style="display:none;text-align:center;padding:30px 0">
           <div class="load-ring"></div><p style="color:var(--muted)">Checking your offer…</p>
@@ -724,17 +731,23 @@ html[data-theme=dark] .seg button{background:var(--surface);border-color:var(--b
           <div class="kpi"><span>Interest rate</span><b id="offerRate">26% p.a.</b></div>
           <div class="kpi"><span>Monthly EMI</span><b id="offerEmi">₹4,803</b></div>
           <div style="margin-top:20px"><button class="btn" id="acceptOffer" style="width:100%;justify-content:center">Accept & get money <span class="shine"></span></button></div>
+          <button class="btn" id="signOutBtnOffer" style="width:100%;margin-top:10px;background:transparent;color:var(--muted);border:1px solid var(--border)">Sign out</button>
         </div>
         <div class="form-ok" id="okView">
           <div class="tst-ava" style="margin:0 auto 14px">✓</div>
           <h3>Application received!</h3>
           <p style="color:var(--muted)">Payout of <b id="okAmt" style="color:var(--primary)">₹50,000</b> will arrive in your account in minutes. We've sent the details to your phone.</p>
+          <div style="margin-top:20px"><button class="btn" id="signOutBtnOk" style="width:100%;justify-content:center;background:transparent;color:var(--muted);border:1px solid var(--border)">Sign out</button></div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="firebase.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/MotionPathPlugin.min.js"></script>
@@ -1380,6 +1393,22 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal()
 $('#modal').addEventListener('click', e => { if (e.target === modal) closeModal(); });
 
 let loginStep = 'phone';
+let confirmationResult = null;
+let recaptchaVerifier = null;
+
+function fbErr(e) {
+  const map = {
+    'auth/code-expired': 'Code expired. Request a new one.',
+    'auth/invalid-verification-code': 'Incorrect code. Please try again.',
+    'auth/invalid-phone-number': 'That phone number looks invalid.',
+    'auth/quota-exceeded': 'Too many attempts. Try again later.',
+    'auth/too-many-requests': 'Too many requests. Please wait a bit.',
+    'auth/unauthorized-domain': 'This domain is not authorized for Firebase phone sign-in. Add it in Firebase Console (Authentication > Settings > Authorized domains).',
+    'auth/recaptcha-not-enabled': 'reCAPTCHA/Phone sign-in is not enabled for this domain. Enable the Phone provider and add the domain in Firebase Console.',
+    'auth/user-disabled': 'This account has been disabled.'
+  };
+  return map[e.code] || e.message || 'Something went wrong. Please try again.';
+}
 function showOtpField(show) {
   $('#otpField').style.display = show ? 'block' : 'none';
   if (!show) { $('#mOtp').value = ''; $('#errOtp').textContent = ''; }
@@ -1394,36 +1423,89 @@ function validatePhone() {
 $('#submitApply').addEventListener('click', () => {
   if (loginStep === 'phone') {
     if (!validatePhone()) return;
-    loginStep = 'otp';
-    $('#mPhone').setAttribute('disabled', 'disabled');
-    showOtpField(true);
-    $('#submitApply').textContent = 'Verify OTP';
-    $('#errOtp').textContent = 'Demo: use OTP 1234';
-    $('#mOtp').focus();
+    if (!window.firebase || !firebase.auth) {
+      $('#errOtp').textContent = 'Firebase Auth is not ready yet. Check the CDN scripts.';
+      return;
+    }
+    const btn = $('#submitApply');
+    if (!recaptchaVerifier) {
+      recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+        size: 'invisible',
+        'expired-callback': () => {
+          $('#errOtp').textContent = 'Security check expired. Please try again.';
+          btn.disabled = false;
+          btn.textContent = 'Login';
+        },
+        'error-callback': () => {
+          $('#errOtp').textContent = 'Security check failed. Please try again.';
+          btn.disabled = false;
+          btn.textContent = 'Login';
+        }
+      });
+    }
+    const phone = '+91' + $('#mPhone').value.trim();
+    btn.disabled = true;
+    btn.textContent = 'Sending code…';
+    firebase.auth().signInWithPhoneNumber(phone, recaptchaVerifier)
+      .then(result => {
+        confirmationResult = result;
+        loginStep = 'otp';
+        $('#mPhone').setAttribute('disabled', 'disabled');
+        showOtpField(true);
+        btn.textContent = 'Verify OTP';
+        $('#errPhone').textContent = '';
+        $('#errOtp').textContent = '';
+        $('#mOtp').focus();
+      })
+      .catch(err => {
+        $('#errPhone').textContent = fbErr(err);
+        btn.textContent = 'Login';
+      })
+      .finally(() => { btn.disabled = false; });
   } else {
     const otp = $('#mOtp').value.trim();
-    if (otp !== '1234') {
-      $('#errOtp').textContent = otp ? 'Incorrect OTP. Use 1234.' : 'Enter the 4-digit OTP.';
+    if (!otp) {
+      $('#errOtp').textContent = 'Enter the code sent to your phone.';
       return;
     }
     $('#errOtp').textContent = '';
-    $('#formView').style.display = 'none';
-    $('#loadingView').style.display = 'block';
-    setTimeout(() => {
-      $('#loadingView').style.display = 'none';
-      const amt = 50000;
-      const mr = 0.26 / 12; // 26% p.a. monthly
-      const emi = Math.round(amt * mr * Math.pow(1 + mr, 12) / (Math.pow(1 + mr, 12) - 1));
-      $('#offerAmount').textContent = fmtIN(amt);
-      $('#offerRate').textContent = '26% p.a.';
-      $('#offerEmi').textContent = fmtIN(emi);
-      $('#offerView').classList.add('show');
-      gsap.fromTo('#offerView', { scale: 0.8, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.6, ease: 'back.out(1.8)' });
-    }, 1400);
+    const btn = $('#submitApply');
+    btn.disabled = true;
+    btn.textContent = 'Verifying…';
+    var credential = firebase.auth.PhoneAuthProvider.credential(confirmationResult.verificationId, otp);
+    firebase.auth().signInWithCredential(credential)
+      .then(showOffer)
+      .catch(err => {
+        $('#errOtp').textContent = fbErr(err);
+        btn.textContent = 'Verify OTP';
+      })
+      .finally(() => { btn.disabled = false; });
   }
 });
+function showOffer() {
+  $('#formView').style.display = 'none';
+  $('#loadingView').style.display = 'block';
+  setTimeout(() => {
+    $('#loadingView').style.display = 'none';
+    const amt = 50000;
+    const mr = 0.26 / 12; // 26% p.a. monthly
+    const emi = Math.round(amt * mr * Math.pow(1 + mr, 12) / (Math.pow(1 + mr, 12) - 1));
+    $('#offerAmount').textContent = fmtIN(amt);
+    $('#offerRate').textContent = '26% p.a.';
+    $('#offerEmi').textContent = fmtIN(emi);
+    $('#offerView').classList.add('show');
+    gsap.fromTo('#offerView', { scale: 0.8, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.6, ease: 'back.out(1.8)' });
+  }, 1400);
+}
 function resetLogin() {
   loginStep = 'phone';
+  confirmationResult = null;
+  if (recaptchaVerifier) {
+    try { recaptchaVerifier.clear(); } catch (e) {}
+    recaptchaVerifier = null;
+  }
+  const rc = document.getElementById('recaptcha-container');
+  if (rc) rc.innerHTML = '';
   $('#mPhone').removeAttribute('disabled');
   showOtpField(false);
   $('#submitApply').textContent = 'Login';
@@ -1433,6 +1515,32 @@ $('#acceptOffer').addEventListener('click', () => {
   $('#okAmt').textContent = fmtIN(50000);
   $('#okView').classList.add('show');
   gsap.fromTo('#okView', { scale: 0.85, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.6, ease: 'back.out(1.8)' });
+});
+
+function signOutApp() {
+  if (!window.firebase || !firebase.auth) { closeModal(); return; }
+  firebase.auth().signOut()
+    .then(() => { resetLogin(); closeModal(); })
+    .catch(err => { $('#errOtp').textContent = fbErr(err); });
+}
+$('#signOutBtnOffer').addEventListener('click', signOutApp);
+$('#signOutBtnOk').addEventListener('click', signOutApp);
+
+$('#googleBtn').addEventListener('click', () => {
+  if (!window.firebase || !firebase.auth) return;
+  const provider = new firebase.auth.GoogleAuthProvider();
+  firebase.auth().signInWithPopup(provider)
+    .then(() => { resetLogin(); showOffer(); })
+    .catch(err => { $('#errPhone').textContent = fbErr(err); });
+});
+
+firebase.auth().onAuthStateChanged(user => {
+  const navEl = document.getElementById('navSignOut');
+  if (navEl) navEl.style.display = user ? 'inline-flex' : 'none';
+});
+const navSignOutEl = document.getElementById('navSignOut');
+if (navSignOutEl) navSignOutEl.addEventListener('click', () => {
+  firebase.auth().signOut().catch(err => console.error(err));
 });
 
 // ============ DARK MODE TOGGLE ============
