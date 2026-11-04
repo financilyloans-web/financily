@@ -156,7 +156,7 @@ footer{text-align:center;padding:18px;color:var(--muted);font-size:.78rem}
           <div class="cap" data-cap="pan" data-cam="true"><span class="ci">📷</span><b>Camera</b><small>Take photo</small></div>
         </div>
         <div class="preview" id="panPrev"><img id="panImg"><div class="scanline" id="panScan"></div><div class="ocrspin" id="panSpin"><span class="ring"></span>Reading card…</div></div>
-        <p class="hint" style="margin-bottom:0">🧠 OCR runs securely through our server proxy (FreeOCR) — no keys stored on your device.</p>
+        <p class="hint" style="margin-bottom:0">🧠 OCR reads your card with Puter.js cloud OCR (fall back to in-browser Tesseract). Your image is processed for text extraction only.</p>
       <button class="sample" id="panSample">Use sample card (demo)</button>
         <div class="ocrfields" id="panFields">
           <div class="field"><label>Full name (from PAN)</label><input id="panName" placeholder="Name on PAN" maxlength="60"></div>
@@ -255,6 +255,8 @@ footer{text-align:center;padding:18px;color:var(--muted);font-size:.78rem}
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<!-- Puter.js (cloud OCR via puter.ai.img2txt). Loads global `puter`. -->
+<script src="https://js.puter.com/v2/"></script>
 
 <script type="module">
 import { auth } from './src/firebase.js';
@@ -377,8 +379,17 @@ function enhanceImage(file, max = 1600){
 }
 
 async function runOcr(file){
-  // In-browser OCR via Tesseract.js (WASM). No server proxy or API key needed.
+  // Cloud OCR via Puter.js (puter.ai.img2txt) — more accurate on card photos.
+  // Falls back to in-browser Tesseract.js if Puter is unavailable or errors.
   const enhanced = await enhanceImage(file);
+  try {
+    if (window.puter && puter.ai && typeof puter.ai.img2txt === 'function') {
+      const text = await puter.ai.img2txt(enhanced);
+      if (text && String(text).trim()) return String(text).trim();
+    }
+  } catch(e) {
+    console.warn('Puter OCR failed, falling back to Tesseract:', e);
+  }
   const dataUrl = await readAsDataURL(enhanced);
   if (!worker) worker = await createWorker('eng');
   const { data } = await worker.recognize(dataUrl);
