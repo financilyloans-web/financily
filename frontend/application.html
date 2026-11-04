@@ -310,7 +310,7 @@ caps.forEach(cap => {
     const kind = cap.dataset.cap;
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'image/*';
+    input.accept = 'image/*,.pdf';
     if (cap.dataset.cam === 'true') input.setAttribute('capture','environment');
     input.addEventListener('change', () => {
       const f = input.files[0];
@@ -325,12 +325,13 @@ function readAsDataURL(file){
 }
 
 async function processCard(kind, file){
-  const dataUrl = await readAsDataURL(file);
+  const isPdf = file && (file.type === 'application/pdf' || /\.pdf$/i.test(file.name || ''));
   const img = kind === 'pan' ? $('panImg') : $('aadImg');
   const prev = kind === 'pan' ? $('panPrev') : $('aadPrev');
+  const fields = kind === 'pan' ? $('panFields') : $('aadFields');
   const scan = kind === 'pan' ? $('panScan') : $('aadScan');
   const spin = kind === 'pan' ? $('panSpin') : $('aadSpin');
-  img.src = dataUrl;
+  if (!isPdf) { img.src = await readAsDataURL(file); }   // PDFs can't preview in <img>
   prev.classList.add('on');
   scan.classList.add('on'); spin.classList.add('on');
   gsap.fromTo(scan, { top: '0%' }, { top: '100%', duration: 1.1, repeat: 3, yoyo: true, ease: 'power1.inOut', onComplete(){ scan.classList.remove('on'); } });
@@ -339,7 +340,8 @@ async function processCard(kind, file){
     const parsed = kind === 'pan' ? parsePan(text) : parseAadhaar(text);
     fillOcr(kind, parsed);
   } catch(e) {
-    spin.classList.remove('on');
+    console.error('OCR failed:', e);
+    errEl(fields).textContent = (e && e.message) || 'OCR failed. Please try a clearer image.';
   }
   setTimeout(() => spin.classList.remove('on'), 1200);
 }
@@ -384,15 +386,20 @@ function enhanceImage(file, max = 1600){
 
 async function runOcr(file){
   // Cloud OCR via Puter.js (puter.ai.img2txt) — more accurate on card photos.
-  // Falls back to in-browser Tesseract.js if Puter is unavailable or errors.
-  const enhanced = await enhanceImage(file);
-  try {
-    if (window.puter && puter.ai && typeof puter.ai.img2txt === 'function') {
+  // PDFs are passed straight to Puter (it reads them via Mistral); Tesseract.js
+  // cannot read PDFs, so PDF paths require Puter to be available.
+  const isPdf = file && (file.type === 'application/pdf' || /\.pdf$/i.test(file.name || ''));
+  const enhanced = isPdf ? file : await enhanceImage(file);
+  if (window.puter && puter.ai && typeof puter.ai.img2txt === 'function') {
+    try {
       const text = await puter.ai.img2txt(enhanced);
       if (text && String(text).trim()) return String(text).trim();
+    } catch(e) {
+      console.warn('Puter OCR failed, falling back to Tesseract:', e);
     }
-  } catch(e) {
-    console.warn('Puter OCR failed, falling back to Tesseract:', e);
+  }
+  if (isPdf) {
+    throw new Error('PDF OCR requires Puter.js, which is not available right now. Please upload an image.');
   }
   const dataUrl = await readAsDataURL(enhanced);
   if (!worker) worker = await createWorker('eng');
