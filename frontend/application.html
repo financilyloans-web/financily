@@ -444,11 +444,30 @@ function parseAadhaar(text){
     pincode: pinM ? pinM[0] : ''
   };
 }
+// JavaScript Regex for PAN format validation
+function isValidPAN(pan) {
+  const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+  return panRegex.test(pan);
+}
+
+// Live PAN verification shown right after OCR fills the box (or on typing).
+function verifyPanLive() {
+  const raw = $('panNo').value.trim().toUpperCase();
+  const err = $('panFields').querySelector('.err');
+  if (!raw) { err.textContent = ''; return false; }
+  const ok = isValidPAN(raw);
+  err.textContent = ok ? '✓ Valid PAN format' : '✗ Invalid PAN format (e.g. ABCDE1234F)';
+  err.style.color = ok ? '#16a34a' : '#dc2626';
+  return ok;
+}
+$('panNo').addEventListener('input', verifyPanLive);
+
 function fillOcr(kind, p){
   if (kind === 'pan') {
     $('panName').value = p.name;
     $('panNo').value = p.pan;
     if (p.dob) { const d = new Date(p.dob); if (!isNaN(d)) $('panDob').value = d.toISOString().slice(0,10); }
+    verifyPanLive();   // verify the PAN as soon as OCR fills it in
   } else {
     $('aadName').value = p.name;
     $('aadNo').value = p.aadhaarMask;
