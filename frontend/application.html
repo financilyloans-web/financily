@@ -518,6 +518,62 @@ function verifyIndividualPan(pan) {
   }
 }
 
+/**
+ * Verifies a PAN card for an Individual using both:
+ * 1. 4th Letter = 'P' (Individual status check)
+ * 2. 5th Letter = First letter of the person's Surname / Last Name
+ *
+ * @param {string} pan - The PAN number (e.g., "ABCDE1234F")
+ * @param {string} surname - The user's Last Name / Surname (e.g., "Sharma")
+ * @returns {object} - Verification result with status, tag, and message
+ */
+function verifyPanAndSurname(pan, surname) {
+  // 1. Standard PAN format regex (5 letters, 4 numbers, 1 letter)
+  const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+
+  if (!pan || !surname || typeof pan !== 'string' || typeof surname !== 'string') {
+    return { status: 'invalid', tag: 'INVALID', message: 'Both PAN and Surname are required.' };
+  }
+
+  const cleanPan = pan.trim().toUpperCase();
+  const cleanSurname = surname.trim().toUpperCase();
+
+  // 2. Format validation check
+  if (!panRegex.test(cleanPan)) {
+    return { status: 'invalid', tag: 'INVALID', message: 'Invalid PAN format.' };
+  }
+
+  // 3. Extract 4th and 5th letters
+  const holderType = cleanPan.charAt(3);    // 4th letter -> Should be 'P'
+  const panSurnameInitial = cleanPan.charAt(4); // 5th letter -> First letter of surname
+  const expectedInitial = cleanSurname.charAt(0); // User ke surname ka pehla letter
+
+  // 4. Condition A: Check if 4th letter is 'P' (Individual)
+  if (holderType !== 'P') {
+    return {
+      status: 'invalid',
+      tag: 'INVALID',
+      message: `PAN holder type is '${holderType}', which is not an Individual ('P').`
+    };
+  }
+
+  // 5. Condition B: Check if 5th letter matches the Surname's first letter
+  if (panSurnameInitial !== expectedInitial) {
+    return {
+      status: 'invalid',
+      tag: 'INVALID',
+      message: `Mismatch: 5th letter of PAN is '${panSurnameInitial}', but surname '${surname}' starts with '${expectedInitial}'.`
+    };
+  }
+
+  // 6. Success: Both conditions met!
+  return {
+    status: 'verified',
+    tag: 'VERIFIED',
+    message: 'PAN and Surname initial successfully matched for Individual.'
+  };
+}
+
 // Live PAN verification shown right after OCR fills the box (or on typing).
 function verifyPanLive() {
   const raw = $('panNo').value.trim().toUpperCase();
@@ -528,12 +584,15 @@ function verifyPanLive() {
     badge.className = 'pan-badge';
     return false;
   }
-  const result = verifyIndividualPan(raw);
+  const fullName = ($('panName').value || '').trim();
+  // Surname = last word of the full name (e.g. "RAHUL SHARMA" -> "SHARMA").
+  const surname = fullName.split(/\s+/).filter(Boolean).pop() || '';
+  const result = fullName && surname ? verifyPanAndSurname(raw, surname) : verifyIndividualPan(raw);
   if (result.status === 'verified') {
     err.textContent = result.message;
     err.style.color = '#16a34a';
     badge.className = 'pan-badge ok';
-    badge.textContent = '✓ Verified Individual';
+    badge.textContent = '✓ Verified';
     return true;
   } else {
     err.textContent = result.message;
@@ -544,6 +603,7 @@ function verifyPanLive() {
   }
 }
 $('panNo').addEventListener('input', verifyPanLive);
+$('panName').addEventListener('input', verifyPanLive);
 
 function fillOcr(kind, p){
   if (kind === 'pan') {
