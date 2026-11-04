@@ -32,3 +32,14 @@ Frontend (static, your design) → Vercel · Backend (Node/Express) → Render �
 - Set FAST2SMS_KEY (or SMTP_*) or OTP login will not work in production.
 - Render free plan sleeps after inactivity; the first request can take ~50s. Ping /api/health with UptimeRobot or use a paid plan.
 - The form collects PAN and personal data: get the legal text reviewed, and confirm your lender-partner / DSA / RBI-related compliance with a professional.
+
+## Firebase security (web app)
+
+The Firebase `apiKey` in `frontend/firebase.js` / `frontend/src/firebase.js` is **public by design** — it ships in every client build and only identifies the project. It is not a secret, so committing it is safe. Security is enforced by the controls below, not by hiding the key.
+
+**Required before production (Firebase Console):**
+- **Enable App Check** for Authentication (Project Settings → App Check → use reCAPTCHA v3 or Play Integrity for the web app). This blocks requests from non-Firebase clients. This app accesses Auth only — mint a provider token and call `initializeAppCheck()` in `src/firebase.js` once your reCAPTCHA v3 site key exists.
+- **Restrict Authorized domains** (Authentication → Settings) to just your live frontend domain and `localhost`.
+- **Set restrictive Security Rules if you ever add Firestore/Storage.** The app does not currently use Firestore or Storage, so rules there are not yet applicable. If they are added, deny-all-by-default and grant only authenticated, per-user access.
+- Consider rotating the `apiKey` (Project Settings → API keys) after enabling App Check — optional, since the key is public; it mainly invalidates any pre-existing misuse.
+- Monitor Auth usage/quota for anomalies (Billing → Usage).

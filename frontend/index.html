@@ -744,15 +744,23 @@ html[data-theme=dark] .seg button{background:var(--surface);border-color:var(--b
   </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-<script src="firebase.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/MotionPathPlugin.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Draggable.min.js"></script>
-<script>
+<script type="module">
+import { auth } from './src/firebase.js';
+import {
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+  PhoneAuthProvider,
+  signInWithCredential,
+  signOut,
+  GoogleAuthProvider,
+  signInWithPopup,
+  onAuthStateChanged
+} from 'firebase/auth';
+
 // ============ SETUP ============
 gsap.registerPlugin(ScrollTrigger, MotionPathPlugin, Draggable);
 const $ = (s, c = document) => c.querySelector(s);
@@ -1405,6 +1413,7 @@ function fbErr(e) {
     'auth/too-many-requests': 'Too many requests. Please wait a bit.',
     'auth/unauthorized-domain': 'This domain is not authorized for Firebase phone sign-in. Add it in Firebase Console (Authentication > Settings > Authorized domains).',
     'auth/recaptcha-not-enabled': 'reCAPTCHA/Phone sign-in is not enabled for this domain. Enable the Phone provider and add the domain in Firebase Console.',
+    'auth/billing-not-enabled': 'Phone verification is not enabled for this project. In Firebase Console, enable Billing (Blaze plan) and the Phone sign-in provider so SMS can be sent.',
     'auth/user-disabled': 'This account has been disabled.'
   };
   return map[e.code] || e.message || 'Something went wrong. Please try again.';
@@ -1423,13 +1432,13 @@ function validatePhone() {
 $('#submitApply').addEventListener('click', () => {
   if (loginStep === 'phone') {
     if (!validatePhone()) return;
-    if (!window.firebase || !firebase.auth) {
-      $('#errOtp').textContent = 'Firebase Auth is not ready yet. Check the CDN scripts.';
+    if (!auth) {
+      $('#errOtp').textContent = 'Firebase Auth is not ready yet.';
       return;
     }
     const btn = $('#submitApply');
     if (!recaptchaVerifier) {
-      recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+      recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         size: 'invisible',
         'expired-callback': () => {
           $('#errOtp').textContent = 'Security check expired. Please try again.';
@@ -1446,7 +1455,7 @@ $('#submitApply').addEventListener('click', () => {
     const phone = '+91' + $('#mPhone').value.trim();
     btn.disabled = true;
     btn.textContent = 'Sending code…';
-    firebase.auth().signInWithPhoneNumber(phone, recaptchaVerifier)
+    signInWithPhoneNumber(auth, phone, recaptchaVerifier)
       .then(result => {
         confirmationResult = result;
         loginStep = 'otp';
@@ -1472,8 +1481,9 @@ $('#submitApply').addEventListener('click', () => {
     const btn = $('#submitApply');
     btn.disabled = true;
     btn.textContent = 'Verifying…';
-    var credential = firebase.auth.PhoneAuthProvider.credential(confirmationResult.verificationId, otp);
-    firebase.auth().signInWithCredential(credential)
+    // Sign the user in with the SMS code (modular PhoneAuthProvider path).
+    const credential = PhoneAuthProvider.credential(confirmationResult.verificationId, otp);
+    signInWithCredential(auth, credential)
       .then(() => { window.location.replace('application.html'); })
       .catch(err => {
         $('#errOtp').textContent = fbErr(err);
@@ -1518,8 +1528,8 @@ $('#acceptOffer').addEventListener('click', () => {
 });
 
 function signOutApp() {
-  if (!window.firebase || !firebase.auth) { closeModal(); return; }
-  firebase.auth().signOut()
+  if (!auth) { closeModal(); return; }
+  signOut(auth)
     .then(() => { resetLogin(); closeModal(); })
     .catch(err => { $('#errOtp').textContent = fbErr(err); });
 }
@@ -1527,20 +1537,20 @@ $('#signOutBtnOffer').addEventListener('click', signOutApp);
 $('#signOutBtnOk').addEventListener('click', signOutApp);
 
 $('#googleBtn').addEventListener('click', () => {
-  if (!window.firebase || !firebase.auth) return;
-  const provider = new firebase.auth.GoogleAuthProvider();
-  firebase.auth().signInWithPopup(provider)
+  if (!auth) return;
+  const provider = new GoogleAuthProvider();
+  signInWithPopup(auth, provider)
     .then(() => { window.location.replace('application.html'); })
     .catch(err => { $('#errPhone').textContent = fbErr(err); });
 });
 
-firebase.auth().onAuthStateChanged(user => {
+onAuthStateChanged(auth, user => {
   const navEl = document.getElementById('navSignOut');
   if (navEl) navEl.style.display = user ? 'inline-flex' : 'none';
 });
 const navSignOutEl = document.getElementById('navSignOut');
 if (navSignOutEl) navSignOutEl.addEventListener('click', () => {
-  firebase.auth().signOut().catch(err => console.error(err));
+  signOut(auth).catch(err => console.error(err));
 });
 
 // ============ DARK MODE TOGGLE ============

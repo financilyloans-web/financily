@@ -1,0 +1,19 @@
+{
+  "name": "financily-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Financily frontend (static site) — Firebase JS SDK for client auth.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "firebase": "^11.10.0",
+    "tesseract.js": "^7.0.0"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}

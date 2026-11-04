@@ -12,6 +12,7 @@
 // the global `firebase` object. Do not move it before those script tags.
 // ============================================================================
 
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyC38LtZ7bVQA5g7pC0fTikKLcZnwbz4S2M",
   authDomain: "financily-17141.firebaseapp.com",

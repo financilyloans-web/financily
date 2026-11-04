@@ -95,6 +95,8 @@ header.appbar{position:sticky;top:0;z-index:60;background:var(--glass);backdrop-
 
 .consent{display:flex;gap:10px;align-items:flex-start;background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:14px;font-size:.85rem;color:var(--muted)}
 .consent input{margin-top:3px;width:17px;height:17px}
+.focr-set{border:1px dashed var(--border);border-radius:12px;padding:10px 12px;margin:12px 0 6px;background:var(--bg)}
+.focr-set summary{cursor:pointer;font-weight:600;font-size:.85rem;color:var(--primary)}
 
 /* nav buttons */
 .btnnav{display:flex;gap:12px;margin-top:20px}
@@ -148,7 +150,8 @@ footer{text-align:center;padding:18px;color:var(--muted);font-size:.78rem}
           <div class="cap" data-cap="pan" data-cam="true"><span class="ci">📷</span><b>Camera</b><small>Take photo</small></div>
         </div>
         <div class="preview" id="panPrev"><img id="panImg"><div class="scanline" id="panScan"></div><div class="ocrspin" id="panSpin"><span class="ring"></span>Reading card…</div></div>
-        <button class="sample" id="panSample">Use sample card (demo)</button>
+        <p class="hint" style="margin-bottom:0">🧠 OCR runs securely through our server proxy (FreeOCR) — no keys stored on your device.</p>
+      <button class="sample" id="panSample">Use sample card (demo)</button>
         <div class="ocrfields" id="panFields">
           <div class="field"><label>Full name (from PAN)</label><input id="panName" placeholder="Name on PAN" maxlength="60"></div>
           <div class="field"><label>PAN number</label><input id="panNo" placeholder="ABCDE1234F" maxlength="10"></div>
@@ -243,18 +246,23 @@ footer{text-align:center;padding:18px;color:var(--muted);font-size:.78rem}
   <footer>Financily Technologies Pvt. Ltd. © 2026</footer>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-<script src="firebase.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
-<script>
+<script type="module">
+import { auth } from './src/firebase.js';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { createWorker } from 'tesseract.js';
+
 gsap.registerPlugin();
 
 // ---------- Auth guard + logout ----------
-firebase.auth().onAuthStateChanged(user => { if (!user) window.location.replace('index.html'); });
-document.getElementById('logoutLink').addEventListener('click', () => firebase.auth().signOut());
+onAuthStateChanged(auth, user => { if (!user) window.location.replace('index.html'); });
+document.getElementById('logoutLink').addEventListener('click', () => {
+  signOut(auth)
+    .then(() => { /* Sign-out successful — onAuthStateChanged redirects to index.html */ })
+    .catch(err => { console.error('Sign out failed:', err); });
+});
+// OCR runs through the server proxy; no client-side keys.
 
 // ---------- Step management ----------
 const stepOrder = ['viewPan','viewAad','viewIncome','viewLoan','viewSubmit','viewDone'];
@@ -308,7 +316,7 @@ async function processCard(kind, file){
   scan.classList.add('on'); spin.classList.add('on');
   gsap.fromTo(scan, { top: '0%' }, { top: '100%', duration: 1.1, repeat: 3, yoyo: true, ease: 'power1.inOut', onComplete(){ scan.classList.remove('on'); } });
   try {
-    const text = await runOcr(dataUrl);
+    const text = await runOcr(file);
     const parsed = kind === 'pan' ? parsePan(text) : parseAadhaar(text);
     fillOcr(kind, parsed);
   } catch(e) {
@@ -318,33 +326,95 @@ async function processCard(kind, file){
 }
 
 // ---------- OCR (Tesseract) ----------
+// ---------- OCR: in-browser Tesseract.js (no server required) ----------
 let worker = null;
-async function runOcr(dataUrl){
-  if (!window.Tesseract) throw new Error('OCR not loaded');
-  if (!worker) worker = await Tesseract.createWorker('eng');
+// Normalise the card photo for OCR: fit to a max dimension, convert to
+// grayscale, and stretch contrast to full range. This removes lighting
+// variance and shadows that make OCR engines misread text.
+function enhanceImage(file, max = 1600){
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      let w = img.naturalWidth, h = img.naturalHeight;
+      const s = Math.min(1, max / Math.max(w, h));
+      w = Math.max(1, Math.round(w * s)); h = Math.max(1, Math.round(h * s));
+      const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+      const ctx = cv.getContext('2d');
+      ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, 0, 0, w, h);
+      const id = ctx.getImageData(0, 0, w, h), d = id.data;
+      let lo = 255, hi = 0;
+      for (let i = 0; i < d.length; i += 4){
+        const g = 0.299 * d[i] + 0.587 * d[i+1] + 0.114 * d[i+2];
+        d[i] = d[i+1] = d[i+2] = g;
+        if (g < lo) lo = g; if (g > hi) hi = g;
+      }
+      const range = (hi - lo) || 1;
+      for (let i = 0; i < d.length; i += 4){
+        d[i] = d[i+1] = d[i+2] = Math.round((d[i] - lo) / range * 255);
+      }
+      ctx.putImageData(id, 0, 0);
+      URL.revokeObjectURL(url);
+      cv.toBlob(b => b ? resolve(b) : reject(new Error('encode failed')), 'image/png');
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('image decode failed')); };
+    img.src = url;
+  });
+}
+
+async function runOcr(file){
+  // In-browser OCR via Tesseract.js (WASM). No server proxy or API key needed.
+  const enhanced = await enhanceImage(file);
+  const dataUrl = await readAsDataURL(enhanced);
+  if (!worker) worker = await createWorker('eng');
   const { data } = await worker.recognize(dataUrl);
   return data.text || '';
 }
+// Cards print names either as "Rahul Sharma" (Title Case) or, far more
+// commonly on PAN/Aadhaar, as all-caps "RAHUL SHARMA". We scan for both, but
+// reject candidates whose words are known field labels / headers (so a name
+// like "RAHUL SHARMA" wins over "Permanent Account Number").
+const NAME_BAD = new Set(['permanent','account','number','identification','authority','income','tax','department','government','govt','india','father','mother','spouse','husband','address','date','birth','signature','male','female','election','commission','card','name','republic','hindustan','bharat','delhi','pune','mumbai','chennai','kolkata','hyderabad','bengaluru','maharashtra','karnataka','tamil','nadu','pradesh','unique','director','manager','chairman','country','state','ward','village','district','pin','pincode','dob','valid','through','under','renewal']);
+function pickName(text){
+  const ok = (phrase) => {
+    const toks = phrase.toLowerCase().split(/[^a-z]+/).filter(Boolean);
+    return toks.length > 0 && !toks.some((t) => NAME_BAD.has(t));
+  };
+  const titles = text.match(/[A-Z][a-z]+(?: [A-Z][a-z]+){1,2}/g) || [];
+  for (const t of titles) if (ok(t)) return t;
+  const caps = text.match(/\b[A-Z]{3,}(?: [A-Z]{3,}){1,2}\b/g) || [];
+  for (const c of caps) if (ok(c)) return c;
+  return '';
+}
+
 function parsePan(text){
-  const norm = text.replace(/\s+/g,' ').toUpperCase();
-  const pan = (text.match(/[A-Z]{5}[0-9]{4}[A-Z]/) || [])[0] || '';
+  // A PAN is exactly 10 characters (5 letters, 4 digits, 1 letter). Require a
+  // full word boundary on both sides so we never match a substring of a longer
+  // alphanumeric token (e.g. inside a larger ID).
+  const up = text.toUpperCase();
+  const m = up.match(/\b[A-Z]{5}[0-9]{4}[A-Z]\b/);
+  const pan = m ? m[0] : '';
   const dobM = text.match(/\b\d{1,2}([\/-])\d{1,2}\1\d{4}\b/);
   const dob = dobM ? dobM[0].replace(/\//g,'-') : '';
-  const nameRx = /[A-Z][a-z]+ [A-Z][a-z]+(?: [A-Z][a-z]+)?/;
-  const m = text.match(nameRx);
-  return { pan, dob, name: m ? m[0] : '' };
+  return { pan, dob, name: pickName(text) };
 }
 function parseAadhaar(text){
-  const num = (text.match(/\d{4}[\s]?\d{4}[\s]?\d{4}/) || [])[0] || '';
-  const cleaned = num.replace(/\D/g,'');
-  const nameRx = /[A-Z][a-z]+ [A-Z][a-z]+(?: [A-Z][a-z]+)?/;
-  const m = text.match(nameRx);
+  // Accept only a 12-digit Aadhaar candidate that appears as its own token
+  // (not embedded in a longer number) AND passes the Verhoeff checksum.
+  let cleaned = '';
+  const re = /(?:^|[^\d])(\d{4}\s?\d{4}\s?\d{4})(?=$|[^\d])/g;
+  let m;
+  while ((m = re.exec(text)) && !cleaned){
+    const c = m[1].replace(/\D/g,'');
+    if (c.length === 12 && verhoeff(c)) cleaned = c;
+  }
   const dobM = text.match(/\b\d{1,2}([\/-])\d{1,2}\1\d{4}\b/);
   const pinM = text.match(/\b\d{6}\b/);
   return {
     aadhaar: cleaned,
     aadhaarMask: cleaned ? 'XXXX XXXX ' + cleaned.slice(-4) : '',
-    name: m ? m[0] : '',
+    name: pickName(text),
     dob: dobM ? dobM[0].replace(/\//g,'-') : '',
     pincode: pinM ? pinM[0] : ''
   };

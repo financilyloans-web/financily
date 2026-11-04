@@ -6,6 +6,65 @@ const app=express();app.set('trust proxy',1);
 const origins=(process.env.CLIENT_ORIGIN||'').split(',').map(s=>s.trim()).filter(Boolean);
 app.use(helmet());
 app.use(cors({origin:(o,cb)=>(!o||origins.includes(o))?cb(null,true):cb(new Error('Origin not allowed'))}));
+/* --- FreeOCR proxy: rate-limited, origin-checked, optional Firebase auth; key stays on server --- */
+const ocrJSON=express.json({limit:'8mb'});
+const ocrLimiter=rate({windowMs:15*60*1000,max:5,message:{ok:false,error:'Too many OCR requests, try later'}});
+/* Per-user OCR limiter keyed by verified Firebase UID (not spoofable via IP rotation). */
+const ocrByUid=new Map();
+function ocrUidAllowed(uid){
+  const now=Date.now(),win=15*60*1000,max=5;
+  const h=ocrByUid.get(uid);
+  if(!h||h.reset<now){ocrByUid.set(uid,{n:1,reset:now+win});return true}
+  if(h.n>=max)return false;
+  h.n++;return true;
+}
+let firebaseAdmin=null;
+function verifyFirebaseToken(token){
+  return new Promise((resolve,reject)=>{
+    if(!process.env.FIREBASE_SERVICE_ACCOUNT)return resolve(null);
+    try{
+      if(!firebaseAdmin){
+        firebaseAdmin=require('firebase-admin');
+        firebaseAdmin.initializeApp({credential:firebaseAdmin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT))});
+      }
+      firebaseAdmin.auth().verifyIdToken(token).then(resolve).catch(reject);
+    }catch(e){reject(e)}
+  });
+}
+app.post('/api/ocr',ocrLimiter,ocrJSON,async(req,res)=>{
+  try{
+    if(req.headers.origin&&origins.length&&!origins.includes(req.headers.origin))return res.status(403).json({ok:false,error:'Origin not allowed'});
+    // OCR requires an authenticated Firebase user (fail closed). Without the
+    // service account there is no way to verify a token, so we refuse to proxy.
+    if(!process.env.FIREBASE_SERVICE_ACCOUNT)return res.status(503).json({ok:false,error:'OCR disabled: FIREBASE_SERVICE_ACCOUNT not configured'});
+    const authz=(req.headers.authorization||'').replace(/^Bearer\s+/i,'');
+    if(!authz)return res.status(401).json({ok:false,error:'Authentication required'});
+    let uid;
+    try{uid=(await verifyFirebaseToken(authz)).uid;}catch{return res.status(401).json({ok:false,error:'Invalid token'})}
+    if(!uid||!ocrUidAllowed(uid))return res.status(429).json({ok:false,error:'Too many OCR requests, try later'});
+    const base64=(req.body||{}).image_base64;
+    if(!base64||typeof base64!=='string')return res.status(400).json({ok:false,error:'image_base64 is required'});
+    const key=process.env.FREEOCR_API_KEY;
+    if(!key)return res.status(503).json({ok:false,error:'OCR not configured on server (set FREEOCR_API_KEY)'});
+    const raw=base64.includes(',')?base64.slice(base64.indexOf(',')+1):base64;
+    const buf=Buffer.from(raw,'base64');
+    const form=new FormData();
+    form.append('image',new Blob([buf]),'document.png');
+    const r=await fetch('https://freeocr.ai/api/v1/platform/ocr',{
+      method:'POST',
+      headers:{Authorization:'Bearer '+key},
+      body:form
+    });
+    if(!r.ok){const t=await r.text().catch(()=>'');return res.status(502).json({ok:false,error:'FreeOCR '+r.status+': '+t.slice(0,200)})}
+    const ct=r.headers.get('content-type')||'';
+    let text='';
+    if(ct.indexOf('application/json')!==-1){
+      const j=await r.json();
+      text=j.text||j.recognized_text||j.markdown||(j.data&&(j.data.text||j.data.markdown))||JSON.stringify(j);
+    }else text=await r.text();
+    res.json({ok:true,text});
+  }catch(e){console.error('ocr proxy:',e.message);res.status(500).json({ok:false,error:'OCR failed'})}
+});
 app.use(express.json({limit:'50kb'}));
 app.use('/api',rate({windowMs:15*60*1000,max:100}));
 const limiter=(max)=>rate({windowMs:15*60*1000,max,message:{ok:false,error:'Too many requests, try later'}});
