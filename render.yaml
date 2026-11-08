@@ -2,6 +2,7 @@ services:
   - type: web
     name: financily-api
     runtime: node
+    runtimeVersion: "22.x"
     rootDir: backend
     buildCommand: npm install
     startCommand: npm start
