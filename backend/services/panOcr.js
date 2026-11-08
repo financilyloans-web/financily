@@ -156,6 +156,53 @@ function parsePanText(text) {
   return { pan, name, father, dob };
 }
 
+/* ---------- Aadhaar validation & extraction ---------- */
+
+const AADHAAR_RE = /\b\d{4}\s?\d{4}\s?\d{4}\b/;
+
+// Verhoeff checksum (same table as the frontend) — verifies a 12-digit Aadhaar.
+const V_D = [
+  [0,1,2,3,4,5,6,7,8,9],[1,2,3,4,0,6,7,8,9,5],[2,3,4,0,1,7,8,9,5,6],[3,4,0,1,2,8,9,5,6,7],[4,0,1,2,3,9,5,6,7,8],[5,9,8,7,6,0,4,3,2,1],[6,5,9,8,7,1,0,4,3,2],[7,6,5,9,8,2,1,0,4,3],[8,7,6,5,9,3,2,1,0,4],[9,8,7,6,5,4,3,2,1,0]];
+const V_P = [
+  [0,1,2,3,4,5,6,7,8,9],[1,5,7,6,2,8,3,0,9,4],[5,8,0,3,7,9,6,1,4,2],[8,9,1,6,0,4,3,5,2,7],[9,4,5,3,1,2,6,8,7,0],[4,2,8,6,5,7,3,9,0,1],[2,7,9,3,8,0,6,4,1,5],[7,0,4,6,9,1,3,2,5,8]];
+function verhoeff(num) {
+  let c = 0;
+  const a = String(num).split('').map(Number).reverse();
+  for (let i = 0; i < a.length; i++) c = V_D[c][V_P[i % 8][a[i]]];
+  return c === 0;
+}
+
+function extractGender(text) {
+  const up = text.toUpperCase();
+  if (/\bMALE\b/.test(up)) return 'MALE';
+  if (/\bFEMALE\b/.test(up)) return 'FEMALE';
+  if (/\bF\b/.test(up) && !/\bM\b/.test(up)) return 'FEMALE';
+  if (/\bM\b/.test(up)) return 'MALE';
+  return '';
+}
+
+function parseAadhaarText(text) {
+  const up = text.toUpperCase();
+  const aadMatch = up.match(AADHAAR_RE);
+  let number = '';
+  if (aadMatch) {
+    const c = aadMatch[0].replace(/\s/g, '');
+    if (c.length === 12 && verhoeff(c)) number = c;
+  }
+  const name = extractName(text);
+  const dob = extractDob(text);
+  const gender = extractGender(text);
+
+  return {
+    documentType: 'AADHAAR',
+    aadhaarNumber: number,
+    aadhaarMask: number ? 'XXXX XXXX ' + number.slice(-4) : '',
+    name,
+    dob,
+    gender,
+  };
+}
+
 /* ---------- Main pipeline ---------- */
 async function processPanImage({ image_base64, save = true }) {
   const { buf, mime } = validateImage(image_base64);
@@ -202,4 +249,45 @@ async function processPanImage({ image_base64, save = true }) {
   };
 }
 
-module.exports = { processPanImage, validateImage, parsePanText, extractDob, extractFatherName, extractName };
+async function processAadhaarImage({ image_base64, save = true }) {
+  const { buf, mime } = validateImage(image_base64);
+
+  const { text, provider, timeMs } = await runOcr(image_base64, mime);
+
+  const extracted = parseAadhaarText(text);
+
+  if (!extracted.aadhaarNumber) {
+    return {
+      ok: false, stage: 'aadhaar_regex', provider, timeMs,
+      message: 'Aadhaar number not detected clearly. Try a clearer image.',
+      raw_text: text.slice(0, 2000), extracted
+    };
+  }
+
+  let saved = null;
+  if (save) {
+    try {
+      saved = await Application.create({
+        name: extracted.name || 'Aadhaar Upload',
+        mobile: '', email: '', city: '', loanType: 'Other',
+        amount: 0, tenure: 0, income: 0, cibil: '', source: 'aadhaar_upload',
+        data: { text, aadhaar: extracted.aadhaarNumber, gender: extracted.gender, dob: extracted.dob, provider },
+        note: 'Uploaded via Aadhaar OCR pipeline', status: 'new'
+      });
+    } catch (e) {
+      console.error('aadOcr save failed:', e.message);
+    }
+  }
+
+  return {
+    ok: true, stage: 'complete', provider, timeMs,
+    ...extracted,
+    saved: !!saved, ref: saved ? saved.ref : undefined
+  };
+}
+
+module.exports = {
+  processPanImage, processAadhaarImage,
+  validateImage, parsePanText, parseAadhaarText,
+  extractDob, extractFatherName, extractName, extractGender, verhoeff
+};
