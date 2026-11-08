@@ -65,6 +65,25 @@ app.post('/api/ocr',ocrLimiter,ocrJSON,async(req,res)=>{
     res.json({ok:true,text});
   }catch(e){console.error('ocr proxy:',e.message);res.status(500).json({ok:false,error:'OCR failed'})}
 });
+/* --- PAN OCR pipeline: image validation -> OCR (Google/Azure/FreeOCR) -> PAN
+       regex -> extraction -> save. Uses the same authenticated origin gate. --- */
+const { processPanImage } = require('./services/panOcr');
+app.post('/api/ocr/pan', ocrLimiter, ocrJSON, async (req, res) => {
+  try {
+    if (req.headers.origin && origins.length && !origins.includes(req.headers.origin)) {
+      return res.status(403).json({ ok: false, error: 'Origin not allowed' });
+    }
+    const { image_base64, save } = req.body || {};
+    if (!image_base64) return res.status(400).json({ ok: false, error: 'image_base64 is required' });
+    const result = await processPanImage({ image_base64, save: save !== false });
+    if (!result.ok) return res.status(422).json(result);
+    res.json(result);
+  } catch (e) {
+    console.error('pan ocr:', e.message);
+    const msg = e && e.message ? e.message : 'PAN OCR failed';
+    res.status(500).json({ ok: false, error: msg });
+  }
+});
 app.use(express.json({limit:'50kb'}));
 app.use('/api',rate({windowMs:15*60*1000,max:100}));
 const limiter=(max)=>rate({windowMs:15*60*1000,max,message:{ok:false,error:'Too many requests, try later'}});
