@@ -159,9 +159,11 @@ footer{text-align:center;padding:18px;color:var(--muted);font-size:.78rem}
         <p class="hint" style="margin-bottom:0">🧠 OCR reads your card with Puter.js cloud OCR (fall back to in-browser Tesseract). Your image is processed for text extraction only.</p>
       <button class="sample" id="panSample">Use sample card (demo)</button>
         <div class="ocrfields" id="panFields">
-          <div class="field"><label>Full name (from PAN)</label><input id="panName" placeholder="Name on PAN" maxlength="60"></div>
-          <div class="field"><label>PAN number</label><div class="pan-row"><input id="panNo" placeholder="ABCDE1234F" maxlength="10"><span id="panBadge" class="pan-badge"></span></div></div>
-          <div class="field"><label>Date of birth (if present)</label><input id="panDob" type="date"></div>
+          <div class="field"><label>PAN number</label><div class="pan-row"><input id="panNo" placeholder="ABCDE1234F" maxlength="10" style="text-transform:uppercase"><button type="button" id="panVerifyBtn" class="btn ghost" style="flex:none;padding:11px 16px;font-size:.84rem">Verify PAN</button><span id="panBadge" class="pan-badge"></span></div><p class="hint" style="margin:6px 0 0">Enter your PAN (or scan/upload your card above), then tap <b>Verify PAN</b>.</p></div>
+          <div id="panMore" style="display:none">
+            <div class="field"><label>Full name (from PAN)</label><input id="panName" placeholder="Name on PAN" maxlength="60"></div>
+            <div class="field"><label>Date of birth (if present)</label><input id="panDob" type="date"></div>
+          </div>
           <div class="err"></div>
         </div>
         <div class="btnnav"><button class="btn" id="panNext">Continue <span class="shine"></span></button></div>
@@ -576,13 +578,17 @@ function verifyPanAndSurname(pan, surname) {
 }
 
 // Live PAN verification shown right after OCR fills the box (or on typing).
+let panVerified = false;
 function verifyPanLive() {
   const raw = $('panNo').value.trim().toUpperCase();
   const err = $('panFields').querySelector('.err');
   const badge = $('panBadge');
+  const more = $('panMore');
   if (!raw) {
     err.textContent = '';
     badge.className = 'pan-badge';
+    more.style.display = 'none';
+    panVerified = false;
     return false;
   }
   const fullName = ($('panName').value || '').trim();
@@ -594,17 +600,22 @@ function verifyPanLive() {
     err.style.color = '#16a34a';
     badge.className = 'pan-badge ok';
     badge.textContent = '✓ Verified';
+    more.style.display = 'block';   // unlock the remaining PAN details
+    panVerified = true;
     return true;
   } else {
     err.textContent = result.message;
     err.style.color = '#dc2626';
     badge.className = 'pan-badge bad';
     badge.textContent = '✕ Invalid';
+    more.style.display = 'none';
+    panVerified = false;
     return false;
   }
 }
 $('panNo').addEventListener('input', verifyPanLive);
 $('panName').addEventListener('input', verifyPanLive);
+$('panVerifyBtn').addEventListener('click', verifyPanLive);  // explicit "Verify PAN" gate
 
 function fillOcr(kind, p){
   if (kind === 'pan') {
@@ -626,6 +637,7 @@ $('panSample').addEventListener('click', () => {
   $('panNo').value = 'ABCDE1234F';
   const d = new Date(); d.setFullYear(1994); d.setMonth(2); d.setDate(12);
   $('panDob').value = d.toISOString().slice(0,10);
+  verifyPanLive();   // verify the sample PAN so the details unlock
 });
 $('aadSample').addEventListener('click', () => {
   $('aadName').value = 'Rahul Sharma';
@@ -649,8 +661,12 @@ function verhoeff(num){
 
 // ---------- Nav wiring ----------
 $('panNext').addEventListener('click', () => {
-  if (!$('panName').value.trim() || !/^[A-Z]{5}[0-9]{4}[A-Z]$/.test($('panNo').value.toUpperCase().replace(/\s/g,''))) {
-    errEl($('panFields')).textContent = 'Add a valid PAN (from upload/camera or sample).';
+  if (!panVerified) {
+    errEl($('panFields')).textContent = 'Please verify your PAN first.';
+    return;
+  }
+  if (!$('panName').value.trim()) {
+    errEl($('panFields')).textContent = 'Please add your full name (from PAN).';
     return;
   }
   errEl($('panFields')).textContent = '';
