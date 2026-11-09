@@ -201,6 +201,18 @@ googleBtn.addEventListener('click', () => {
     });
 });
 
+// Where to go after login: if the user clicked "Apply Now" before signing in,
+// take them straight to the application form; otherwise go to the home page.
+function postLoginDestination(){
+  try {
+    if (sessionStorage.getItem('fin-pending-apply') === '1') {
+      sessionStorage.removeItem('fin-pending-apply');
+      return 'application.html';
+    }
+  } catch (e) {}
+  return 'index.html';
+}
+
 function showSuccess(){
   loginView.style.display = 'none';
   successView.style.display = 'flex';
@@ -209,11 +221,11 @@ function showSuccess(){
   gsap.from('#successView h2', {y:16, opacity:0, duration:.5, delay:.15});
   gsap.from('#successView p', {y:12, opacity:0, duration:.5, delay:.25});
   gsap.from('#successView .badge', {scale:0, opacity:0, duration:.5, delay:.4, ease:'back.out(1.6)'});
-  setTimeout(() => { window.location.replace('index.html'); }, 2200);
+  setTimeout(() => { window.location.replace(postLoginDestination()); }, 2200);
 }
 
-// Already signed in? Go straight home.
-onAuthStateChanged(auth, user => { if (user) window.location.replace('index.html'); });
+// Already signed in? Go straight to home (or to the form if Apply was pending).
+onAuthStateChanged(auth, user => { if (user) window.location.replace(postLoginDestination()); });
 </script>
 </body>
 </html>

@@ -1389,8 +1389,16 @@ function openModal() {
 function closeModal() { modal.classList.remove('open'); document.body.style.overflow = ''; }
 $$('[data-open-modal]').forEach(b => b.addEventListener('click', openModal));
 // "Apply Now" CTA buttons connect the home page to the application form.
+// Record the intent so that after signing in the user lands directly on the
+// application form (instead of the home page and then having to click Apply
+// again). Unauthenticated users are sent to the login page, not the form.
 $$('[data-apply]').forEach(b => b.addEventListener('click', () => {
-  window.location.href = 'application.html';
+  try { sessionStorage.setItem('fin-pending-apply', '1'); } catch (e) {}
+  if (auth && auth.currentUser) {
+    window.location.href = 'application.html';
+  } else {
+    window.location.replace('login.html');
+  }
 }));
 $$('[data-close]').forEach(b => b.addEventListener('click', closeModal));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
