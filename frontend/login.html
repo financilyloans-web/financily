@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Financily — Login</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 48 48%22><circle cx=%2224%22 cy=%2224%22 r=%2222%22 fill=%22%234f46e5%22/><text x=%2224%22 y=%2231%22 text-anchor=%22middle%22 font-size=%2219%22 font-weight=%22800%22 fill=%22white%22>₹</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{
+  --primary:#4f46e5; --primary-600:#4338ca;
+  --secondary:#7c3aed; --sec-600:#6d28d9;
+  --accent:#06b6d4; --accent-400:#22d3ee;
+  --pink:#ec4899; --rose:#f43f5e; --amber:#f59e0b; --teal:#14b8a6;
+  --ink:#0f0f15; --muted:#5b5b66; --white:#ffffff;
+  --card:rgba(255,255,255,.86);
+  --radius:26px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  overflow:hidden; color:var(--ink);
+  background:#eef0ff;
+}
+/* ---------- Animated colourful background ---------- */
+.stage{position:fixed; inset:0; overflow:hidden; z-index:0;
+  background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 35%,#06b6d4 70%,#14b8a6 100%);}
+.orb{position:absolute; border-radius:50%; filter:blur(60px); opacity:.55; mix-blend-mode:screen;}
+.orb.o1{width:420px;height:420px; background:#f472b6; top:-80px; left:-60px;}
+.orb.o2{width:360px;height:360px; background:#fbbf24; bottom:-70px; right:-50px;}
+.orb.o3{width:300px;height:300px; background:#22d3ee; top:40%; left:60%;}
+.orb.o4{width:260px;height:260px; background:#a78bfa; top:20%; left:10%;}
+.grid-lines{position:absolute; inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.12) 1px,transparent 1px);
+  background-size:56px 56px; mask-image:radial-gradient(ellipse at center,black 30%,transparent 75%); -webkit-mask-image:radial-gradient(ellipse at center,black 30%,transparent 75%);}
+@keyframes floatY{0%,100%{transform:translateY(0) translateX(0)}50%{transform:translateY(-40px) translateX(24px)}}
+@keyframes floatY2{0%,100%{transform:translateY(-20px) translateX(0)}50%{transform:translateY(30px) translateX(-20px)}}
+.o1{animation:floatY 14s ease-in-out infinite}
+.o3{animation:floatY2 18s ease-in-out infinite}
+/* floating money / sparkle particles */
+.particle{position:absolute; color:rgba(255,255,255,.85); font-size:22px; animation:floatUp linear infinite; opacity:0; user-select:none;}
+@keyframes floatUp{0%{transform:translateY(0) rotate(0deg); opacity:0}10%{opacity:.9}90%{opacity:.6}100%{transform:translateY(-110vh) rotate(360deg); opacity:0}}
+
+/* ---------- Login card ---------- */
+.lockup{position:relative; z-index:2; height:100%; display:flex; align-items:center; justify-content:center; padding:24px;}
+.card{
+  width:min(440px,100%); background:var(--card); border-radius:var(--radius);
+  box-shadow:0 30px 80px -30px rgba(15,15,40,.55);
+  backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+  border:1px solid rgba(255,255,255,.7);
+  padding:42px 40px 40px; text-align:center; position:relative; overflow:hidden;
+}
+.card::before{content:""; position:absolute; top:-60%; left:50%; transform:translateX(-50%); width:260%; height:220%;
+  background:conic-gradient(from 0deg, var(--primary), var(--secondary), var(--pink), var(--amber), var(--accent), var(--primary));
+  opacity:.18; filter:blur(30px); animation:spinHue 12s linear infinite;}
+@keyframes spinHue{to{transform:translateX(-50%) rotate(360deg)}}
+.card>*{position:relative; z-index:1;}
+.logo{
+  width:78px; height:78px; margin:0 auto 18px; border-radius:24px; display:flex; align-items:center; justify-content:center;
+  font-size:40px; font-weight:900; color:#fff; background:linear-gradient(135deg,var(--primary),var(--secondary));
+  box-shadow:0 14px 34px -10px rgba(79,70,229,.7); animation:logoPulse 3s ease-in-out infinite;}
+@keyframes logoPulse{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.06) rotate(-3deg)}}
+h1{margin:0 0 6px; font-size:28px; font-weight:900; letter-spacing:-.02em; color:#0a0a14;}
+.sub{margin:0 0 30px; color:var(--muted); font-size:14.5px; line-height:1.6;}
+.hint{font-size:12.5px; color:var(--muted); margin-top:18px; line-height:1.5;}
+
+/* Google button */
+.google-btn{
+  width:100%; display:flex; align-items:center; justify-content:center; gap:12px;
+  padding:15px 18px; font:600 15px/1 'Inter',sans-serif; color:#1a1a2e;
+  background:#ffffff; border:1px solid rgba(20,20,26,.12); border-radius:16px; cursor:pointer;
+  box-shadow:0 10px 30px -12px rgba(20,20,40,.35); transition:transform .18s ease,box-shadow .18s ease,background .18s ease;
+  -webkit-tap-highlight-color:transparent;}
+.google-btn:hover{transform:translateY(-3px) scale(1.02); box-shadow:0 18px 40px -14px rgba(20,20,40,.45); background:#fafaff;}
+.google-btn:active{transform:translateY(0) scale(.98);}
+.google-btn:disabled{opacity:.7; cursor:default; transform:none;}
+.google-btn .fab{font-size:20px;}
+.err{min-height:20px; margin-top:14px; font-size:13px; color:#e11d48; font-weight:500;}
+
+/* ---------- Success / cute overlay ---------- */
+.success{position:absolute; inset:0; z-index:5; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background:linear-gradient(160deg,#ffe8f2,#fff3e0 45%,#e6f7ff); padding:24px; text-align:center;}
+.success .big{font-size:82px; animation:popIn .6s cubic-bezier(.2,1.8,.4,1) both, wiggle 1.6s ease-in-out .6s infinite;}
+@keyframes popIn{0%{transform:scale(0) rotate(-30deg); opacity:0}100%{transform:scale(1) rotate(0); opacity:1}}
+@keyframes wiggle{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg)}40%{transform:rotate(10deg)}60%{transform:rotate(-6deg)}80%{transform:rotate(4deg)}}
+.success h2{margin:10px 0 6px; font-size:26px; font-weight:900; color:#11182f;}
+.success p{margin:0; color:#4b5563; font-size:15px;}
+.confetti{position:absolute; top:-12px; font-size:20px; animation:cfFall linear infinite; opacity:0; user-select:none;}
+@keyframes cfFall{0%{transform:translateY(0) rotate(0); opacity:0}8%{opacity:1}100%{transform:translateY(430px) rotate(340deg); opacity:0}}
+.badge{display:inline-flex; align-items:center; gap:6px; margin-top:18px; padding:8px 16px; border-radius:999px;
+  background:#ffffff; color:#059669; font-weight:700; font-size:13px; box-shadow:0 8px 22px -10px rgba(5,150,105,.6);}
+</style>
+</head>
+<body>
+
+<!-- Animated background -->
+<div class="stage" id="stage">
+  <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="orb o4"></div>
+  <div class="grid-lines"></div>
+</div>
+
+<div class="lockup">
+  <div class="card">
+    <!-- Login view -->
+    <div id="loginView">
+      <div class="logo">₹</div>
+      <h1>Welcome to Financily</h1>
+      <p class="sub">Your money, in minutes — zero paperwork.<br>Sign in to see your instant offer.</p>
+      <button class="google-btn" id="googleBtn">
+        <i class="fab fa-google"></i> Continue with Google
+      </button>
+      <div class="err" id="loginErr"></div>
+      <p class="hint">🔒 Protected with Google Sign-In. We never post without your permission.</p>
+    </div>
+
+    <!-- Success view (hidden initially) -->
+    <div class="success" id="successView" style="display:none">
+      <div class="big">🥳</div>
+      <h2>Yay! You're in!</h2>
+      <p>Welcome to Financily.<br>Wrapping your personal offer…</p>
+      <span class="badge"><i class="fa-solid fa-circle-check"></i> Login successful</span>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script type="module">
+import { auth } from './src/firebase.js';
+import { GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from 'firebase/auth';
+
+const $ = s => document.querySelector(s);
+const stage = $('#stage');
+const loginView = $('#loginView');
+const successView = $('#successView');
+const googleBtn = $('#googleBtn');
+const loginErr = $('#loginErr');
+
+function fbErr(e){
+  const map = {
+    'auth/user-disabled':'This account has been disabled.',
+    'auth/unauthorized-domain':'This domain is not authorized for Google sign-in.'
+  };
+  return map[e.code] || e.message || 'Something went wrong. Please try again.';
+}
+
+/* --- Spawn floating particles --- */
+const glyphs = ['💰','💸','📈','🔺','✨','🪙','💎'];
+function spawnParticles(){
+  const count = 22;
+  for(let i=0;i<count;i++){
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.textContent = glyphs[i % glyphs.length];
+    p.style.left = Math.random()*100 + '%';
+    p.style.fontSize = (16 + Math.random()*18) + 'px';
+    p.style.animationDuration = (7 + Math.random()*8) + 's';
+    p.style.animationDelay = (Math.random()*6) + 's';
+    stage.appendChild(p);
+  }
+}
+
+/* --- Cute confetti burst --- */
+function burstConfetti(){
+  const emojis = ['🎉','✨','💖','⭐','🎊','🌈'];
+  for(let i=0;i<24;i++){
+    const c = document.createElement('div');
+    c.className='confetti'; c.textContent = emojis[i % emojis.length];
+    c.style.left = Math.random()*100 + '%';
+    c.style.animationDuration = (1.6 + Math.random()*1.6) + 's';
+    c.style.transform = `rotate(${Math.random()*360}deg)`;
+    successView.appendChild(c);
+  }
+}
+
+/* --- Entrance animation --- */
+window.addEventListener('load', () => {
+  spawnParticles();
+  const tl = gsap.timeline({defaults:{ease:'power3.out'}});
+  tl.from('#loginView .logo', {scale:0, rotation:-180, opacity:0, duration:.8, ease:'back.out(1.7)'})
+    .from('#loginView h1', {y:24, opacity:0, duration:.6}, '-=.4')
+    .from('#loginView .sub', {y:16, opacity:0, duration:.5}, '-=.35')
+    .from('.google-btn', {y:20, opacity:0, scale:.96, duration:.5}, '-=.3')
+    .from('#loginView .hint', {opacity:0, duration:.5}, '-=.2');
+});
+
+googleBtn.addEventListener('click', () => {
+  googleBtn.disabled = true;
+  loginErr.textContent = '';
+  googleBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Signing in…';
+  const provider = new GoogleAuthProvider();
+  signInWithPopup(auth, provider)
+    .then(() => { showSuccess(); })
+    .catch(err => {
+      googleBtn.disabled = false;
+      googleBtn.innerHTML = '<i class="fab fa-google"></i> Continue with Google';
+      loginErr.textContent = fbErr(err);
+    });
+});
+
+function showSuccess(){
+  loginView.style.display = 'none';
+  successView.style.display = 'flex';
+  burstConfetti();
+  gsap.from('#successView .big', {scale:0, opacity:0, duration:.7, ease:'back.out(1.8)'});
+  gsap.from('#successView h2', {y:16, opacity:0, duration:.5, delay:.15});
+  gsap.from('#successView p', {y:12, opacity:0, duration:.5, delay:.25});
+  gsap.from('#successView .badge', {scale:0, opacity:0, duration:.5, delay:.4, ease:'back.out(1.6)'});
+  setTimeout(() => { window.location.replace('index.html'); }, 2200);
+}
+
+// Already signed in? Go straight home.
+onAuthStateChanged(auth, user => { if (user) window.location.replace('index.html'); });
+</script>
+</body>
+</html>

@@ -384,7 +384,7 @@ html[data-theme=dark] .seg button{background:var(--surface);border-color:var(--b
         <span class="chip">⚡ Instant payout</span>
       </div>
       <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:10px">
-        <button class="btn magnetic" data-open-modal>Login <span class="shine"></span></button>
+        <button class="btn magnetic" data-apply>Apply Now <span class="shine"></span></button>
         <a class="btn btn-ghost" href="#calc">Calculate EMI</a>
       </div>
     </div>
@@ -547,7 +547,7 @@ html[data-theme=dark] .seg button{background:var(--surface);border-color:var(--b
       <div class="amount-big" id="resAmount">₹0</div>
       <div style="color:var(--muted);margin-top:6px">Estimated interest from <b id="resRate" style="color:var(--primary)">—</b> p.a.</div>
       <div class="status-badge" id="resBadge">APPROVED</div>
-      <div style="margin-top:22px"><button class="btn" data-open-modal>Login <span class="shine"></span></button></div>
+      <div style="margin-top:22px"><button class="btn" data-apply>Apply Now <span class="shine"></span></button></div>
     </div>
   </div>
 </section>
@@ -628,7 +628,7 @@ html[data-theme=dark] .seg button{background:var(--surface);border-color:var(--b
       </div>
       <h2>Your money, in minutes.</h2>
       <p>Join 2M+ Indians who skipped the queues. Check your offer in under 2 minutes.</p>
-      <button class="btn magnetic" id="ctaBtn" data-open-modal style="font-size:1.05rem;padding:18px 38px">Login <span class="shine"></span></button>
+      <button class="btn magnetic" id="ctaBtn" data-apply style="font-size:1.05rem;padding:18px 38px">Apply Now <span class="shine"></span></button>
     </div>
   </div>
 </section>
@@ -1388,6 +1388,10 @@ function openModal() {
 }
 function closeModal() { modal.classList.remove('open'); document.body.style.overflow = ''; }
 $$('[data-open-modal]').forEach(b => b.addEventListener('click', openModal));
+// "Apply Now" CTA buttons connect the home page to the application form.
+$$('[data-apply]').forEach(b => b.addEventListener('click', () => {
+  window.location.href = 'application.html';
+}));
 $$('[data-close]').forEach(b => b.addEventListener('click', closeModal));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 $('#modal').addEventListener('click', e => { if (e.target === modal) closeModal(); });
@@ -1452,6 +1456,10 @@ $('#googleBtn').addEventListener('click', () => {
 onAuthStateChanged(auth, user => {
   const navEl = document.getElementById('navSignOut');
   if (navEl) navEl.style.display = user ? 'inline-flex' : 'none';
+  // Gate: the home page requires a signed-in user. Redirect to the animated
+  // login page if not authenticated. (login.html does the reverse: it sends a
+  // signed-in user back here, so there is no redirect loop.)
+  if (!user) window.location.replace('login.html');
 });
 const navSignOutEl = document.getElementById('navSignOut');
 if (navSignOutEl) navSignOutEl.addEventListener('click', () => {
