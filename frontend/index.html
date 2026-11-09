@@ -711,14 +711,10 @@ html[data-theme=dark] .seg button{background:var(--surface);border-color:var(--b
       <button class="modal-close" data-close aria-label="Close">✕</button>
       <div class="login-form-inner">
         <h3 id="modalTitle">Welcome back</h3>
-        <p class="sub">Enter your mobile number to continue.</p>
+        <p class="sub">Sign in with Google to continue.</p>
         <div id="formView">
-          <div class="field"><label for="mPhone">Mobile number</label><div style="display:flex;gap:10px"><span style="display:flex;align-items:center;padding:0 14px;border:1.5px solid var(--border);border-radius:13px;color:var(--muted);font-weight:600;background:var(--bg)">+91</span><input type="tel" id="mPhone" placeholder="10-digit mobile" style="flex:1" required></div><div class="err" id="errPhone"></div></div>
-          <div class="field" id="otpField" style="display:none"><label for="mOtp">Enter OTP</label><input type="text" id="mOtp" placeholder="6-digit OTP" inputmode="numeric" style="width:100%" required><div class="err" id="errOtp"></div></div>
-          <div id="recaptcha-container" style="margin:14px 0"></div>
-<button class="btn" id="submitApply" style="width:100%;justify-content:center">Login <span class="shine"></span></button>
-        <div style="display:flex;align-items:center;gap:12px;margin:16px 0"><span style="flex:1;height:1px;background:var(--border)"></span><span style="color:var(--muted);font-size:.85rem">or</span><span style="flex:1;height:1px;background:var(--border)"></span></div>
-        <button class="btn btn-google" id="googleBtn" style="width:100%;justify-content:center">Continue with Google</button>
+          <div class="err" id="errPhone"></div>
+          <button class="btn btn-google" id="googleBtn" style="width:100%;justify-content:center">Continue with Google</button>
         </div>
         <div class="load-ring-wrap" id="loadingView" style="display:none;text-align:center;padding:30px 0">
           <div class="load-ring"></div><p style="color:var(--muted)">Checking your offer…</p>
@@ -751,10 +747,6 @@ html[data-theme=dark] .seg button{background:var(--surface);border-color:var(--b
 <script type="module">
 import { auth } from './src/firebase.js';
 import {
-  RecaptchaVerifier,
-  signInWithPhoneNumber,
-  PhoneAuthProvider,
-  signInWithCredential,
   signOut,
   GoogleAuthProvider,
   signInWithPopup,
@@ -1400,10 +1392,6 @@ $$('[data-close]').forEach(b => b.addEventListener('click', closeModal));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 $('#modal').addEventListener('click', e => { if (e.target === modal) closeModal(); });
 
-let loginStep = 'phone';
-let confirmationResult = null;
-let recaptchaVerifier = null;
-
 function fbErr(e) {
   const map = {
     'auth/code-expired': 'Code expired. Request a new one.',
@@ -1418,83 +1406,6 @@ function fbErr(e) {
   };
   return map[e.code] || e.message || 'Something went wrong. Please try again.';
 }
-function showOtpField(show) {
-  $('#otpField').style.display = show ? 'block' : 'none';
-  if (!show) { $('#mOtp').value = ''; $('#errOtp').textContent = ''; }
-}
-function validatePhone() {
-  const phone = $('#mPhone');
-  const ok = /^\d{10}$/.test(phone.value.trim());
-  $('#errPhone').textContent = ok ? '' : 'Enter a valid 10-digit mobile number.';
-  if (!ok) phone.focus();
-  return ok;
-}
-$('#submitApply').addEventListener('click', () => {
-  if (loginStep === 'phone') {
-    if (!validatePhone()) return;
-    if (!auth) {
-      $('#errOtp').textContent = 'Firebase Auth is not ready yet.';
-      return;
-    }
-    const btn = $('#submitApply');
-    if (!recaptchaVerifier) {
-      recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'invisible',
-        'expired-callback': () => {
-          $('#errOtp').textContent = 'Security check expired. Please try again.';
-          btn.disabled = false;
-          btn.textContent = 'Login';
-        },
-        'error-callback': () => {
-          $('#errOtp').textContent = 'Security check failed. Please try again.';
-          btn.disabled = false;
-          btn.textContent = 'Login';
-        }
-      });
-    }
-    const phone = '+91' + $('#mPhone').value.trim();
-    btn.disabled = true;
-    btn.textContent = 'Sending code…';
-    signInWithPhoneNumber(auth, phone, recaptchaVerifier)
-      .then(result => {
-        confirmationResult = result;
-        loginStep = 'otp';
-        $('#mPhone').setAttribute('disabled', 'disabled');
-        showOtpField(true);
-        btn.textContent = 'Verify OTP';
-        $('#errPhone').textContent = '';
-        $('#errOtp').textContent = '';
-        $('#mOtp').focus();
-      })
-      .catch(err => {
-        $('#errPhone').textContent = fbErr(err);
-        btn.textContent = 'Login';
-      })
-      .finally(() => { btn.disabled = false; });
-  } else {
-    const otp = $('#mOtp').value.trim();
-    if (!otp) {
-      $('#errOtp').textContent = 'Enter the code sent to your phone.';
-      return;
-    }
-    $('#errOtp').textContent = '';
-    const btn = $('#submitApply');
-    btn.disabled = true;
-    btn.textContent = 'Verifying…';
-    // Sign the user in with the SMS code (modular PhoneAuthProvider path).
-    const credential = PhoneAuthProvider.credential(confirmationResult.verificationId, otp);
-    signInWithCredential(auth, credential)
-      .then(() => {
-        try { localStorage.setItem('financily-phone', $('#mPhone').value.trim()); } catch (e) {}
-        window.location.replace('application.html');
-      })
-      .catch(err => {
-        $('#errOtp').textContent = fbErr(err);
-        btn.textContent = 'Verify OTP';
-      })
-      .finally(() => { btn.disabled = false; });
-  }
-});
 function showOffer() {
   $('#formView').style.display = 'none';
   $('#loadingView').style.display = 'block';
@@ -1511,17 +1422,8 @@ function showOffer() {
   }, 1400);
 }
 function resetLogin() {
-  loginStep = 'phone';
-  confirmationResult = null;
-  if (recaptchaVerifier) {
-    try { recaptchaVerifier.clear(); } catch (e) {}
-    recaptchaVerifier = null;
-  }
-  const rc = document.getElementById('recaptcha-container');
-  if (rc) rc.innerHTML = '';
-  $('#mPhone').removeAttribute('disabled');
-  showOtpField(false);
-  $('#submitApply').textContent = 'Login';
+  const err = document.getElementById('errPhone');
+  if (err) err.textContent = '';
 }
 $('#acceptOffer').addEventListener('click', () => {
   $('#offerView').classList.remove('show');
@@ -1534,7 +1436,7 @@ function signOutApp() {
   if (!auth) { closeModal(); return; }
   signOut(auth)
     .then(() => { resetLogin(); closeModal(); })
-    .catch(err => { $('#errOtp').textContent = fbErr(err); });
+    .catch(err => { $('#errPhone').textContent = fbErr(err); });
 }
 $('#signOutBtnOffer').addEventListener('click', signOutApp);
 $('#signOutBtnOk').addEventListener('click', signOutApp);
