@@ -11,6 +11,8 @@
     "verify": "node tests/verify-kyc-extraction.js"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.119.0",
     "firebase": "^11.10.0",
     "tesseract.js": "^7.0.0"
   },
