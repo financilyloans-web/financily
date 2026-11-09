@@ -51,9 +51,12 @@ header.appbar{position:sticky;top:0;z-index:60;background:var(--glass);backdrop-
 .steps .st.done .dot{background:var(--good)}
 
 /* stage container */
-.stage{padding:12px 18px 40px;flex:1}
-.view{display:none}
+.stage{padding:12px 18px 40px;flex:1;perspective:1200px}
+.view{display:none;transform-style:preserve-3d}
 .view.on{display:block}
+/* subtle ambient 3D float for the active card */
+.view.on .card{animation:cardFloat 6s ease-in-out infinite}
+@keyframes cardFloat{0%,100%{transform:rotateX(0) translateY(0) scale(1)}50%{transform:rotateX(2deg) translateY(-6px) scale(1.01)}}
 
 .card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);padding:22px 18px;margin-bottom:16px}
 .card h2{font-size:1.25rem;display:flex;align-items:center;gap:10px;margin-bottom:4px}
@@ -192,15 +195,17 @@ footer{text-align:center;padding:18px;color:var(--muted);font-size:.78rem}
       </div>
     </section>
 
-    <!-- STEP 3: INCOME -->
+    <!-- STEP 3: INCOME / CONTACT / CREDIT -->
     <section class="view" id="viewIncome">
       <div class="card">
         <h2><span class="ico">💼</span>Employment & income</h2>
         <p class="hint">Used to compute your eligibility.</p>
+        <div class="field"><label>Mobile number (for updates)</label><input id="eMobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile"><div class="err"></div></div>
         <div class="field"><label>Employment type</label><select id="eType"><option value="">Select</option><option>Salaried</option><option>Self-employed</option><option>Business</option><option>Student</option></select><div class="err"></div></div>
         <div class="field"><label>Employer / Business name</label><input id="eOrg" placeholder="Company or firm" maxlength="80"><div class="err"></div></div>
         <div class="field"><label>Monthly income (₹)</label><input id="eIncome" type="number" placeholder="50000"><div class="err"></div></div>
         <div class="field"><label>Existing monthly EMI (₹)</label><input id="eEmi" type="number" placeholder="0"><div class="err"></div></div>
+        <div class="field"><label>CIBIL score range</label><select id="cibilRange"><option value="">Select range</option><option>Outstanding (900–750)</option><option>Good (749–650)</option><option>Fair (649–550)</option><option>Poor (below 550)</option></select><div class="err"></div></div>
         <div class="btnnav"><button class="btn ghost" id="incBack">Back</button><button class="btn" id="incNext">Save & continue <span class="shine"></span></button></div>
       </div>
     </section>
@@ -288,8 +293,12 @@ const segs = document.querySelectorAll('#steps .st');
 function goTo(i){
   const old = document.getElementById(stepOrder[cur]);
   const next = document.getElementById(stepOrder[i]);
-  old.classList.remove('on'); next.classList.add('on');
-  gsap.fromTo(next, { autoAlpha:0, y:26 }, { autoAlpha:1, y:0, duration:.5, ease:'power3.out' });
+  gsap.to(old, { autoAlpha:0, rotateX:-24, y:-18, scale:.96, duration:.3, ease:'power2.in' });
+  old.classList.remove('on');
+  next.classList.add('on');
+  gsap.fromTo(next,
+    { autoAlpha:0, rotateX:24, y:30, scale:.96 },
+    { autoAlpha:1, rotateX:0, y:0, scale:1, duration:.55, ease:'back.out(1.6)' });
   cur = i;
   const pct = Math.round((i / 5) * 100);
   document.getElementById('stepPct').textContent = pct + '%';
@@ -685,20 +694,34 @@ $('aadNext').addEventListener('click', () => {
 });
 $('incBack').addEventListener('click', () => goTo(1));
 $('incNext').addEventListener('click', () => {
+  // Mobile number (also prefill from login if the user hasn't typed one).
+  const mobile = ($('eMobile').value || localStorage.getItem('financily-phone') || '').replace(/\D/g,'').slice(-10);
+  $('eMobile').value = mobile;
+  if (!/^[6-9]\d{9}$/.test(mobile)) {
+    $('eMobile').parentElement.querySelector('.err').textContent = 'Enter a valid 10-digit mobile number.';
+    $('eMobile').focus();
+    return;
+  }
+  $('eMobile').parentElement.querySelector('.err').textContent = '';
   if (!$('eType').value || +($('eIncome').value||0) < 10000) {
     $('eIncome').parentElement.querySelector('.err').textContent = 'Select employment type and income ≥ ₹10,000';
     return;
   }
   $('eIncome').parentElement.querySelector('.err').textContent = '';
+  if (!$('cibilRange').value) {
+    $('cibilRange').parentElement.querySelector('.err').textContent = 'Select your CIBIL score range.';
+    return;
+  }
+  $('cibilRange').parentElement.querySelector('.err').textContent = '';
   goTo(3);
 });
 $('loanBack').addEventListener('click', () => goTo(2));
 $('loanNext').addEventListener('click', () => {
   if (!$('lPurpose').value) { $('lPurpose').parentElement.querySelector('.err').textContent = 'Select purpose'; return; }
   $('lPurpose').parentElement.querySelector('.err').textContent = '';
-  // Prefill mobile from login (if not already entered on the review step).
+  // Prefill mobile from login (if not already entered on the income step).
   if (!$('reviewMobile').value) {
-    $('reviewMobile').value = (localStorage.getItem('financily-phone') || '').replace(/\D/g,'').slice(-10);
+    $('reviewMobile').value = ($('eMobile').value || localStorage.getItem('financily-phone') || '').replace(/\D/g,'').slice(-10);
   }
   buildSummary();
   goTo(4);
@@ -718,8 +741,10 @@ function buildSummary(){
     ['Name', $('panName').value.trim()],
     ['PAN', $('panNo').value.trim()],
     ['Aadhaar', $('aadNo').value.trim()],
+    ['Mobile', $('eMobile').value.trim()],
     ['Employment', $('eType').value],
     ['Monthly income', fmtIN($('eIncome').value)],
+    ['CIBIL', $('cibilRange').value],
     ['Loan amount', $('lAmtVal').textContent],
     ['Tenure', $('lTenVal').textContent],
     ['Purpose', $('lPurpose').value]
@@ -741,7 +766,7 @@ $('submitBtn').addEventListener('click', async () => {
   errEl.textContent = '';
   const btn = $('submitBtn');
 
-  const mobile = ($('reviewMobile').value || localStorage.getItem('financily-phone') || '').replace(/\D/g,'').slice(-10);
+  const mobile = ($('reviewMobile').value || $('eMobile').value || localStorage.getItem('financily-phone') || '').replace(/\D/g,'').slice(-10);
   if (!/^[6-9]\d{9}$/.test(mobile)) {
     errEl.textContent = 'Enter a valid 10-digit mobile number to receive updates.';
     $('reviewMobile').focus();
@@ -761,6 +786,8 @@ $('submitBtn').addEventListener('click', async () => {
     Income: +($('eIncome').value||0),
     employer: $('eOrg').value.trim(),
     employmentType: $('eType').value,
+    cibil: $('cibilRange').value,
+    CIBIL: $('cibilRange').value,
     source: 'full',
     consent: true
   };
