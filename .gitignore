@@ -1,5 +1,7 @@
 node_modules
 .env
+.env.local
+.env.*.local
 .env.render
 .DS_Store
 _mobile_*.png
